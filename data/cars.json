@@ -1,0 +1,89 @@
+[
+  {
+    "id": 1,
+    "brand": "Geely",
+    "model": "Monjaro",
+    "year": 2023,
+    "month": "Апрель",
+    "price": "3 450 000 ₽",
+    "country": "Китай",
+    "country_code": "CN",
+    "featured": true,
+    "photos": ["assets/cars/monjaro.jpg"],
+    "specs": {
+      "hp": "238 л.с.",
+      "fuel": "Бензин",
+      "volume": "1969 см³",
+      "mileage": "0 км"
+    }
+  },
+  {
+    "id": 2,
+    "brand": "Hyundai",
+    "model": "Santa Fe",
+    "year": 2022,
+    "price": "2 850 000 ₽",
+    "country": "Корея",
+    "country_code": "KR",
+    "featured": true,
+    "photos": ["assets/cars/santafe.jpg"],
+    "specs": {
+      "hp": "199 л.с.",
+      "fuel": "Дизель",
+      "volume": "2151 см³",
+      "mileage": "24 000 км"
+    }
+  },
+  {
+    "id": 3,
+    "brand": "Kia",
+    "model": "Sorento",
+    "year": 2021,
+    "price": "3 100 000 ₽",
+    "country": "Корея",
+    "country_code": "KR",
+    "featured": true,
+    "photos": ["assets/cars/sorento.jpg"],
+    "specs": {
+      "hp": "199 л.с.",
+      "fuel": "Дизель",
+      "volume": "2151 см³",
+      "mileage": "32 500 км"
+    }
+  },
+  {
+    "id": 4,
+    "brand": "Lixiang",
+    "model": "L7 Pro",
+    "year": 2023,
+    "price": "5 200 000 ₽",
+    "country": "Китай",
+    "country_code": "CN",
+    "featured": true,
+    "photos": ["assets/cars/lixiang.jpg"],
+    "specs": {
+      "hp": "449 л.с.",
+      "fuel": "Гибрид",
+      "volume": "1496 см³",
+      "mileage": "100 км"
+    }
+  },
+  {
+    "id": 5,
+    "brand": "BMW",
+    "model": "X5 30d",
+    "year": 2020,
+    "month": "Сентябрь",
+    "price": "5 900 000 ₽",
+    "country": "Корея",
+    "country_code": "KR",
+    "featured": true,
+    "photos": ["assets/cars/bmw.jpg"],
+    "specs": {
+      "hp": "249 л.с.",
+      "fuel": "Дизель",
+      "volume": "2993 см³",
+      "mileage": "58 000 км"
+    }
+  }
+]
