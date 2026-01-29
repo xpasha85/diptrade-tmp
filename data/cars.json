@@ -4,17 +4,25 @@
     "brand": "Geely",
     "model": "Monjaro",
     "year": 2023,
-    "month": "Апрель",
-    "price": "3 450 000 ₽",
-    "country": "Китай",
+    "month": 0,
+    "price": 3450000,
     "country_code": "CN",
+    "in_stock": true,
+    "is_auction": false,
+    "auction_benefit": 0,
     "featured": true,
     "photos": ["assets/cars/monjaro.jpg"],
     "specs": {
-      "hp": "238 л.с.",
+      "hp": 238,
+      "volume": 1969,
       "fuel": "Бензин",
-      "volume": "1969 см³",
-      "mileage": "0 км"
+      "drive": "4WD",
+      "transmission": "Автомат",
+      "mileage": 0
+    },
+    "details": {
+      "history": "Новый автомобиль",
+      "vin": null
     }
   },
   {
@@ -22,16 +30,25 @@
     "brand": "Hyundai",
     "model": "Santa Fe",
     "year": 2022,
-    "price": "2 850 000 ₽",
-    "country": "Корея",
+    "month": 6,
+    "price": 2850000,
     "country_code": "KR",
+    "in_stock": true,
+    "is_auction": false,
+    "auction_benefit": 0,
     "featured": true,
     "photos": ["assets/cars/santafe.jpg"],
     "specs": {
-      "hp": "199 л.с.",
+      "hp": 199,
+      "volume": 2151,
       "fuel": "Дизель",
-      "volume": "2151 см³",
-      "mileage": "24 000 км"
+      "drive": "4WD",
+      "transmission": "Робот",
+      "mileage": 24000
+    },
+    "details": {
+      "history": "Без пробега по РФ",
+      "vin": "KMHS..."
     }
   },
   {
@@ -39,16 +56,25 @@
     "brand": "Kia",
     "model": "Sorento",
     "year": 2021,
-    "price": "3 100 000 ₽",
-    "country": "Корея",
+    "month": 8,
+    "price": 3100000,
     "country_code": "KR",
+    "in_stock": false,
+    "is_auction": true,
+    "auction_benefit": 150000,
     "featured": true,
     "photos": ["assets/cars/sorento.jpg"],
     "specs": {
-      "hp": "199 л.с.",
+      "hp": 199,
+      "volume": 2151,
       "fuel": "Дизель",
-      "volume": "2151 см³",
-      "mileage": "32 500 км"
+      "drive": "4WD",
+      "transmission": "Робот",
+      "mileage": 32500
+    },
+    "details": {
+      "history": "Аукционный лист 4.5 балла",
+      "vin": "KNA..."
     }
   },
   {
@@ -56,16 +82,25 @@
     "brand": "Lixiang",
     "model": "L7 Pro",
     "year": 2023,
-    "price": "5 200 000 ₽",
-    "country": "Китай",
+    "month": 1,
+    "price": 5200000,
     "country_code": "CN",
+    "in_stock": false,
+    "is_auction": false,
+    "auction_benefit": 0,
     "featured": true,
     "photos": ["assets/cars/lixiang.jpg"],
     "specs": {
-      "hp": "449 л.с.",
+      "hp": 449,
+      "volume": 1496,
       "fuel": "Гибрид",
-      "volume": "1496 см³",
-      "mileage": "100 км"
+      "drive": "4WD",
+      "transmission": "Автомат",
+      "mileage": 100
+    },
+    "details": {
+      "history": "Новый, под заказ",
+      "vin": null
     }
   },
   {
@@ -73,17 +108,25 @@
     "brand": "BMW",
     "model": "X5 30d",
     "year": 2020,
-    "month": "Сентябрь",
-    "price": "5 900 000 ₽",
-    "country": "Корея",
+    "month": 9,
+    "price": 5900000,
     "country_code": "KR",
+    "in_stock": true,
+    "is_auction": false,
+    "auction_benefit": 0,
     "featured": true,
     "photos": ["assets/cars/bmw.jpg"],
     "specs": {
-      "hp": "249 л.с.",
+      "hp": 249,
+      "volume": 2993,
       "fuel": "Дизель",
-      "volume": "2993 см³",
-      "mileage": "58 000 км"
+      "drive": "4WD",
+      "transmission": "Автомат",
+      "mileage": 58000
+    },
+    "details": {
+      "history": "Дилерский, подтвержденный пробег",
+      "vin": "WBA..."
     }
   }
 ]

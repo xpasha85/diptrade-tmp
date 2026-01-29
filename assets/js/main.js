@@ -51,32 +51,70 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeOrderSheetBtn) closeOrderSheetBtn.addEventListener('click', closeAllSheets);
     if (overlay) overlay.addEventListener('click', closeAllSheets);
 
-    // --- 4. РЕНДЕРИНГ АВТО ---
+
+    // --- 4. РЕНДЕРИНГ АВТО (НОВАЯ ЛОГИКА) ---
     const grid = document.getElementById('featured-grid');
+    
+    // Форматтер цены (1000000 -> 1 000 000 ₽)
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('ru-RU', { 
+            style: 'currency', 
+            currency: 'RUB', 
+            maximumFractionDigits: 0 
+        }).format(price);
+    };
+
+    // Форматтер месяца (4 -> Апрель)
+    const formatMonth = (monthNum) => {
+        if (!monthNum) return '';
+        const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        return months[monthNum - 1] || '';
+    };
+
     if (grid) {
         fetch('data/cars.json')
             .then(res => res.json())
             .then(data => {
                 const featured = data.filter(car => car.featured);
+                // Перемешиваем
                 const shuffled = featured.sort(() => 0.5 - Math.random());
                 const isMobile = window.innerWidth < 768;
+                // На мобилке показываем все, на ПК только 4
                 const selected = isMobile ? shuffled : shuffled.slice(0, 4);
 
                 grid.innerHTML = selected.map(car => {
-                    const monthText = car.month ? `${car.month}, ` : '';
+                    // Подготовка данных для отображения
+                    const displayPrice = formatPrice(car.price);
+                    const displayMonth = car.month ? `${formatMonth(car.month)}, ` : '';
+                    
+                    // Собираем строку характеристик
+                    const hp = `${car.specs.hp} л.с.`;
+                    const fuel = car.specs.fuel;
+                    // Если объем 0 (электричка), пишем просто Электро, иначе объем
+                    const volume = car.specs.volume > 0 ? `${car.specs.volume} см³` : 'Электро';
+
                     return `
                     <div class="car-card" onclick="handleCardClick(event, ${car.id})">
                         <div class="car-img-wrap">
                             <img src="${car.photos[0]}" alt="${car.brand}" class="car-img" onerror="this.src='https://placehold.co/600x400/EEE/31343C?text=DipTrade'">
                             <div class="car-badge">${car.country_code}</div>
+                            
+                            ${car.in_stock ? '<div style="position:absolute; top:10px; right:10px; background:#10B981; color:white; font-size:10px; padding:4px 8px; border-radius:6px; font-weight:700; z-index:2;">В наличии</div>' : ''}
                         </div>
+                        
                         <div class="car-content">
                             <div class="car-title">${car.brand} ${car.model}</div>
-                            <div class="car-specs-text">${car.specs.hp}, ${car.specs.fuel}, ${car.specs.volume}<br>${monthText}${car.year} год</div>
+                            
+                            <div class="car-specs-text">
+                                ${hp}, ${fuel}, ${volume}<br>
+                                ${displayMonth}${car.year} год
+                            </div>
+                            
                             <div class="car-footer">
-                                <div class="car-price">${car.price}</div>
+                                <div class="car-price">${displayPrice}</div>
                                 <div class="car-info-container">
                                     <span class="car-subprice">до Владивостока</span>
+                                    
                                     <div class="info-icon" onclick="handleInfoClick(event)">
                                         <i>i</i>
                                         <div class="tooltip">
@@ -92,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).catch(err => console.error('Ошибка загрузки:', err));
     }
 
+
     // --- 5. ОБРАБОТЧИКИ КЛИКОВ (Глобальные) ---
     window.handleCardClick = (event, id) => {
         if (!event.target.closest('.info-icon')) {
@@ -106,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Клик по иконке в ФОРМЕ (используем ID, который ты добавил в HTML)
+    // Клик по иконке в ФОРМЕ (используем ID)
     document.addEventListener('click', (e) => {
         if (e.target.closest('#orderInfoBtn')) {
             openSheet(orderSheet);
