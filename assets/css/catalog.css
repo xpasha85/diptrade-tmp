@@ -1,0 +1,452 @@
+/* ==========================================================================
+   СТИЛИ ДЛЯ СТРАНИЦЫ КАТАЛОГА (FINAL)
+   ========================================================================== */
+
+/* --- 1. ОБЩАЯ СТРУКТУРА --- */
+.catalog-page {
+    padding: 30px 0 80px;
+    background-color: #F8FAFC; 
+    min-height: 100vh;
+}
+
+.catalog-header-block { display: none; } /* Скрываем старый заголовок */
+
+.catalog-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* --- 2. САЙДБАР (ФИЛЬТРЫ) --- */
+.catalog-sidebar {
+    background: #FFFFFF;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0; /* Светлая рамка */
+    position: sticky; top: 100px; z-index: 10;
+}
+
+.filter-group { margin-bottom: 24px; }
+.filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #1E293B; }
+.filter-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #1E293B; }
+
+/* Инпуты и Селекты */
+.catalog-sidebar select, 
+.catalog-sidebar input[type="number"] {
+    width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0;
+    border-radius: 8px; font-size: 14px; outline: none; background: #fff; transition: 0.2s;
+}
+.catalog-sidebar select:focus, .catalog-sidebar input:focus { border-color: #3E89C2; }
+.inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+
+/* --- ЧЕКБОКСЫ (ИСПРАВЛЕННЫЕ) --- */
+
+/* ВАЖНО: Добавили .filter-group в начало, чтобы перебить общий стиль label */
+.filter-group .checkbox-wrapper {
+    display: flex !important; /* Принудительно возвращаем ряд */
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: #334155;
+    transition: 0.2s;
+    width: 100%;
+    
+    /* Сбрасываем жирность, которую навязал .filter-group label */
+    font-weight: 400 !important; 
+}
+
+.checkbox-wrapper:hover {
+    color: #0F172A;
+}
+
+/* Скрываем стандартный инпут */
+.checkbox-wrapper input {
+    display: none; 
+}
+
+/* Наш кастомный квадрат */
+.checkmark {
+    display: block;             
+    width: 20px;
+    height: 20px;
+    min-width: 20px;            
+    border: 2px solid #CBD5E1;  
+    border-radius: 6px;
+    background: #FFFFFF;
+    position: relative;
+    transition: 0.2s;
+    box-sizing: border-box;     
+}
+
+/* При наведении рамка темнеет */
+.checkbox-wrapper:hover .checkmark {
+    border-color: #94A3B8;
+}
+
+/* АКТИВНОЕ СОСТОЯНИЕ (Галочка нажата) */
+.checkbox-wrapper input:checked + .checkmark {
+    background: #1E293B;
+    border-color: #1E293B;
+}
+
+/* Рисуем галочку внутри */
+.checkbox-wrapper input:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 5px;       
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+
+/* Кнопка сброса (Спокойная, серая) */
+#resetFilters {
+    margin-top: 16px;
+    background: #F1F5F9;       /* Светло-серый фон */
+    color: #64748B;            /* Серый текст */
+    border: 1px solid #E2E8F0 !important; /* Тонкая рамка */
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+#resetFilters:hover {
+    background: #E2E8F0;       /* Чуть темнее при наведении */
+    color: #334155;            /* Текст темнее */
+    border-color: #CBD5E1 !important;
+}
+
+
+/* --- 3. ПРАВАЯ ЧАСТЬ (КОНТЕНТ) --- */
+
+/* Чипсы (Теги сверху) */
+.catalog-chips-row { margin-bottom: 20px; }
+.catalog-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+    background: #FFFFFF; border: 1px solid #E2E8F0; padding: 8px 16px; border-radius: 50px;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; color: #1E293B;
+}
+.chip:hover { border-color: #3E89C2; }
+.chip.active { background: #1E293B; color: white; border-color: #1E293B; }
+
+/* Панель "Найдено + Сортировка" */
+.catalog-info-bar {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 15px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 25px;
+}
+.results-count { font-size: 14px; color: #1E293B; font-weight: 500; }
+.sort-controls { display: flex; align-items: center; }
+#sortSelect { padding: 6px 12px; border-radius: 8px; border: 1px solid #E2E8F0; font-size: 13px; cursor: pointer; background: transparent; color: #1E293B; }
+
+
+/* --- 4. КАРТОЧКИ АВТО --- */
+.catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+
+.car-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex; flex-direction: column;
+}
+.car-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #3E89C2; }
+
+/* ФОТО И БЕЙДЖИ (Позиционирование) */
+.car-img-wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background-color: #F1F5F9; 
+    
+    /* ИСПОЛЬЗУЕМ ТВОЙ ПЛЕЙСХОЛДЕР */
+    background-image: url('../img/placeholder.png'); 
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; /* Или contain, если это логотип */
+}
+
+
+/* Общий стиль для всех бейджей на фото */
+.badge-overlay {
+    position: absolute;
+    z-index: 5;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+/* --- 1. ВЕРХНИЕ БЕЙДЖИ (Флаг, Молот, Наличие) --- */
+
+/* Флаг (Левый верхний) */
+.car-flag-icon {
+    position: absolute;
+    top: 10px; left: 10px; z-index: 30;
+    width: 28px; height: auto;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Молоток (Сразу за флагом) */
+.auction-badge-wrap {
+    position: absolute;
+    top: 10px; left: 46px; /* 10px + 28px + 8px отступ */
+    z-index: 30;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: help;
+}
+.auction-icon {
+    width: 100%; height: 100%;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+    transition: 0.2s;
+}
+.auction-badge-wrap:hover .auction-icon { transform: scale(1.15) rotate(-10deg); }
+
+/* В наличии (Правый верхний) */
+.badge-stock {
+    position: absolute;
+    top: 10px; right: 10px; z-index: 30;
+    background: #10B981; color: white;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 8px; border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+/* --- 2. НИЖНИЕ БЕЙДЖИ НА ФОТО (Glassmorphism) --- */
+
+.badges-bottom-row {
+    position: absolute;
+    bottom: 10px; left: 10px; right: 10px;
+    display: flex; gap: 6px;
+    z-index: 30;
+    pointer-events: none; /* Чтобы не мешали клику по карточке */
+}
+
+.badge-glass {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(8px); /* Размытие фона под бейджем */
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.badge-glass.green {
+    background: rgba(22, 163, 74, 0.85); /* Зеленый полупрозрачный */
+    color: #ffffff;
+}
+
+.badge-glass.red {
+    background: rgba(220, 38, 38, 0.85); /* Красный полупрозрачный */
+    color: #ffffff;
+}
+
+.badge-glass.yellow {
+    background: rgba(234, 179, 8, 0.9); /* Желтый */
+    color: #422006;
+}
+
+
+/* --- 3. ФУТЕР (ДЕНЬГИ) --- */
+
+.car-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    margin-top: auto; padding-top: 12px;
+    border-top: 1px solid #F1F5F9;
+}
+
+.price-block { display: flex; flex-direction: column; gap: 2px; }
+
+.car-price {
+    font-size: 19px !important;
+    font-weight: 800; color: #0F172A;
+    line-height: 1;
+}
+
+.price-subtitle { font-size: 11px; color: #94A3B8; font-weight: 400; }
+
+/* Правая часть: Выгода */
+.benefit-block { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+
+.benefit-value {
+    color: #16A34A; font-weight: 800; font-size: 13px;
+    background: #DCFCE7; padding: 2px 6px; border-radius: 4px;
+}
+.benefit-label { font-size: 9px; color: #166534; font-weight: 700; text-transform: uppercase; }
+
+/* Правая часть: Обычная доставка */
+.delivery-simple { font-size: 11px; color: #94A3B8; text-align: right; }
+
+
+
+/* --- СТИЛИ ДЛЯ АУКЦИОННЫХ АВТО (ИСПРАВЛЕННЫЕ) --- */
+
+/* 1. Желтоватый фон для самой карточки */
+.car-card.auction-card {
+    background-color: #FFFBEB; 
+    border-color: #FEF3C7;    
+}
+
+.car-card.auction-card:hover {
+    border-color: #B45309 !important;
+    box-shadow: 0 10px 20px rgba(180, 83, 9, 0.1); 
+}
+
+/* 2. Обертка для иконки Молотка */
+.auction-badge-wrap {
+    position: absolute;
+    top: 10px;
+    left: 48px; 
+    z-index: 30; /* ВАЖНО: Подняли слой выше слайдера (20), теперь ховер работает */
+    cursor: help;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; /* Задали явный размер зоны клика */
+    height: 28px;
+}
+
+/* Сама иконка молотка */
+.auction-icon {
+    width: 100%;
+    height: 100%;
+    
+    /* УБРАЛИ БЕЛЫЙ ФОН */
+    background: transparent; 
+    
+    border-radius: 0;
+    padding: 0;
+    object-fit: contain;
+    transition: 0.2s;
+    
+    /* Добавляем тень самой картинке, чтобы её было видно на белом авто */
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+}
+
+.auction-badge-wrap:hover .auction-icon {
+    transform: scale(1.2); /* Чуть сильнее увеличиваем при наведении */
+}
+
+/* 3. Тултип (Всплывашка) */
+.auction-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    
+    background: #1E293B;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s;
+    pointer-events: none;
+    z-index: 40; /* Тултип должен быть выше всего */
+}
+
+/* Стрелочка у тултипа */
+.auction-tooltip::after {
+    content: ''; 
+    position: absolute; 
+    bottom: 100%; 
+    left: 50%; 
+    margin-left: -4px;
+    border-width: 4px; 
+    border-style: solid; 
+    border-color: transparent transparent #1E293B transparent;
+}
+
+.auction-badge-wrap:hover .auction-tooltip {
+    opacity: 1; visibility: visible;
+}
+
+
+/* --- ХОВЕР-СЛАЙДЕР (ПРЕДПРОСМОТР) --- */
+
+/* Контейнер для зон наведения (растянут на все фото) */
+.hover-zones {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 20; /* Поверх бейджей, чтобы ловить мышь */
+    display: flex; /* Магия: сам делит ширину поровну */
+}
+
+/* Одна зона (полоска) */
+.hover-zone {
+    height: 100%;
+    flex-grow: 1; /* Занимает всё доступное место */
+    /* background: rgba(255,0,0,0.2); Для отладки можно раскомментить */
+}
+
+/* Индикаторы (черточки внизу) */
+.slider-pagination {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px; /* Высота полоски индикаторов */
+    display: flex;
+    gap: 2px;
+    padding: 0 4px;
+    z-index: 21;
+    opacity: 0; /* Скрыты, пока не наведешь */
+    transition: 0.2s;
+}
+
+/* Показываем индикаторы при наведении на все фото */
+.car-img-wrap:hover .slider-pagination {
+    opacity: 1;
+}
+
+/* Сама черточка */
+.slider-dot {
+    flex-grow: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 2px;
+    margin-top: 1px;
+}
+
+/* Активная черточка */
+.slider-dot.active {
+    background: #fff;
+    height: 3px; /* Чуть толще */
+    margin-top: 0;
+}
+
+
+
+/* --- АДАПТИВ --- */
+@media (max-width: 1024px) { .catalog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { 
+    .catalog-layout { grid-template-columns: 1fr; }
+    .catalog-sidebar { display: none; }
+    .catalog-grid { grid-template-columns: 1fr; }
+    .catalog-info-bar { flex-direction: column; align-items: stretch; gap: 15px; }
+    .sort-controls { justify-content: space-between; }
+}

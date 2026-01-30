@@ -170,17 +170,65 @@ img { display: block; max-width: 100%; }
     padding: 12px; position: relative; 
 }
 .car-card:hover { transform: translateY(-5px); background: var(--white); box-shadow: var(--shadow-hover); border-color: var(--primary); z-index: 50; }
-.car-img-wrap { position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #E2E8F0; }
-.car-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; }
+.car-img-wrap { 
+    position: relative; 
+    width: 100%; 
+    aspect-ratio: 4 / 3; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    
+    /* 1. ПЛЕЙСХОЛДЕР (Пока грузится) */
+    background-color: #F1F5F9;
+    background-image: url('../img/placeholder.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover; 
+}
+
+.car-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: 0.5s ease;
+    display: block; 
+}
 .car-card:hover .car-img { transform: scale(1.05); }
-.car-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: white; padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 700; z-index: 2; }
 .car-content { padding: 16px 4px 4px 4px; }
-.car-title { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+.car-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+
+    /* --- МАГИЯ ВЫРАВНИВАНИЯ --- */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;      /* Ограничиваем: не больше 2 строк */
+    -webkit-box-orient: vertical;
+    overflow: hidden;           /* Всё, что не влезло — скрываем */
+    text-overflow: ellipsis;    /* Добавляем троеточие "..." в конце */
+    
+    line-height: 1.2;           /* Высота одной строки */
+    height: 44px;               /* Фиксируем высоту: 18px * 1.2 * 2 строки ≈ 44px */
+    /* Если название короткое, пустое место зарезервируется, и соседи не уедут */
+}
 .car-specs-text { font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 12px; }
 .car-footer { margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
 .car-price { font-size: 19px; font-weight: 700; color: var(--text-main); white-space: nowrap; }
 .car-subprice { font-size: 11px; color: var(--text-secondary); white-space: normal; }
 .car-info-container { display: flex; align-items: center; gap: 6px; position: relative; }
+.car-flag-icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    
+    width: 26px;       /* Аккуратный размер */
+    height: auto;
+    
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Тень, чтобы не сливался */
+}
+
 
 /* Directions */
 .directions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }

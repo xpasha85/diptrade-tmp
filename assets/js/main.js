@@ -83,31 +83,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selected = isMobile ? shuffled : shuffled.slice(0, 4);
 
                 grid.innerHTML = selected.map(car => {
-                    // Подготовка данных для отображения
+                    // 1. ФОТО: Собираем путь или ставим заглушку
+                    let photoSrc = 'assets/img/no-photo.png';
+                    if (car.photos && car.photos.length > 0) {
+                        photoSrc = `${car.assets_folder}/${car.photos[0]}`;
+                    }
+
+                    // 2. ЗАГОЛОВОК: Web title или Марка+Модель
+                    const title = car.web_title || `${car.brand} ${car.model}`;
+
+                    // 3. ФЛАГ: Выбираем картинку
+                    let flagIcon = '';
+                    if (car.country_code === 'KR') flagIcon = 'assets/img/flag-korea.png';
+                    else if (car.country_code === 'CN') flagIcon = 'assets/img/flag-china.png';
+                    else if (car.country_code === 'RU') flagIcon = 'assets/img/flag-russia.png';
+                    
+                    // Если флаг есть — вставляем IMG, иначе ничего
+                    const flagHtml = flagIcon ? `<img src="${flagIcon}" class="car-flag-icon" alt="${car.country_code}">` : '';
+
+                    // Форматирование данных
                     const displayPrice = formatPrice(car.price);
                     const displayMonth = car.month ? `${formatMonth(car.month)}, ` : '';
-                    
-                    // Собираем строку характеристик
                     const hp = `${car.specs.hp} л.с.`;
                     const fuel = car.specs.fuel;
-                    // Если объем 0 (электричка), пишем просто Электро, иначе объем
-                    const volume = car.specs.volume > 0 ? `${car.specs.volume} см³` : 'Электро';
+                    const volume = car.specs.volume > 0 ? `${(car.specs.volume / 1000).toFixed(1)} л` : 'Электро';
 
                     return `
                     <div class="car-card" onclick="handleCardClick(event, ${car.id})">
                         <div class="car-img-wrap">
-                            <img src="${car.photos[0]}" alt="${car.brand}" class="car-img" onerror="this.src='https://placehold.co/600x400/EEE/31343C?text=DipTrade'">
-                            <div class="car-badge">${car.country_code}</div>
+                            <img src="${photoSrc}" 
+                                 alt="${car.brand}" 
+                                 class="car-img" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='assets/img/no-photo.png';">
+                            
+                            ${flagHtml}
                             
                             ${car.in_stock ? '<div style="position:absolute; top:10px; right:10px; background:#10B981; color:white; font-size:10px; padding:4px 8px; border-radius:6px; font-weight:700; z-index:2;">В наличии</div>' : ''}
                         </div>
                         
                         <div class="car-content">
-                            <div class="car-title">${car.brand} ${car.model}</div>
+                            <div class="car-title">${title}</div>
                             
                             <div class="car-specs-text">
-                                ${hp}, ${fuel}, ${volume}<br>
-                                ${displayMonth}${car.year} год
+                                ${displayMonth}${car.year} • ${volume} • ${hp}<br>
+                                ${fuel}
                             </div>
                             
                             <div class="car-footer">
