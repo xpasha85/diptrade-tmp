@@ -57,7 +57,14 @@
             
             <aside class="catalog-sidebar">
                 <form id="filterForm" class="filter-box">
-                    
+
+                    <select name="country_code" id="hiddenCountry" style="display: none;">
+                        <option value="">all</option>
+                        <option value="KR">korea</option>
+                        <option value="CN">china</option>
+                        <option value="RU">russia</option>
+                    </select>
+
                     <div class="filter-group">
                         <label>Марка</label>
                         <select name="brand" id="brandSelect">
@@ -189,7 +196,7 @@
                 <div class="catalog-grid" id="catalogGrid"></div>
 
                 <div class="pagination-block">
-                    <button class="btn btn-outline" id="loadMoreBtn">Показать еще 20</button>
+                    <button class="btn btn-outline" id="loadMoreBtn">Показать еще</button>
                 </div>
 
             </section>
@@ -197,28 +204,45 @@
     </div>
 </main>
 
-<footer class="footer">
+<footer class="footer" id="footer">
     <div class="container">
         <div class="footer-wrap">
             <div class="footer-col footer-brand">
-                 <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи.</p>
-                 <div class="footer-social">
-                     <a href="#">Telegram</a>
-                     <a href="#">WhatsApp</a>
-                     <a href="#">VK</a>
-                 </div>
+                <a href="#" class="logo">
+                    <img src="assets/img/logo-white.png" alt="DipTrade">
+                </a>
+                <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи во Владивосток и по всей России.</p>
+                <div class="footer-social">
+                    <a href="#">Telegram</a>
+                    <a href="#">WhatsApp</a>
+                    <a href="#">MAX</a>
+                </div>
             </div>
-            <div class="footer-col"></div>
-            <div class="footer-col footer-contacts">
+
+            <div class="footer-col">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="catalog.html">Каталог авто</a></li>
+                    <li><a href="/#directions">Направления</a></li>
+                    <li><a href="/#steps">Этапы работы</a></li>
+                    <li><a href="/#advantages">О компании</a></li>
+                    <li><a href="/#order">Заказать подбор</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
                 <h4>Контакты</h4>
-                <p><strong>Телефон:</strong> +7 (902) 488-88-84</p>
-                <p><strong>Офис:</strong> г. Владивосток, ул. Гоголя 39а, офис 33</p>
-                <p><strong>Режим работы:</strong> Пн-Пт: 10:00 - 19:00</p>
+                <div class="footer-contacts">
+                    <p><strong>Адрес:</strong> г. Уссурийск, <br>ул. Тургенева, 73б</p>
+                    <p><strong>Телефон:</strong> +7 (902) 488-88-84</p>
+                    <p><strong>Email:</strong> info@diptrade.ru</p>
+                </div>
             </div>
         </div>
+
         <div class="footer-bottom">
-            <p>&copy; 2026 DipTrade.</p>
-            <a href="#">Политика конфиденциальности</a>
+            <p>&copy; 2026 DipTrade. Все права защищены.</p>
+            <p>Дизайн и разработка: <a href="#">Xpasha85</a></p>
         </div>
     </div>
 </footer>
