@@ -568,7 +568,7 @@ function getPageSize() {
     sortCars();
 
     // пагинация: при любом изменении фильтров — показываем первые 20
-    itemsToShow = 20;
+    itemsToShow = getPageSize();
 
     renderGrid();
     updateCounter();
