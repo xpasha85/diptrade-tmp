@@ -197,12 +197,47 @@
 /* Чипсы (Теги сверху) */
 .catalog-chips-row { margin-bottom: 20px; }
 .catalog-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
 .chip {
-    background: #FFFFFF; border: 1px solid #E2E8F0; padding: 8px 16px; border-radius: 50px;
-    font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; color: #1E293B;
+    background: #FFFFFF; 
+    border: 1px solid #E2E8F0; 
+    padding: 8px 16px; 
+    border-radius: 50px;
+    font-size: 13px; 
+    font-weight: 500; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    color: #1E293B;
+    
+    /* Flex чтобы крестик встал ровно в ряд */
+    display: inline-flex;
+    align-items: center;
 }
-.chip:hover { border-color: #3E89C2; }
-.chip.active { background: #1E293B; color: white; border-color: #1E293B; }
+
+.chip:hover { 
+    border-color: #3E89C2; 
+}
+
+.chip.active { 
+    background: #1E293B; 
+    color: white; 
+    border-color: #1E293B;
+    /* Чуть меняем padding справа, чтобы визуально сбалансировать крестик */
+    padding-right: 12px; 
+}
+
+/* Рисуем крестик */
+.chip.active::after {
+    content: "✕"; /* Аккуратный крестик (unicode) */
+    font-size: 10px;
+    margin-left: 8px; /* Отступ от текста */
+    opacity: 0.7;     /* Чуть прозрачный, чтобы не спорил с текстом */
+    transform: translateY(1px); /* Микро-коррекция по высоте */
+}
+
+.chip.active:hover::after {
+    opacity: 1; /* При наведении становится ярко-белым */
+}
 
 /* Панель "Найдено + Сортировка" */
 .catalog-info-bar {
