@@ -11,7 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/catalog.css"> <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/catalog.css"> 
+    
 </head>
 <body>
 
@@ -64,6 +65,42 @@
                         <option value="CN">china</option>
                         <option value="RU">russia</option>
                     </select>
+                    <div class="filter-group">
+                        <label>Страна</label>
+                        <div class="country-buttons" role="group" aria-label="Страна">
+                            <button type="button"
+                                    class="country-btn active"
+                                    data-country=""
+                                    title="Все страны"
+                                    aria-pressed="true">
+                                <img src="assets/img/flags/globe.png" alt="World">
+                            </button>
+
+                            <button type="button"
+                                    class="country-btn"
+                                    data-country="KR"
+                                    title="Корея"
+                                    aria-pressed="false">
+                                <img src="assets/img/flags/kr.png" alt="Korea">
+                            </button>
+
+                            <button type="button"
+                                    class="country-btn"
+                                    data-country="CN"
+                                    title="Китай"
+                                    aria-pressed="false">
+                                <img src="assets/img/flags/cn.png" alt="China">
+                            </button>
+
+                            <button type="button"
+                                    class="country-btn"
+                                    data-country="RU"
+                                    title="Россия"
+                                    aria-pressed="false">
+                                <img src="assets/img/flags/ru.png" alt="Russia">
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="filter-group">
                         <label>Марка</label>
@@ -168,10 +205,6 @@
                 
                 <div class="catalog-chips-row">
                     <div class="catalog-chips">
-                        <button class="chip active" data-filter="all">Все</button>
-                        <button class="chip" data-filter="korea">🇰🇷 Корея</button>
-                        <button class="chip" data-filter="china">🇨🇳 Китай</button>
-                        <button class="chip" data-filter="russia">🇷🇺 Россия</button>
                         <button class="chip" data-filter="power_low">до 160 л.с.</button>
                         <button class="chip" data-filter="budget">До 2 млн</button>
                         <button class="chip" data-filter="passable">Проходные (3-5 лет)</button>

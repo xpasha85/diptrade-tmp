@@ -40,6 +40,62 @@
 .catalog-sidebar select:focus, .catalog-sidebar input:focus { border-color: #3E89C2; }
 .inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+/* --- КНОПКИ СТРАНЫ (САЙДБАР) --- */
+.country-buttons {
+    display: flex;
+    gap: 10px; /* Чуть увеличим отступ, так как кнопки визуально легче */
+    align-items: center;
+}
+
+.country-btn {
+    width: 46px; /* Чуть крупнее для комфортного клика */
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0; /* Исходная тонкая рамка */
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px; /* Внутренний отступ для флага */
+}
+
+/* Стили для картинки флага */
+.country-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Чтобы флаг не искажался */
+    filter: none; /* Флаг чистый */
+    pointer-events: none; /* Чтобы клик проходил сквозь картинку */
+}
+
+/* Ховер: легкая подсветка рамки */
+.country-btn:hover {
+    border-color: #94A3B8;
+    transform: translateY(-1px);
+}
+
+/* АКТИВНОЕ СОСТОЯНИЕ (Ring + White Bg) */
+.country-btn.active {
+    background: #3E89C2; /* Фон остается белым */
+    border: 2px solid #1E293B; /* Толстая темная обводка (Ring) */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Легкая тень */
+    transform: translateY(-1px);
+}
+
+.country-btn:focus {
+    outline: none;
+}
+
+/* Фокус с клавиатуры */
+.country-btn:focus-visible {
+    outline: 2px solid rgba(62, 137, 194, 0.45);
+    outline-offset: 2px;
+}
+
+
 
 /* --- ЧЕКБОКСЫ (ИСПРАВЛЕННЫЕ) --- */
 

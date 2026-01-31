@@ -35,6 +35,8 @@ function getPageSize() {
   const sortSelect = document.getElementById('sortSelect');
   const resetBtn = document.getElementById('resetFilters');
   const chips = document.querySelectorAll('.chip');
+  const countryButtons = document.querySelectorAll('.country-btn');
+
 
   // Если есть скрытое поле страны (как раньше)
   const hiddenCountry =
@@ -212,19 +214,21 @@ function getPageSize() {
   // ЧИПСЫ: UI sync
   // ---------------------------
   function syncChipsUI() {
-    chips.forEach(chip => {
-      const t = chip.dataset.filter;
+  // 1) Верхние чипсы (теперь только multi)
+  chips.forEach(chip => {
+    const t = chip.dataset.filter;
+    chip.classList.toggle('active', state.chipFlags.has(t));
+  });
 
-      // страна (radio)
-      if (t === 'all') { chip.classList.toggle('active', state.country === ""); return; }
-      if (t === 'korea') { chip.classList.toggle('active', state.country === "KR"); return; }
-      if (t === 'china') { chip.classList.toggle('active', state.country === "CN"); return; }
-      if (t === 'russia') { chip.classList.toggle('active', state.country === "RU"); return; }
+  // 2) Кнопки стран в сайдбаре (radio)
+  countryButtons.forEach(btn => {
+    const v = btn.dataset.country || "";
+    const isActive = state.country === v;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
 
-      // флаги (multi)
-      chip.classList.toggle('active', state.chipFlags.has(t));
-    });
-  }
 
   // ---------------------------
   // ЧИПСЫ -> форма (overrides)
@@ -623,6 +627,20 @@ function getPageSize() {
       applyFilters();
     });
   }
+
+    // Страна (кнопки в сайдбаре) -> state -> форма -> фильтры
+    if (countryButtons.length) {
+    countryButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+        state.country = btn.dataset.country || "";
+        syncCountryToForm();   // пишет в hiddenCountry
+        syncChipsUI();         // подсветка кнопок
+        updateBrandList();     // марки/модели зависят от страны
+        applyFilters();
+        });
+    });
+    }
+
 
   // Чипсы -> state -> форма -> фильтры
   chips.forEach(chip => {
