@@ -628,18 +628,36 @@ function getPageSize() {
     });
   }
 
-    // Страна (кнопки в сайдбаре) -> state -> форма -> фильтры
-    if (countryButtons.length) {
+
+// Страна (кнопки в сайдбаре) -> ПОЛНЫЙ СБРОС + выбор страны
+  if (countryButtons.length) {
     countryButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+      btn.addEventListener('click', () => {
+        // 1. Сначала сбрасываем вообще всё
+        if (filterForm) filterForm.reset();
+        state.chipFlags.clear();
+        state.overrides.budget = null;
+        state.overrides.power_low = null;
+        state.overrides.stock = null;
+        
+        // Сбрасываем марку и модель принудительно
+        if (brandSelect) brandSelect.value = "";
+        if (modelSelect) {
+            modelSelect.innerHTML = '<option value="">Сначала выберите марку</option>';
+            modelSelect.disabled = true;
+        }
+
+        // 2. Устанавливаем выбранную страну
         state.country = btn.dataset.country || "";
-        syncCountryToForm();   // пишет в hiddenCountry
-        syncChipsUI();         // подсветка кнопок
-        updateBrandList();     // марки/модели зависят от страны
+        
+        // 3. Синхронизируем и обновляем
+        syncCountryToForm();   
+        syncChipsUI();         
+        updateBrandList();     
         applyFilters();
-        });
+      });
     });
-    }
+  }
 
 
   // Чипсы -> state -> форма -> фильтры
@@ -680,25 +698,28 @@ function getPageSize() {
     });
   }
 
-  if (resetBtn && filterForm) {
+if (resetBtn && filterForm) {
     resetBtn.addEventListener('click', () => {
+      // 1. Сброс формы
       filterForm.reset();
 
-      // сброс state
-      state.country = "";
+      // 2. Сброс стейта
+      state.country = ""; // Все страны
       state.chipFlags.clear();
       state.overrides.budget = null;
       state.overrides.power_low = null;
       state.overrides.stock = null;
 
-      syncCountryToForm();
-      syncChipsUI();
-
+      // 3. Сброс селектов (чтобы марка не залипала)
+      if (brandSelect) brandSelect.value = "";
       if (modelSelect) {
         modelSelect.innerHTML = '<option value="">Сначала выберите марку</option>';
         modelSelect.disabled = true;
       }
 
+      // 4. Обновление UI
+      syncCountryToForm();
+      syncChipsUI();
       updateBrandList();
       applyFilters();
     });
