@@ -1,0 +1,3 @@
+# Live data / uploads (do not store in git)
+data/cars.json
+assets/cars/
