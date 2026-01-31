@@ -24,7 +24,7 @@
     padding: 24px;
     border-radius: 16px;
     border: 1px solid #E2E8F0; /* Светлая рамка */
-    position: sticky; top: 100px; z-index: 10;
+    /* Убрали position: sticky, max-height и overflow */
 }
 
 .filter-group { margin-bottom: 24px; }
@@ -179,6 +179,17 @@
     color: #334155;            /* Текст темнее */
     border-color: #CBD5E1 !important;
 }
+
+
+/* --- ПЛАВАЮЩАЯ КНОПКА СБРОСА --- */
+
+/* --- СБРОС ФИЛЬТРОВ: "умная" кнопка без JS --- */
+.filter-actions {
+    position: sticky;
+    bottom: 20px;     /* отступ от низа экрана, когда "прилипнет" */
+    z-index: 10;      /* достаточно, не надо 900 */
+}
+
 
 
 /* --- 3. ПРАВАЯ ЧАСТЬ (КОНТЕНТ) --- */
