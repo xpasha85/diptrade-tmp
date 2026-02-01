@@ -78,7 +78,8 @@ function getPageSize() {
   const formatMonth = (monthNum) => {
     const m = Number(monthNum) || 0;
     if (!m) return '';
-    const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+    const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
+         'Август', 'Сенябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
     return months[m - 1] || '';
   };
 
@@ -94,7 +95,8 @@ function getPageSize() {
     car.country_code = car.country_code ?? '';
     car.brand = car.brand ?? '';
     car.model = car.model ?? '';
-    car.web_title = car.web_title ?? '';
+    let rawTitle = car.web_title ? car.web_title : `${car.brand} ${car.model}`;
+    car.web_title = rawTitle.replace(/_/g, ' ');
 
     car.year = Number(car.year) || 0;
     car.month = Number(car.month) || 0;
@@ -159,54 +161,63 @@ function getPageSize() {
     else setFormValue('country_code', state.country);
   }
 
+
+ // Вешаем слушатели закрытия
+if (closeSheetBtn) closeSheetBtn.addEventListener('click', closeSheet);
+if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
+
+
   // ---------------------------
-  // Делегирование hover (1 раз!)
+  // Делегирование hover (ДЛЯ ПК)
   // ---------------------------
   if (grid) {
-    // Hover по зонам фото
     grid.addEventListener('mouseover', (e) => {
+      // Ищем зону наведения
       const zone = e.target.closest('.hover-zone');
       if (!zone || !grid.contains(zone)) return;
 
       const wrap = zone.closest('.car-img-wrap');
       if (!wrap) return;
 
-      const img = wrap.querySelector('.car-img');
-      const dots = wrap.querySelector('.slider-pagination');
-      if (!img || !dots) return;
-
-      const src = zone.dataset.src;
+      // Получаем индекс зоны
       const idx = Number(zone.dataset.idx || 0);
 
-      if (src) img.src = src;
+      // 1. Переключаем картинки (добавляем/убираем класс active)
+      const slides = wrap.querySelectorAll('.car-img-slide');
+      slides.forEach((slide, i) => {
+        if (i === idx) slide.classList.add('active');
+        else slide.classList.remove('active');
+      });
 
-      const prev = dots.querySelector('.slider-dot.active');
-      if (prev) prev.classList.remove('active');
-
-      const next = dots.children[idx];
-      if (next) next.classList.add('active');
+      // 2. Переключаем точки
+      const dots = wrap.querySelectorAll('.slider-dot');
+      dots.forEach((dot, i) => {
+        if (i === idx) dot.classList.add('active');
+        else dot.classList.remove('active');
+      });
     });
 
-    // Reset фото при уходе мыши из wrap
-    // mouseleave не всплывает => делаем mouseout + проверка relatedTarget
+    // Reset при уходе мыши (возвращаем первую картинку)
     grid.addEventListener('mouseout', (e) => {
       const wrap = e.target.closest('.car-img-wrap');
       if (!wrap || !grid.contains(wrap)) return;
-
+      
+      // Если мышь перешла на дочерний элемент (например, бейдж), не сбрасываем
       if (e.relatedTarget && wrap.contains(e.relatedTarget)) return;
 
-      const img = wrap.querySelector('.car-img');
-      const dots = wrap.querySelector('.slider-pagination');
-      if (!img || !dots) return;
+      // Возвращаем активность первому слайду
+      const slides = wrap.querySelectorAll('.car-img-slide');
+      slides.forEach((slide, i) => {
+         if (i === 0) slide.classList.add('active');
+         else slide.classList.remove('active');
+      });
 
-      const first = wrap.dataset.first;
-      if (first) img.src = first;
-
-      const prev = dots.querySelector('.slider-dot.active');
-      if (prev) prev.classList.remove('active');
-
-      const firstDot = dots.children[0];
-      if (firstDot) firstDot.classList.add('active');
+      // Возвращаем активность первой точке
+      const dots = wrap.querySelectorAll('.slider-dot');
+      dots.forEach((dot, i) => {
+         if (i === 0) dot.classList.add('active');
+         else dot.classList.remove('active');
+      });
     });
   }
 
@@ -328,13 +339,14 @@ function getPageSize() {
   }
 
   // ---------------------------
-  // РЕНДЕРИНГ СЕТКИ (быстрый)
+  // РЕНДЕРИНГ СЕТКИ (FINAL GOLD VERSION)
   // ---------------------------
   function renderGrid() {
     if (!grid) return;
 
     const visibleCars = filteredCars.slice(0, itemsToShow);
 
+    // Если машин нет
     if (visibleCars.length === 0) {
       grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 60px; color: #64748B;">Ничего не найдено.</div>';
       if (loadMoreBtn) loadMoreBtn.style.display = 'none';
@@ -344,21 +356,37 @@ function getPageSize() {
     const htmlParts = [];
 
     for (const car of visibleCars) {
+      // --- 1. ФОТО И СЛАЙДЕР (Адаптивный: 5 тегов img) ---
       const safePhotos = (car.photos && car.photos.length > 0)
         ? car.photos.map(f => `${car.assets_folder}/${f}`)
         : ['assets/img/no-photo.png'];
 
       const photosToShow = safePhotos.slice(0, 5);
+      
+      let slidesHTML = ''; // Тут будут сами картинки
+      let zonesHTML = '';  // Тут зоны для ховера (ПК)
+      let dotsHTML = '';   // Тут точки (ПК)
 
-      let zonesHTML = '';
-      let dotsHTML = '';
-
+      // Генерируем 5 картинок сразу
       for (let i = 0; i < photosToShow.length; i++) {
         const photoUrl = photosToShow[i];
-        zonesHTML += `<div class="hover-zone" data-idx="${i}" data-src="${escapeHtml(photoUrl)}"></div>`;
-        dotsHTML += `<div class="slider-dot ${i === 0 ? 'active' : ''}"></div>`;
+        
+        // Картинка: Первая получает класс active (для ПК)
+        const isActive = (i === 0) ? 'active' : '';
+        // loading="lazy" только для 2-й и далее, первую грузим сразу
+        const loading = (i === 0) ? 'eager' : 'lazy'; 
+        
+        slidesHTML += `<img src="${escapeHtml(photoUrl)}" class="car-img-slide ${isActive}" loading="${loading}" alt="${escapeHtml(car.brand)}">`;
+
+        // Зоны и точки (как раньше, для ПК)
+        zonesHTML += `<div class="hover-zone" data-idx="${i}"></div>`;
+        dotsHTML += `<div class="slider-dot ${isActive}"></div>`;
       }
 
+      // Обертка трека
+      const photosHTML = `<div class="car-slider-track">${slidesHTML}</div>`;
+
+      // --- 2. ВЕРХНИЕ БЕЙДЖИ И ФЛАГ ---
       const bottomBadges = [];
       bottomBadges.push(car._isPassable
         ? '<div class="badge-glass green">Проходной</div>'
@@ -380,25 +408,69 @@ function getPageSize() {
 
       const stockBadge = car.in_stock ? '<div class="badge-stock">В наличии</div>' : '';
 
-      let footerRightHtml = '';
-      if (car.is_auction && car.auction_benefit > 0) {
-        footerRightHtml = `
+      // --- 3. ДАННЫЕ АВТО (Title, Specs) ---
+      // Убираем подчеркивания из названия
+      let rawTitle = car.web_title ? car.web_title : `${car.brand} ${car.model}`;
+      const title = rawTitle.replace(/_/g, ' ');
+
+      const volStr = (car.specs.volume / 1000).toFixed(1) + ' л';
+      const hpStr = car.specs.hp + ' л.с.';
+      const fuelStr = car.specs.fuel; 
+      const kmStr = car.specs.mileage.toLocaleString() + ' км';
+      
+      const monthStr = car.month ? formatMonth(car.month) : '';
+      const dateStr = (monthStr ? monthStr + ' ' : '') + car.year;
+
+      // HTML Характеристик (ПК vs Мобилка)
+      const specsHTML_PC = `
+        <div class="specs-pc">
+            <div class="specs-row">${escapeHtml(fuelStr)} • ${escapeHtml(volStr)} • ${escapeHtml(hpStr)}</div>
+            <div class="specs-row">${escapeHtml(kmStr)} • ${escapeHtml(dateStr)}</div>
+        </div>
+      `;
+
+      const specsHTML_Mobile = `
+        <div class="specs-mobile">
+            <div class="specs-row">${escapeHtml(fuelStr)}, ${escapeHtml(volStr)}</div>
+            <div class="specs-row">${escapeHtml(hpStr)}, ${escapeHtml(kmStr)}</div>
+            <div class="specs-row">${escapeHtml(dateStr)}</div>
+        </div>
+      `;
+
+      // --- 4. ЛОГИКА ТУЛТИПОВ И ЦЕНЫ (Исправленная часть) ---
+      
+      // Тексты для шторки/тултипа
+      const tooltipTextAuction = "Это предварительная цена авто с учетом аукционной скидки.";
+      const tooltipTextSimple = "Со всеми расходами до Владивостока, включая пошлины, утиль и услуги брокера.";
+      
+      // Проверка типа цены
+      const isAuctionType = (car.is_auction && car.auction_benefit > 0);
+      const currentTooltipText = isAuctionType ? tooltipTextAuction : tooltipTextSimple;
+      // Тип текста для JS-функции открытия шторки ('auction' или 'simple')
+      const jsTextType = isAuctionType ? 'auction' : 'simple';
+
+      // Генерация HTML блока выгоды
+      let benefitHTML = '';
+      if (isAuctionType) {
+        benefitHTML = `
           <div class="benefit-block">
-            <div class="benefit-value">-${formatPrice(car.auction_benefit)}</div>
-            <div class="benefit-label">Ваша выгода</div>
-          </div>`;
+             <div class="benefit-value">-${formatPrice(car.auction_benefit)}</div>
+             <div class="benefit-label">Ваша выгода</div>
+          </div>
+        `;
       } else {
-        footerRightHtml = `<div class="delivery-simple">до Владивостока</div>`;
+        benefitHTML = `<div class="delivery-simple">до Владивостока</div>`;
       }
 
       const cardClass = car.is_auction ? 'car-card auction-card' : 'car-card';
-      const title = car.web_title ? car.web_title : `${car.brand} ${car.model}`;
 
+      // --- 5. СБОРКА КАРТОЧКИ ---
+      // --- 5. СБОРКА КАРТОЧКИ ---
       htmlParts.push(`
         <div class="${cardClass}" onclick="window.location.href='car.html?id=${encodeURIComponent(car.id)}'">
-          <div class="car-img-wrap" data-first="${escapeHtml(safePhotos[0])}">
-            <img src="${escapeHtml(safePhotos[0])}" class="car-img" loading="lazy"
-                 onerror="this.onerror=null; this.src='assets/img/no-photo.png';">
+          <div class="car-img-wrap">
+            
+            ${photosHTML}
 
             <div class="hover-zones">${zonesHTML}</div>
             <div class="slider-pagination">${dotsHTML}</div>
@@ -411,24 +483,27 @@ function getPageSize() {
               ${bottomBadges.join('')}
             </div>
           </div>
-
+          
           <div class="car-content">
             <div class="car-title">${escapeHtml(title)}</div>
 
-            <div class="car-specs-text">
-              ${car.month ? escapeHtml(formatMonth(car.month)) + ', ' : ''}${escapeHtml(car.year)} •
-              ${car.specs.volume > 0 ? escapeHtml((car.specs.volume / 1000).toFixed(1) + ' л') : 'Электро'} •
-              ${escapeHtml(car.specs.hp)} л.с.<br>
-              ${escapeHtml(car.specs.fuel)} • ${car.full_time ? '4WD' : '2WD'} • ${escapeHtml(car.specs.mileage.toLocaleString())} км
+            <div class="car-specs-block">
+                ${specsHTML_PC}
+                ${specsHTML_Mobile}
             </div>
 
             <div class="car-footer">
-              <div class="price-block">
-                <div class="car-price">${formatPrice(car.price)}</div>
-                <div class="price-subtitle">под ключ</div>
+              <div class="price-column">
+                <div class="price-row-main">
+                    <div class="car-price">${formatPrice(car.price)}</div>
+                    
+                    <div class="info-icon" onclick="openPriceInfo(event, '${jsTextType}')">
+                        i
+                        <div class="tooltip">${currentTooltipText}</div>
+                    </div>
+                </div>
+                ${benefitHTML}
               </div>
-
-              ${footerRightHtml}
             </div>
           </div>
         </div>
@@ -437,6 +512,7 @@ function getPageSize() {
 
     grid.innerHTML = htmlParts.join('');
 
+    // Управление кнопкой "Показать еще"
     if (loadMoreBtn) {
       loadMoreBtn.style.display = itemsToShow >= filteredCars.length ? 'none' : 'inline-flex';
     }
@@ -732,9 +808,195 @@ if (resetBtn && filterForm) {
     });
   }
 
+// --- МОБИЛЬНАЯ ШТОРКА: ОТКРЫТИЕ/ЗАКРЫТИЕ ---
+  const filterDrawer = document.getElementById('filterDrawer');
+  const openFiltersBtn = document.getElementById('openFiltersBtn');
+  const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+  const drawerOverlay = document.getElementById('drawerOverlay'); // Должно совпадать с HTML
 
+function toggleDrawer(isOpen) {
+    if (!filterDrawer) return;
+    
+    filterDrawer.classList.toggle('active', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : ''; // Блокируем фон
+    
+    // Если открываем — скроллим содержимое шторки наверх
+    if (isOpen) {
+      const drawerBody = filterDrawer.querySelector('.drawer-body');
+      if (drawerBody) {
+        drawerBody.scrollTop = 0;
+      }
+    }
+  }
+
+  if (openFiltersBtn) openFiltersBtn.onclick = () => toggleDrawer(true);
+  if (closeDrawerBtn) closeDrawerBtn.onclick = () => toggleDrawer(false);
+  if (drawerOverlay) drawerOverlay.onclick = () => toggleDrawer(false);
+
+  // ---------------------------
+  // АДАПТИВНЫЙ ПЕРЕНОС ФОРМЫ + СМЕНА ПОДПИСЕЙ
+  // ---------------------------
+  const sidebar = document.querySelector('.catalog-sidebar');
+  const mobilePlace = document.getElementById('mobileFilterPlace');
+
+  // Словарь: имя поля -> текст для мобильной версии
+  const mobilePlaceholders = {
+    'price_from': 'Цена от',   'price_to': 'Цена до',
+    'year_from': 'Год от',     'year_to': 'Год до',
+    'volume_from': 'Объем от', 'volume_to': 'Объем до',
+    'hp_from': 'Л.с. от',      'hp_to': 'Л.с. до'
+  };
+
+  // Словарь: имя поля -> текст для ПК (стандартный)
+  const desktopPlaceholders = {
+    'price_from': 'От',        'price_to': 'До',
+    'year_from': 'С 2020',     'year_to': 'По 2026',
+    'volume_from': 'От',       'volume_to': 'До',
+    'hp_from': 'От',           'hp_to': 'До'
+  };
+
+  function updatePlaceholders(isMobile) {
+    if (!filterForm) return;
+    
+    // Перебираем все инпуты в словаре
+    for (const [name, text] of Object.entries(isMobile ? mobilePlaceholders : desktopPlaceholders)) {
+      const input = filterForm.querySelector(`[name="${name}"]`);
+      if (input) input.placeholder = text;
+    }
+  }
+
+function moveForm() {
+    if (!filterForm || !sidebar || !mobilePlace) return;
+
+    const isMobile = window.innerWidth < 768;
+    const currentParent = filterForm.parentElement;
+
+    // Ссылки на селекты
+    const bSelect = filterForm.querySelector('#brandSelect');
+    const mSelect = filterForm.querySelector('#modelSelect');
+
+    if (isMobile) {
+      // --- МОБИЛЬНЫЙ РЕЖИМ ---
+      if (currentParent !== mobilePlace) {
+        mobilePlace.appendChild(filterForm);
+        updatePlaceholders(true); // Меняем инпуты на "Цена от"
+        
+        // Меняем селекты на короткие названия
+        if (bSelect && bSelect.options.length > 0) bSelect.options[0].text = "Марка";
+        if (mSelect && mSelect.options.length > 0) mSelect.options[0].text = "Модель";
+      }
+    } else {
+      // --- ПК РЕЖИМ ---
+      if (currentParent !== sidebar) {
+        sidebar.appendChild(filterForm);
+        updatePlaceholders(false); // Меняем инпуты на "От"
+        
+        // Возвращаем длинные названия
+        if (bSelect && bSelect.options.length > 0) bSelect.options[0].text = "Все марки";
+        // Для модели текст зависит от контекста, но вернем базу
+        if (mSelect && mSelect.options.length > 0) {
+           // Если марка не выбрана — длинный текст, если выбрана — "Все модели"
+           // Упростим: просто вернем "Все модели" или "Выберите марку"
+           mSelect.options[0].text = bSelect.value ? "Все модели" : "Сначала выберите марку";
+        }
+      }
+    }
+  }
+
+  // Запускаем
+  moveForm();
+  window.addEventListener('resize', moveForm);
+
+
+  // ---------------------------
+  // КНОПКИ ВНУТРИ ШТОРКИ
+  // ---------------------------
+  const applyMobileBtn = document.getElementById('applyMobileFilters');
+  const resetMobileBtn = document.getElementById('resetMobileFilters');
+
+  if (applyMobileBtn) {
+    applyMobileBtn.addEventListener('click', () => {
+      // 1. Применяем фильтры (функция applyFilters уже есть)
+      applyFilters();
+      // 2. Закрываем шторку
+      toggleDrawer(false);
+      // 3. Можно скроллнуть к началу списка (опционально)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+if (resetMobileBtn) {
+    resetMobileBtn.addEventListener('click', () => {
+      // 1. Сбрасываем фильтры (вызываем клик по скрытой ПК-кнопке)
+      if (resetBtn) resetBtn.click();
+      
+      // 2. Закрываем шторку
+      toggleDrawer(false);
+      
+      // 3. Плавный скролл страницы наверх
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 
 // Конец document.addEventListener
 });
 
 
+/* ============================================================
+   ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ ШТОРКИ (Вставлено в самый конец файла)
+   ============================================================ */
+
+// Делаем функцию доступной для HTML (window.openPriceInfo)
+window.openPriceInfo = function(event, textType) {
+    // 1. Останавливаем клик, чтобы не открылась карточка авто
+    if (event) event.stopPropagation();
+
+    // 2. Если это ПК (ширина > 768), ничего не делаем (там работает наведение мыши)
+    if (window.innerWidth > 768) return;
+
+    // 3. Находим элементы (они уже должны быть в catalog.html внизу)
+    const infoSheet = document.getElementById('infoSheet');
+    const sheetOverlay = document.getElementById('sheetOverlay');
+    const sheetTextEl = document.getElementById('sheetText');
+
+    if (!infoSheet || !sheetOverlay) {
+        console.error('Ошибка: Не найден блок #infoSheet или #sheetOverlay в HTML');
+        return;
+    }
+
+    // 4. Подбираем текст
+    let content = '';
+    if (textType === 'auction') {
+        content = `Это предварительная цена авто с учетом аукционной скидки. <br><br>
+                   <span style="color:#16A34A; font-weight:700;">Ваша выгода</span> рассчитана относительно средней рыночной стоимости аналогичного авто в РФ.`;
+    } else {
+        content = `Со всеми расходами до Владивостока, включая таможенные пошлины, утилизационный сбор и услуги брокера.
+        <br><br><strong>Больше ни за что платить не нужно.</strong>`;
+    }
+
+    // 5. Вставляем текст и открываем шторку
+    if (sheetTextEl) sheetTextEl.innerHTML = content;
+    
+    infoSheet.classList.add('active');
+    sheetOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Блокируем прокрутку фона
+};
+
+// Функция закрытия шторки
+window.closeSheet = function() {
+    const infoSheet = document.getElementById('infoSheet');
+    const sheetOverlay = document.getElementById('sheetOverlay');
+    
+    if (infoSheet) infoSheet.classList.remove('active');
+    if (sheetOverlay) sheetOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+};
+
+// Вешаем обработчики на кнопку "Понятно" и на затемненный фон
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtn = document.getElementById('closeSheetBtn');
+    const overlay = document.getElementById('sheetOverlay');
+    
+    if (closeBtn) closeBtn.addEventListener('click', window.closeSheet);
+    if (overlay) overlay.addEventListener('click', window.closeSheet);
+});

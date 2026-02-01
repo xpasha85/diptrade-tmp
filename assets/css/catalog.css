@@ -260,11 +260,15 @@
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 16px;
-    overflow: hidden;
+    /* overflow: hidden;  <-- УБИРАЕМ или комментируем эту строку */
     cursor: pointer;
     transition: 0.3s;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    /* Добавляем relative, на всякий случай, для позиционирования */
+    position: relative; 
 }
+
 .car-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #3E89C2; }
 
 /* ФОТО И БЕЙДЖИ (Позиционирование) */
@@ -279,6 +283,7 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover; /* Или contain, если это логотип */
+    border-radius: 16px 16px 0 0; /* Добавь эту строку */
 }
 
 
@@ -541,7 +546,225 @@
     margin-top: 0;
 }
 
+/* 1. Отвязываем хедер */
+.header {
+    position: static !important;
+}
 
+/* 2. Липкая зона для кнопки */
+.mobile-filter-sticky {
+    display: none; /* Скрыта на ПК */
+    position: sticky;
+    top: 0; 
+    z-index: 90;
+    background: #F8FAFC;
+    padding: 12px 0;
+}
+
+@media (max-width: 768px) {
+    .mobile-filter-sticky { 
+        display: block; 
+        padding-left: 15px; /* Отступы, чтобы кнопка не липла к краям экрана */
+        padding-right: 15px;
+    }
+    .catalog-chips-row { display: none; } /* Прячем старый блок чипсов */
+}
+
+#openFiltersBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    border-radius: 16px; /* Как у инфо-бара */
+    border: none;
+    background-color: #3E89C2; /* Синий бренд */
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 4px 15px rgba(62, 137, 194, 0.4); /* Объемная тень */
+    transition: 0.2s;
+}
+
+
+/* По умолчанию чипсы внутри формы скрыты (для ПК сайдбара) */
+.catalog-chips-inside {
+    display: none;
+}
+
+/* Показываем их только когда форма попадает в мобильную шторку */
+.drawer-body .catalog-chips-inside {
+    display: block;
+    margin-bottom: 25px;
+}
+
+/* Тултип для аукциона (поправим z-index, чтобы не перекрывался) */
+.auction-tooltip {
+    z-index: 100;
+}
+
+#openFiltersBtn img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    /* Указываем путь к картинке и красим в белый */
+    content: url('../img/filter.png');
+    filter: brightness(0) invert(1);
+    vertical-align: middle;
+}
+
+
+.mobile-filter-drawer {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1000;
+    visibility: hidden; /* Вместо display: none для плавности */
+    transition: visibility 0.3s;
+    
+}
+
+.drawer-overlay {
+    position: absolute;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0; /* Изначально прозрачный */
+    transition: opacity 0.3s ease;
+}
+
+.drawer-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 85vh; /* Высота шторки */
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+/* Когда шторка активна */
+.mobile-filter-drawer.active {
+    visibility: visible;
+    
+}
+
+.mobile-filter-drawer.active .drawer-overlay {
+    opacity: 1;
+}
+
+.mobile-filter-drawer.active .drawer-content {
+    transform: translateY(0); /* Выезжает */
+}
+
+.drawer-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.drawer-body {
+    flex: 1;
+    overflow-y: auto; /* Прокрутка только здесь */
+    padding: 20px;
+}
+
+.drawer-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #E2E8F0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    background: #fff; /* Чтобы контент под ним не просвечивал */
+}
+
+/* Скрываем "старую" кнопку сброса, когда форма переехала в мобильную шторку */
+.drawer-body .filter-actions {
+    display: none !important;
+}
+
+/* --- СТИЛИЗАЦИЯ ПОЛЕЙ ВНУТРИ ШТОРКИ --- */
+
+/* 1. Сбрасываем системные стили и задаем базу */
+.drawer-body select,
+.drawer-body input {
+    width: 100%;
+    height: 48px; /* Увеличили высоту для удобного нажатия */
+    padding: 0 16px;
+    
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1; /* Аккуратная серая рамка */
+    border-radius: 12px;       /* Скругления как у кнопок */
+    
+    font-size: 16px; /* ВАЖНО: 16px предотвращает зум страницы на iPhone при вводе */
+    color: #0F172A;
+    
+    outline: none;
+    -webkit-appearance: none; /* Убираем стандартный "глянец" Safari/Chrome */
+    appearance: none;
+    transition: all 0.2s;
+}
+
+/* 2. Эффект при нажатии (Фокус) */
+.drawer-body select:focus,
+.drawer-body input:focus {
+    border-color: #3E89C2; /* Синяя рамка */
+    box-shadow: 0 0 0 4px rgba(62, 137, 194, 0.15); /* Легкое свечение */
+}
+
+/* 3. Кастомная стрелочка для выпадающих списков (Select) */
+.drawer-body select {
+    /* Рисуем аккуратную галочку через SVG прямо в CSS */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 20px;
+    padding-right: 40px; /* Чтобы текст не наехал на стрелку */
+}
+
+/* 4. Поправляем отступы между инпутами в одной строке (От/До) */
+.drawer-body .inputs-row {
+    gap: 12px; /* Чуть больше воздуха */
+}
+
+/* --- КОМПАКТНЫЙ РЕЖИМ В ШТОРКЕ --- */
+
+/* Скрываем подписи над полями (Марка, Модель, Цена и т.д.) */
+.drawer-body label {
+    display: none;
+}
+
+/* Уменьшаем отступы между группами, так как заголовков нет */
+.drawer-body .filter-group {
+    margin-bottom: 15px; 
+}
+
+/* Для заголовков групп чекбоксов (Двигатель, Особенности) оставляем отступ */
+.drawer-body .filter-title {
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+/* --- МАРКА И МОДЕЛЬ В ОДНУ СТРОКУ (В ШТОРКЕ) --- */
+
+.drawer-body .brand-model-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Две равные колонки */
+    gap: 12px;
+    margin-bottom: 15px; /* Общий отступ снизу */
+}
+
+/* Убираем отступы у самих групп внутри этого ряда, чтобы не толкались */
+.drawer-body .brand-model-row .filter-group {
+    margin-bottom: 0;
+}
+
+
+/* Стили для чипсов внутри формы */
+.catalog-chips-inside { margin-bottom: 24px; }
+.catalog-chips-inside .catalog-chips { margin-top: 10px; }
 
 /* --- АДАПТИВ --- */
 @media (max-width: 1024px) { .catalog-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -551,4 +774,440 @@
     .catalog-grid { grid-template-columns: 1fr; }
     .catalog-info-bar { flex-direction: column; align-items: stretch; gap: 15px; }
     .sort-controls { justify-content: space-between; }
+    .catalog-page {
+        padding-top: 15px; /* Было 30px */
+    }
+    .mobile-filter-sticky {
+        display: block;
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        background: #F8FAFC;
+        /* Паддинги по бокам как у контейнера, сверху минимум */
+        padding: 5px 0 15px 0; 
+        margin-bottom: 10px;
+    }
+}
+
+/* --- КОМПАКТНЫЕ КАРТОЧКИ (МОБИЛЬНЫЕ) --- */
+@media (max-width: 768px) {
+    
+    /* 1. Уменьшаем отступы внутри карточки */
+    .car-content {
+        padding: 12px !important; /* Было 20px, слишком много для телефона */
+    }
+
+    /* 2. Заголовок: аккуратнее и компактнее */
+    .car-title {
+        font-size: 15px !important; /* Чуть меньше */
+        line-height: 1.3 !important;
+        margin-bottom: 8px !important;
+        height: auto !important; /* Если была фикс высота, убираем */
+        
+        /* Обрезаем, если больше 2 строк (на всякий случай) */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* 3. Характеристики: серый текст плотнее */
+    .car-specs-text {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 12px !important;
+        color: #64748B;
+    }
+
+    /* 4. Футер с ценой: поджимаем наверх */
+    .car-footer {
+        padding-top: 10px !important;
+        margin-top: 0 !important; /* Убираем лишний margin-top: auto, если он тянет */
+        border-top: 1px solid #F1F5F9;
+        align-items: center !important; /* Центруем по вертикали */
+    }
+
+    /* Цена */
+    .car-price {
+        font-size: 17px !important; /* Чуть меньше гигантских 19px */
+    }
+    .price-subtitle {
+        font-size: 10px !important;
+    }
+
+    /* Бейдж выгоды (зеленый): компактнее */
+    .benefit-value {
+        font-size: 11px !important;
+        padding: 2px 5px !important;
+    }
+    .benefit-label {
+        font-size: 8px !important;
+    }
+    
+    /* Уменьшаем высоту картинки на мобилках, чтобы влезло больше контента */
+    .car-img-wrap {
+        aspect-ratio: 16/10 !important; /* Чуть более узкая полоска, чем 4/3 */
+    }
+}
+
+/* --- НОВЫЙ ДИЗАЙН КАРТОЧКИ (SPECS & PRICE) --- */
+
+/* 1. Переключатель характеристик (ПК vs Мобила) */
+.specs-pc { display: block; }
+.specs-mobile { display: none; }
+
+@media (max-width: 768px) {
+    .specs-pc { display: none; }
+    .specs-mobile { display: block; }
+}
+
+/* Стили текста характеристик */
+.specs-row {
+    margin-bottom: 2px;
+    color: #64748B;
+    font-size: 13px;
+    line-height: 1.4;
+}
+@media (max-width: 768px) {
+    .specs-row { font-size: 12px; }
+}
+
+
+
+/* --- БЛОК ЦЕНЫ И ВЫГОДЫ (FINAL FIX) --- */
+
+/* Контейнер, объединяющий Цену и Правую часть */
+.price-column {
+    display: flex;
+    width: 100%;
+}
+
+/* Строка с главной ценой и иконкой i */
+.price-row-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Иконка "i" */
+.info-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%; border: 1px solid #94A3B8;
+    color: #94A3B8; font-size: 11px; font-family: serif; font-style: italic;
+    cursor: pointer; transition: 0.2s;
+}
+.info-icon:hover { border-color: #3E89C2; color: #3E89C2; background: #F0F9FF; }
+
+/* === СТИЛИ САМОГО БЛОКА ВЫГОДЫ === */
+.benefit-block {
+    display: flex;
+    flex-direction: column; /* Всегда столбик: значение над подписью */
+}
+
+.benefit-value {
+    color: #16A34A; 
+    font-weight: 800; 
+    font-size: 13px; 
+    background: #DCFCE7; 
+    padding: 2px 6px; 
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.benefit-label {
+    font-size: 9px; 
+    color: #166534; 
+    font-weight: 700; 
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.delivery-simple {
+    font-size: 11px; 
+    color: #94A3B8; 
+}
+
+
+/* === ПК ВЕРСИЯ (КАК НА СКРИНЕ) === */
+@media (min-width: 769px) {
+    .price-column {
+        flex-direction: row;            /* В одну строку */
+        justify-content: space-between; /* Разносим по краям */
+        align-items: flex-end;          /* Выравниваем по низу */
+    }
+
+    /* Правая часть (Выгода или Доставка) прижата вправо */
+    .benefit-block, 
+    .delivery-simple {
+        align-items: flex-end; /* Тексты внутри блока тоже вправо */
+        text-align: right;
+    }
+    
+    /* Доп. фикс, чтобы доставка не прилипала к цене */
+    .delivery-simple {
+        margin-bottom: 3px; /* Чуть поднять от самого низа, чтобы ровно с ценой */
+    }
+}
+
+
+/* === МОБИЛЬНАЯ ВЕРСИЯ (СТОЛБИК) === */
+@media (max-width: 768px) {
+    .price-column {
+        flex-direction: column;     /* Вертикально */
+        align-items: flex-start;    /* Всё влево */
+    }
+
+    /* Отступ от цены до выгоды */
+    .benefit-block, 
+    .delivery-simple {
+        margin-top: 6px;
+        align-items: flex-start; /* Тексты влево */
+        text-align: left;
+    }
+    
+    /* На мобилке бейдж выгоды можно сделать чуть компактнее */
+    .benefit-value {
+        font-size: 11px;
+    }
+}
+
+/* --- МОБИЛЬНАЯ СЕТКА КАРТОЧКИ (SPECS + PRICE) [UPDATED] --- */
+@media (max-width: 768px) {
+    
+    /* 1. Превращаем контент карточки в сетку */
+    .car-content {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr; 
+        grid-template-areas: 
+            "title title"
+            "specs price";
+        gap: 8px; 
+        
+        /* ВАЖНО: Снизу (третье число) делаем меньше (6px), чтобы убрать воздух */
+        padding: 12px 12px 0px 12px !important; 
+    }
+
+    /* 2. Заголовок на всю ширину сверху */
+    .car-title {
+        grid-area: title;
+        margin-bottom: 4px !important;
+    }
+
+    /* 3. Характеристики слева */
+    .car-specs-block {
+        grid-area: specs;
+        margin-bottom: 0 !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    /* ТУТ увеличиваем шрифт описания */
+    .specs-row { 
+        font-size: 13px !important; /* Было 11px */
+        line-height: 1.4 !important;
+        color: #475569; /* Чуть темнее для контраста */
+    }
+
+    /* 4. Цена (Футер) справа */
+    .car-footer {
+        grid-area: price;
+        padding-top: 0 !important;
+        border-top: none !important;
+        margin-top: 0 !important;
+        justify-self: end;
+        width: 100%;
+    }
+
+    .price-column {
+        align-items: flex-end !important;
+    }
+
+    .price-row-main {
+        justify-content: flex-end;
+    }
+
+    .benefit-block, 
+    .delivery-simple {
+        align-items: flex-end !important;
+        text-align: right !important;
+        margin-top: 4px;
+    }
+    
+    .car-price { font-size: 18px !important; white-space: nowrap; }
+    
+    /* Если после увеличения шрифта цена стала налезать на текст —
+       можно чуть уменьшить шрифт выгоды или подвинуть колонки */
+    .benefit-value { font-size: 13px !important; }
+}
+
+/* --- ТУЛТИП (ПК) - ИСПРАВЛЕННЫЙ ШРИФТ --- */
+.tooltip {
+    position: absolute;
+    bottom: 100%; 
+    left: 50%;    
+    transform: translateX(-50%);
+    margin-bottom: 10px; 
+    
+    width: 260px;
+    
+    background: #1E293B; 
+    color: #FFFFFF;
+    
+    padding: 16px; 
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    
+    /* --- ВАЖНЫЙ ФИКС ШРИФТОВ --- */
+    /* Принудительно ставим нормальный шрифт без засечек и курсива */
+    font-family: 'Inter', -apple-system, sans-serif !important; 
+    font-style: normal !important; 
+    font-weight: 400 !important;
+    text-transform: none !important;
+    font-variant: normal !important;
+    
+    font-size: 13px; 
+    line-height: 1.5;
+    text-align: left;
+    
+    opacity: 0; 
+    visibility: hidden; 
+    transition: all 0.2s ease;
+    z-index: 100; 
+    pointer-events: none;
+}
+
+/* Стрелочка */
+.tooltip::after {
+    content: ''; 
+    position: absolute; 
+    top: 100%; 
+    left: 50%; 
+    margin-left: -6px; 
+    border-width: 6px; 
+    border-style: solid; 
+    border-color: #1E293B transparent transparent transparent; 
+}
+
+/* Жирный текст внутри */
+.tooltip strong {
+    display: block; 
+    margin-top: 8px; 
+    color: #FFFFFF; 
+    font-weight: 700 !important; /* Тоже форсируем */
+    font-family: 'Inter', sans-serif !important;
+}
+
+@media (min-width: 769px) {
+    .info-icon { position: relative; }
+    .info-icon:hover .tooltip {
+        opacity: 1; 
+        visibility: visible;
+        transform: translateX(-50%) translateY(-5px); 
+    }
+}
+
+@media (max-width: 768px) {
+    .tooltip { display: none !important; }
+}
+
+
+/* --- ШТОРКА (ДЛЯ МОБИЛОК) --- */
+.bottom-sheet-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); z-index: 2000;
+    opacity: 0; transition: opacity 0.3s;
+}
+.bottom-sheet-overlay.active { display: block; opacity: 1; }
+
+.bottom-sheet {
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    background: #fff; z-index: 2001; border-radius: 24px 24px 0 0;
+    padding: 30px 20px 40px; 
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bottom-sheet.active { transform: translateY(0); }
+
+.sheet-content { text-align: left; }
+.sheet-handle { width: 40px; height: 4px; background: #E2E8F0; border-radius: 2px; margin: -10px auto 20px; }
+.sheet-content h3 { margin-bottom: 12px; font-size: 20px; font-weight: 800; color: #1E293B; }
+.sheet-content p { font-size: 15px; line-height: 1.5; color: #475569; }
+
+/* Скрываем тултип на мобилках, чтобы не мешал */
+@media (max-width: 768px) {
+    .tooltip { display: none !important; }
+}
+
+/* --- СВАЙП ФОТОГРАФИЙ (Hybrid: Hover на ПК / Swipe на Мобиле) --- */
+
+/* 1. Контейнер для ленты картинок */
+.car-slider-track {
+    width: 100%;
+    height: 100%;
+    display: flex; /* Выстраиваем в ряд */
+    
+    /* Настройки скролла для мобилок */
+    overflow-x: auto; 
+    scroll-snap-type: x mandatory; /* "Прилипание" к слайдам */
+    -webkit-overflow-scrolling: touch; /* Плавность на iOS */
+    
+    /* Скрываем скроллбар */
+    scrollbar-width: none; 
+}
+.car-slider-track::-webkit-scrollbar { display: none; }
+
+/* 2. Сами картинки */
+.car-img-slide {
+    min-width: 100%; /* Каждая картинка занимает всю ширину */
+    height: 100%;
+    object-fit: cover;
+    
+    scroll-snap-align: start; /* Точка прилипания */
+    scroll-snap-stop: always; /* <--- ДОБАВИТЬ: Останавливаться на каждом слайде обязательно */
+    
+    transition: opacity 0.2s ease; /* Плавность для ПК */
+}
+
+
+/* --- ПОВЕДЕНИЕ НА ПК (Имитация Hover) --- */
+@media (min-width: 769px) {
+    .car-slider-track {
+        display: block; /* Убираем flex, чтобы накладывать слоями */
+        overflow: hidden; /* Запрещаем скролл на ПК */
+        position: relative;
+    }
+
+    .car-img-slide {
+        position: absolute;
+        top: 0; left: 0;
+        opacity: 0; /* Скрываем все */
+        z-index: 1;
+    }
+
+    /* Показываем только активную (первую или ту, на которую навели) */
+    .car-img-slide.active {
+        opacity: 1;
+        z-index: 2;
+    }
+    
+    /* Индикаторы (точки) показываем только на ПК */
+    .slider-pagination {
+        display: flex;
+    }
+}
+
+
+/* --- ПОВЕДЕНИЕ НА МОБИЛЬНОМ (Swipe) --- */
+@media (max-width: 768px) {
+    /* Скрываем зоны наведения и точки, они не нужны при свайпе */
+    .hover-zones,
+    .slider-pagination {
+        display: none !important;
+    }
+    
+    /* Картинки всегда видимы (в ряд) */
+    .car-img-slide {
+        opacity: 1 !important; 
+        position: relative !important;
+    }
 }
