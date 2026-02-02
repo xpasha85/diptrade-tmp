@@ -54,12 +54,7 @@
                         <span class="meta-tag" id="carDate">Обновлено: ...</span>
                     </div>
                     <div class="meta-right">
-                        <span class="status-badge status-clean">
-                            <i class="icon-check">✔</i> Без ДТП
-                        </span>
-                        <span class="status-badge status-alert">
-                            <i class="icon-info">!</i> Были ДТП
-                        </span>
+                        <div class="meta-right" id="headerBadges"></div>
                     </div>
                 </div>
 
@@ -69,7 +64,7 @@
                         <img src="assets/img/placeholder.png" id="mainImage" alt="Car Main">
                         
                         <div class="photo-counter" id="photoCounter">1 / 1</div>
-                        
+
                         <button class="gallery-nav prev-btn" id="prevImgBtn">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -91,76 +86,10 @@
                 <div class="content-box specs-box">
                     <h2 class="box-title">Информация об авто</h2>
                     
-                    <div class="spec-row-line">
-                        <span class="s-label">Марка</span>
-                        <span class="s-val">Genesis</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Модель</span>
-                        <span class="s-val">G80</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Год выпуска</span>
-                        <span class="s-val">2022 / 1</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Пробег</span>
-                        <span class="s-val">78 386 км</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Тип топлива</span>
-                        <span class="s-val">Бензин</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Коробка передач</span>
-                        <span class="s-val">Автомат</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Тип кузова</span>
-                        <span class="s-val">Седан</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Цвет</span>
-                        <span class="s-val">Белый</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Объем двигателя</span>
-                        <span class="s-val">3.5 л</span>
-                    </div>
-
-                    <div class="spec-row-line">
-                        <span class="s-label">Мощность двигателя</span>
-                        <span class="s-val">380 л.с.</span>
-                    </div>
+                    <div id="specsContainer"></div>
                 </div>
 
-                <div class="car-report report-bad" style="margin-top: 20px;"> 
-                    <div class="report-icon">⚠️</div>
-                    <div class="report-content">
-                        <h4>Информация о ДТП</h4>
-                        
-                        <div class="accident-row">
-                            <span>Количество аварий:</span>
-                            <strong>3</strong>
-                        </div>
-                        <div class="accident-row">
-                            <span>Общая стоимость ущерба:</span>
-                            <strong>5 345 690 ₩</strong>
-                        </div>
-                        <div class="accident-row">
-                            <span>Стоимость в рублях:</span>
-                            <strong>~ 345 543 ₽</strong>
-                        </div>
-                    </div>
-                </div>
+                <div id="accidentReportContainer" style="margin-top: 30px;"></div>
 
             </div>
 

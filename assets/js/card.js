@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (car) {
                 renderHeaderInfo(car);
-                renderGallery(car); // Скоро включим
-                // renderSpecs(car);   // Скоро включим
+                renderGallery(car); 
+                renderSpecs(car);   
+                renderAccidents(car);
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
             }
@@ -155,5 +156,146 @@ function updateGalleryState(index) {
     if (thumbs[index]) {
         thumbs[index].classList.add('active');
         thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+}
+
+/**
+ * ЭТАП 3. ХАРАКТЕРИСТИКИ
+ */
+function renderSpecs(car) {
+    const container = document.getElementById('specsContainer');
+    if (!container) return;
+
+    // Данные могут лежать в корне (car.year) или в car.specs (car.specs.hp)
+    // Собираем всё в удобный конфиг. 
+    // label: Название строки
+    // value: Значение (может быть функцией для сложного форматирования)
+    
+    const specsMap = [
+        { label: 'Марка', value: car.brand },
+        { label: 'Модель', value: car.model },
+        { 
+            label: 'Год выпуска', 
+            value: car.year + (car.month ? ` / ${car.month}` : '') 
+        },
+        { 
+            label: 'Пробег', 
+            value: car.specs.mileage ? `${formatNumber(car.specs.mileage)} км` : 'Не указан' 
+        },
+        { label: 'Тип топлива', value: car.specs.fuel },
+        { 
+            label: 'Коробка передач', 
+            value: car.specs.transmission || 'Автомат' // В JSON часто null, ставим дефолт или берем из базы
+        },
+        { label: 'Тип кузова', value: car.body_type || 'Не указан' }, // Если поля нет в JSON
+        { label: 'Цвет', value: car.color || 'Не указан' },             // Если поля нет в JSON
+        { 
+            label: 'Объем двигателя', 
+            value: car.specs.volume ? `${(car.specs.volume / 1000).toFixed(1)} л` : '-' 
+        },
+        { 
+            label: 'Мощность двигателя', 
+            value: car.specs.hp ? `${car.specs.hp} л.с.` : '-' 
+        }
+    ];
+
+    let html = '';
+
+    specsMap.forEach(item => {
+        // Если значение есть (не null, не undefined и не пустая строка), выводим
+        if (item.value && item.value !== 'Не указан' && item.value !== '-') {
+            html += `
+            <div class="spec-row-line">
+                <span class="s-label">${item.label}</span>
+                <span class="s-val">${item.value}</span>
+            </div>
+            `;
+        }
+    });
+
+    container.innerHTML = html;
+}
+
+// Вспомогательная функция для пробелов в цифрах (10000 -> 10 000)
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+/**
+ * ЭТАП 4. ДАННЫЕ О ДТП
+ * Управляет и верхним бейджиком, и нижним блоком отчета
+ */
+function renderAccidents(car) {
+    const reportContainer = document.getElementById('accidentReportContainer');
+    const headerBadges = document.getElementById('headerBadges');
+
+    // 1. НАСТРОЙКА: Список стран, для которых мы ВООБЩЕ показываем этот блок
+    // Если добавится Япония, просто допишем сюда 'JP'
+    const supportedCountries = ['KR'];
+
+    // 2. ПРОВЕРКИ
+    // Если страна не поддерживается ИЛИ данных об авариях в JSON нет вообще (null/undefined)
+    if (!supportedCountries.includes(car.country_code) || !car.accidents) {
+        // Чистим контейнеры и выходим (Блока не будет)
+        if (reportContainer) reportContainer.innerHTML = '';
+        if (headerBadges) headerBadges.innerHTML = '';
+        return;
+    }
+
+    // Если мы здесь — значит это Корея (или другая разрешенная страна) и данные есть
+    const acc = car.accidents;
+    const hasAccidents = acc.count > 0;
+
+    // 1. ВЕРХНИЙ БЕЙДЖИК (Рядом с ID)
+    if (headerBadges) {
+        if (hasAccidents) {
+            headerBadges.innerHTML = `
+                <span class="status-badge status-alert">
+                    <i>!</i> Были ДТП
+                </span>
+            `;
+        } else {
+            headerBadges.innerHTML = `
+                <span class="status-badge status-clean">
+                    <i>✔</i> Без ДТП
+                </span>
+            `;
+        }
+    }
+
+    // 2. ОСНОВНОЙ БЛОК ОТЧЕТА (Внизу)
+    if (reportContainer) {
+        if (hasAccidents) {
+            // ВАРИАНТ: ЕСТЬ ДТП (КРАСНЫЙ)
+            reportContainer.innerHTML = `
+                <div class="report-orange">
+                    <h4>Информация о ДТП</h4>
+                    <div class="report-row-line">
+                        <span>Страховые случаи:</span>
+                        <strong>${acc.count}</strong>
+                    </div>
+                    <div class="report-row-line">
+                        <span>Общая сумма страховых выплат (воны):</span>
+                        <strong>${formatNumber(acc.damages_cost_won)} ₩</strong>
+                    </div>
+                    <div class="report-row-line">
+                        <span>Всего (рубли): </span>
+                        <strong> ~ ${formatNumber(acc.damages_in_rub)} ₽</strong>
+                    </div>
+                    
+                </div>
+            `;
+        } else {
+            // ВАРИАНТ: ЧИСТО (ЗЕЛЕНЫЙ)
+            reportContainer.innerHTML = `
+                <div class="car-report report-clean">
+                    <div class="report-icon">✔</div>
+                    <div class="report-content">
+                        <h4>ДТП не найдено</h4>
+                        <p>По базе страховых выплат Южной Кореи инцидентов не зафиксировано.</p>
+                    </div>
+                </div>
+            `;
+        }
     }
 }

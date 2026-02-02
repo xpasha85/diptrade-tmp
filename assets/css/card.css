@@ -270,7 +270,7 @@
 }
 
 .box-title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     margin-bottom: 20px;
     color: var(--text-main);
@@ -281,13 +281,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 0;
+    
+    /* ИЗМЕНЕНИЯ ЗДЕСЬ: */
+    padding-top: 12px;    /* Отступ сверху */
+    padding-bottom: 4px;  /* Отступ снизу (Линия теперь близко к тексту) */
+    
     border-bottom: 1px solid #E2E8F0;
-    font-size: 15px;
+    font-size: 16px;
+    
+    /* Компенсируем: отодвигаем следующую строку от линии */
+    margin-bottom: 10px; 
 }
+
+/* У последнего элемента убираем лишние отступы */
 .spec-row-line:last-child {
     border-bottom: none;
     padding-bottom: 0;
+    margin-bottom: 0;
 }
 .spec-row-line .s-label { color: var(--text-secondary); }
 .spec-row-line .s-val { font-weight: 500; color: var(--text-main); text-align: right; }
@@ -308,29 +318,72 @@
 }
 .report-clean .report-icon { color: #10B981; }
 
-.report-bad {
-    background-color: #FEF2F2;
-    border: 1px solid #EF4444;
+/* --- СТИЛЬ ДЛЯ ДТП (ОРАНЖЕВЫЙ ВАРИАНТ) --- */
+.report-orange {
+    background-color: #FFF7ED;  /* Светло-оранжевый фон */
+    border: 1px solid #EA580C;  /* Рыжая рамка */
+    border-radius: var(--radius-md); /* 16px как везде */
+    padding: 24px;
+    margin-bottom: 30px;
 }
-.report-bad .report-icon { color: #EF4444; }
+
+/* Заголовок внутри оранжевого блока */
+.report-orange h4 {
+    color: #EA580C; /* Рыжий цвет заголовка */
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Строки внутри (Копия стиля spec-row-line, но с цветами отчета) */
+.report-row-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    padding-top: 6px;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+    
+    border-bottom: 1px solid rgba(234, 88, 12, 0.2); /* Рыжая линия, но прозрачная */
+    font-size: 14px;
+    color: #9A3412; /* Темно-рыжий текст для читаемости */
+}
+
+.report-row-line:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.report-row-line strong {
+    font-weight: 600;
+    color: #EA580C; /* Цифры ярче */
+}
 
 .report-icon { font-size: 24px; line-height: 1; }
 .report-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
 .report-content p { font-size: 14px; margin: 0; }
 
+/* Улучшаем читаемость строк в красном блоке */
 .accident-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 8px; /* Чуть больше воздуха */
     font-size: 14px;
     color: var(--text-main);
-    border-bottom: 1px dashed rgba(0,0,0,0.1);
+    
+    /* Пунктир делаем чуть светлее, чтобы не рябил */
+    border-bottom: 1px dashed rgba(0,0,0,0.08); 
     padding-bottom: 4px;
 }
+
+/* Последнюю строку без линии */
 .accident-row:last-child {
     border-bottom: none;
     margin-bottom: 0;
 }
+
 .accident-row strong { font-weight: 700; }
 
 /* =========================================
