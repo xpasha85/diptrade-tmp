@@ -1,4 +1,274 @@
-<section class="section">
-    <div class="container" id="car-detail">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis G80 — DipTrade</title>
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/card.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="container header-wrap">
+        <a href="/" class="logo">
+            <img src="assets/img/logo.png" alt="DipTrade">
+        </a>
+        <nav class="nav-desktop">
+            <a href="catalog.html">Каталог</a> 
+            <a href="/#directions">Направления</a>
+            <a href="/#steps">Процесс</a>
+            <a href="/#advantages">Почему мы</a> 
+            <a href="#footer">Контакты</a>      
+        </nav>
+        <div class="header-cta">
+            <a href="tel:+79024888884" class="phone-link">+7 (902) 488-88-84</a>
         </div>
-</section>
+        <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+</header>
+<main class="car-page section">
+    <div class="container">
+        
+        <div class="breadcrumbs">
+            <a href="/" class="back-link">← На главную</a>
+            <span class="sep">/</span>
+            <a href="catalog.html" class="back-link">Каталог</a>
+            <span class="sep">/</span>
+            <span class="current">Genesis G80</span>
+        </div>
+
+        <div class="car-layout">
+            
+            <div class="car-main">
+                
+                <h1 class="car-title">Genesis G80 Gasoline 3.5 Turbo AWD</h1>
+                
+                <div class="car-meta-row">
+                    <div class="meta-left">
+                        <span class="meta-tag">ID: 39</span>
+                        <span class="meta-tag">Обновлено: 17.01.2026</span>
+                    </div>
+                    <div class="meta-right">
+                        <span class="status-badge status-clean">
+                            <i class="icon-check">✔</i> Без ДТП
+                        </span>
+                        <span class="status-badge status-alert">
+                            <i class="icon-info">!</i> Были ДТП
+                        </span>
+                    </div>
+                </div>
+
+                <div class="car-gallery">
+                    <div class="gallery-main">
+                        <img src="assets/img/placeholder.png" id="mainImage" alt="Car Main">
+                        <div class="gallery-badges">
+                            <span class="badge badge-korea">🇰🇷 Из Кореи</span>
+                        </div>
+                    </div>
+                    <div class="gallery-thumbs" id="galleryThumbs">
+                        <div class="thumb active"><img src="assets/img/placeholder.png"></div>
+                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
+                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
+                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
+                    </div>
+                </div>
+
+                <div class="content-box specs-box">
+                    <h2 class="box-title">Информация об авто</h2>
+                    
+                    <div class="spec-row-line">
+                        <span class="s-label">Марка</span>
+                        <span class="s-val">Genesis</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Модель</span>
+                        <span class="s-val">G80</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Год выпуска</span>
+                        <span class="s-val">2022 / 1</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Пробег</span>
+                        <span class="s-val">78 386 км</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Тип топлива</span>
+                        <span class="s-val">Бензин</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Коробка передач</span>
+                        <span class="s-val">Автомат</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Тип кузова</span>
+                        <span class="s-val">Седан</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Цвет</span>
+                        <span class="s-val">Белый</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Объем двигателя</span>
+                        <span class="s-val">3.5 л</span>
+                    </div>
+
+                    <div class="spec-row-line">
+                        <span class="s-label">Мощность двигателя</span>
+                        <span class="s-val">380 л.с.</span>
+                    </div>
+                </div>
+
+                <div class="car-report report-bad" style="margin-top: 20px;"> 
+                    <div class="report-icon">⚠️</div>
+                    <div class="report-content">
+                        <h4>Информация о ДТП</h4>
+                        
+                        <div class="accident-row">
+                            <span>Количество аварий:</span>
+                            <strong>3</strong>
+                        </div>
+                        <div class="accident-row">
+                            <span>Общая стоимость ущерба:</span>
+                            <strong>5 345 690 ₩</strong>
+                        </div>
+                        <div class="accident-row">
+                            <span>Стоимость в рублях:</span>
+                            <strong>~ 345 543 ₽</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <aside class="car-sidebar">
+    
+                <div class="sidebar-block price-main-block">
+                    
+                    <div class="price-top-row">
+                        <div class="main-price">8 187 387 ₽</div>
+                        <div class="info-icon" title="Подробнее о цене">i</div>
+                    </div>
+
+                    <div class="price-note">* Окончательная стоимость может отличаться</div>
+
+                    <div class="country-indicator">
+                        <img src="assets/img/flags/kr.png" alt="KR">
+                        <span>Авто из Южной Кореи</span>
+                    </div>
+
+                    <div class="sidebar-chips">
+                        <span class="chip-status chip-passable">Проходной</span>
+                        <span class="chip-status chip-discount">Льготный</span>
+                    </div>
+
+                    <a href="https://t.me/diptrade_ru" target="_blank" class="btn btn-primary btn-full tg-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-0.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.14 3.35-1.34 3.73-1.34.08 0 .27.01.39.12.1.08.13.19.14.27-.01.06.01.24 0 .26z"/>
+                        </svg>
+                        Написать в Telegram
+                    </a>
+                </div>
+
+                <div class="sidebar-block calc-block-wrapper">
+                    <h3 class="block-title-small">Расчет стоимости</h3>
+                    
+                    <div class="calc-row">
+                        <span class="c-label">Цена лота</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">58 000 000 ₩</span>
+                    </div>
+                    
+                    <div class="calc-row">
+                        <span class="c-label">Расходы по стране</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">2 500 ¥</span> </div>
+
+                    <div class="calc-row">
+                        <span class="c-label">Фрахт + Доставка</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">800 $</span>
+                    </div>
+
+                    <div class="calc-divider"></div>
+
+                    <div class="calc-row">
+                        <span class="c-label">Таможенный платеж</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">1 250 000 ₽</span>
+                    </div>
+                    
+                    <div class="calc-row">
+                        <span class="c-label">Утильсбор</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">3 600 ₽</span>
+                    </div>
+
+                    <div class="calc-row">
+                        <span class="c-label">Комиссия</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">50 000 ₽</span>
+                    </div>
+                    
+                    <div class="calc-total-footer">
+                        <span>Итого:</span>
+                        <strong class="total-price-small">8 187 387 ₽</strong>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+</main>
+
+<footer class="footer" id="footer">
+    <div class="container">
+        <div class="footer-wrap">
+            <div class="footer-col footer-brand">
+                <a href="#" class="logo">
+                    <img src="assets/img/logo-white.png" alt="DipTrade">
+                </a>
+                <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи во Владивосток и по всей России.</p>
+                <div class="footer-social">
+                    <a href="#">Telegram</a>
+                    <a href="#">WhatsApp</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="catalog.html">Каталог авто</a></li>
+                    <li><a href="/#directions">Направления</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <div class="footer-contacts">
+                    <p><strong>Адрес:</strong> г. Уссурийск, ул. Тургенева, 73б</p>
+                    <p><strong>Телефон:</strong> +7 (902) 488-88-84</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 DipTrade. Все права защищены.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

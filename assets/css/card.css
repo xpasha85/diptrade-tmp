@@ -1,0 +1,359 @@
+/* =========================================
+   CARD PAGE LAYOUT (Сетка и общие)
+   ========================================= */
+
+.car-page {
+    padding-top: 30px;
+    background-color: #f9f9f9;
+}
+
+.breadcrumbs {
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+.breadcrumbs a { transition: color 0.2s; }
+.breadcrumbs a:hover { color: var(--primary); }
+.breadcrumbs .sep { margin: 0 8px; color: #CBD5E1; }
+.breadcrumbs .current { color: var(--text-main); font-weight: 500; }
+
+/* GRID SYSTEM */
+.car-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr; /* Левая часть шире */
+    gap: 40px;
+    align-items: start; /* Чтобы сайдбар не растягивался на всю высоту */
+}
+
+/* =========================================
+   LEFT COLUMN (MAIN CONTENT)
+   ========================================= */
+
+.car-title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+/* --- META ROW (ID & STATUS) --- */
+.car-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.meta-left {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.meta-right {
+    display: flex;
+    gap: 10px;
+}
+
+/* Статусные плашки (Верхние) */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.status-badge i { font-style: normal; font-weight: 800; }
+
+.status-clean {
+    background-color: #ECFDF5;
+    color: #059669;
+    border: 1px solid #A7F3D0;
+}
+
+.status-alert {
+    background-color: #F1F5F9;
+    color: #64748B;
+    border: 1px solid #CBD5E1;
+}
+
+/* --- GALLERY --- */
+.car-gallery {
+    margin-bottom: 40px;
+}
+
+.gallery-main {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: #F1F5F9;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+}
+
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gallery-thumbs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.thumb {
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: 0.2s;
+    border: 2px solid transparent;
+}
+
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb:hover { opacity: 1; }
+.thumb.active { opacity: 1; border-color: var(--primary); }
+
+/* --- SPECS BOX (Характеристики) --- */
+.content-box {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.box-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+/* Строка характеристики (Подчеркивание снизу) */
+.spec-row-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 15px;
+}
+.spec-row-line:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.spec-row-line .s-label { color: var(--text-secondary); }
+.spec-row-line .s-val { font-weight: 500; color: var(--text-main); text-align: right; }
+
+/* --- REPORT BLOCK (ДТП) --- */
+.car-report {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.report-clean {
+    background-color: #ECFDF5;
+    border: 1px solid #10B981;
+}
+.report-clean .report-icon { color: #10B981; }
+
+.report-bad {
+    background-color: #FEF2F2;
+    border: 1px solid #EF4444;
+}
+.report-bad .report-icon { color: #EF4444; }
+
+.report-icon { font-size: 24px; line-height: 1; }
+.report-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.report-content p { font-size: 14px; margin: 0; }
+
+.accident-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--text-main);
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+    padding-bottom: 4px;
+}
+.accident-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+.accident-row strong { font-weight: 700; }
+
+/* =========================================
+   RIGHT COLUMN (SIDEBAR)
+   ========================================= */
+
+.car-sidebar {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-block {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* --- BLOCK 1: PRICE & ACTIONS --- */
+.price-top-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.main-price {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.price-note {
+    font-size: 12px;
+    color: #94A3B8;
+    margin-bottom: 16px;
+}
+
+.country-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--text-main);
+}
+.country-indicator img {
+    width: 20px;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.sidebar-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.chip-status {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.chip-passable { background: #EFF6FF; color: #3B82F6; }
+.chip-discount { background: #FEF3C7; color: #D97706; }
+
+.tg-btn {
+    background-color: #24A1DE;
+    border-color: #24A1DE;
+    color: #fff;
+    font-weight: 600;
+    text-transform: none;
+}
+.tg-btn:hover {
+    background-color: #1B8UB8; 
+    border-color: #1B8UB8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(36, 161, 222, 0.3);
+}
+
+/* --- BLOCK 2: CALCULATION --- */
+.block-title-small {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-main);
+}
+
+.calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+.calc-row:last-child { margin-bottom: 0; }
+
+.c-label { color: var(--text-secondary); }
+.c-val { font-weight: 500; white-space: nowrap; }
+
+.c-dots {
+    flex-grow: 1;
+    border-bottom: 1px dotted #CBD5E1;
+    margin: 0 8px;
+    position: relative;
+    top: -4px;
+    opacity: 0.5;
+}
+
+.calc-divider {
+    height: 1px;
+    background: #E2E8F0;
+    margin: 12px 0;
+}
+
+.calc-total-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8FAFC;
+    margin: 15px -24px -24px;
+    padding: 15px 24px;
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.calc-total-footer span { font-size: 14px; color: var(--text-secondary); }
+.total-price-small { font-size: 18px; font-weight: 800; color: var(--text-main); }
