@@ -35,23 +35,23 @@
     <div class="container">
         
         <div class="breadcrumbs">
-            <a href="/" class="back-link">← На главную</a>
+            <a href="/">Главная</a>
             <span class="sep">/</span>
-            <a href="catalog.html" class="back-link">Каталог</a>
+            <a href="catalog.html">Каталог</a>
             <span class="sep">/</span>
-            <span class="current">Genesis G80</span>
+            <span class="current" id="breadcrumbTitle">Загрузка...</span>
         </div>
 
         <div class="car-layout">
             
             <div class="car-main">
                 
-                <h1 class="car-title">Genesis G80 Gasoline 3.5 Turbo AWD</h1>
+                <h1 class="car-title" id="pageTitle">Загрузка...</h1>
                 
                 <div class="car-meta-row">
                     <div class="meta-left">
-                        <span class="meta-tag">ID: 39</span>
-                        <span class="meta-tag">Обновлено: 17.01.2026</span>
+                        <span class="meta-tag" id="carId">ID: ...</span>
+                        <span class="meta-tag" id="carDate">Обновлено: ...</span>
                     </div>
                     <div class="meta-right">
                         <span class="status-badge status-clean">
@@ -64,18 +64,28 @@
                 </div>
 
                 <div class="car-gallery">
-                    <div class="gallery-main">
+    
+                    <div class="gallery-main" id="galleryMain">
                         <img src="assets/img/placeholder.png" id="mainImage" alt="Car Main">
-                        <div class="gallery-badges">
-                            <span class="badge badge-korea">🇰🇷 Из Кореи</span>
-                        </div>
+                        
+                        <div class="photo-counter" id="photoCounter">1 / 1</div>
+                        
+                        <button class="gallery-nav prev-btn" id="prevImgBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        
+                        <button class="gallery-nav next-btn" id="nextImgBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L16 12L9 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
+
                     <div class="gallery-thumbs" id="galleryThumbs">
-                        <div class="thumb active"><img src="assets/img/placeholder.png"></div>
-                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
-                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
-                        <div class="thumb"><img src="assets/img/placeholder.png"></div>
-                    </div>
+                        </div>
+
                 </div>
 
                 <div class="content-box specs-box">
@@ -270,5 +280,6 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/card.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 }
 
 .breadcrumbs {
-    margin-bottom: 24px;
+    margin-bottom: 18px;
     font-size: 14px;
     color: var(--text-secondary);
 }
@@ -21,8 +21,14 @@
 .car-layout {
     display: grid;
     grid-template-columns: 1.6fr 1fr; /* Левая часть шире */
-    gap: 40px;
+    gap: 20px;
     align-items: start; /* Чтобы сайдбар не растягивался на всю высоту */
+}
+
+
+.car-main {
+    min-width: 0; /* МАГИЯ: Запрещает колонке растягиваться из-за широкого контента */
+    width: 100%;  /* На всякий случай */
 }
 
 /* =========================================
@@ -66,7 +72,7 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
 }
 .status-badge i { font-style: normal; font-weight: 800; }
@@ -85,7 +91,7 @@
 
 /* --- GALLERY --- */
 .car-gallery {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .gallery-main {
@@ -129,6 +135,27 @@
     gap: 10px;
     overflow-x: auto;
     padding-bottom: 5px;
+    max-width: 100%; 
+    scroll-behavior: smooth;  /* Чтобы листалось плавно */
+}
+
+/* Счетчик фото (1 / 12) */
+.photo-counter {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    
+    background: rgba(0, 0, 0, 0.6); /* Темная полупрозрачная плашка */
+    color: #ffffff;
+    
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    pointer-events: none; /* Чтобы не мешал кликам, если вдруг */
+    z-index: 5; /* Поверх картинки */
+    backdrop-filter: blur(2px); /* Легкое размытие фона под плашкой (для красоты) */
 }
 
 .thumb {
@@ -138,14 +165,100 @@
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
-    opacity: 0.6;
+    
+    /* Важно для позиционирования "пелены" */
+    position: relative; 
+    
+    /* Базовое состояние */
+    opacity: 0.6; 
     transition: 0.2s;
-    border: 2px solid transparent;
+    border: 2px solid transparent; 
 }
 
-.thumb img { width: 100%; height: 100%; object-fit: cover; }
-.thumb:hover { opacity: 1; }
-.thumb.active { opacity: 1; border-color: var(--primary); }
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Убираем отступы снизу картинки */
+}
+
+/* Эффект при наведении на любую миниатюру */
+.thumb:hover {
+    opacity: 1;
+}
+
+/* === СТИЛИ АКТИВНОЙ МИНИАТЮРЫ === */
+
+.thumb.active {
+    opacity: 1;
+    border-color: var(--primary); /* Синяя рамка (можно убрать, если не нужна) */
+}
+
+/* СИНЯЯ ПЕЛЕНА (Оверлей) */
+.thumb::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Цвет твоей "заливки". Сейчас это синий бренд-цвет */
+    background-color: var(--primary); 
+    
+    /* По умолчанию скрыта */
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none; /* Чтобы клики проходили сквозь неё (на всякий случай) */
+}
+
+/* Когда миниатюра активна — показываем пелену */
+.thumb.active::after {
+    opacity: 0.5; /* <-- ИГРАЙСЯ ТУТ (0.1 - прозрачно, 0.9 - густо) */
+}
+
+
+
+/* Навигационные стрелки галереи */
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); /* Центрируем по вертикали */
+    width: 44px;
+    height: 44px;
+    
+    /* Стиль кнопок: белые, полупрозрачные, скругленные */
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px; 
+    border: none;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main); /* Цвет стрелки */
+    z-index: 2; /* Поверх картинки */
+    
+    opacity: 0; /* Скрыты по умолчанию */
+    transition: all 0.3s ease;
+}
+
+/* Показываем стрелки при наведении на главное фото */
+.gallery-main:hover .gallery-nav {
+    opacity: 1;
+}
+
+/* Ховер эффект на саму кнопку (становится менее прозрачной) */
+.gallery-nav:hover {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    color: var(--primary); /* Можно подсветить стрелку цветом бренда */
+}
+
+/* Позиции кнопок */
+.prev-btn { left: 12px; }
+.next-btn { right: 12px; }
+
 
 /* --- SPECS BOX (Характеристики) --- */
 .content-box {
@@ -301,9 +414,10 @@
     font-weight: 600;
     text-transform: none;
 }
+
 .tg-btn:hover {
-    background-color: #1B8UB8; 
-    border-color: #1B8UB8;
+    background-color: #1B88B8; /* Было #1B8UB8 - исправили U на 8 */
+    border-color: #1B88B8;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(36, 161, 222, 0.3);
 }

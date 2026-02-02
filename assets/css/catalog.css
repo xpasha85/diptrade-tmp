@@ -5,7 +5,7 @@
 /* --- 1. ОБЩАЯ СТРУКТУРА --- */
 .catalog-page {
     padding: 30px 0 80px;
-    background-color: #F8FAFC; 
+    background-color: #f9f9f9; /* #F8FAFC; */
     min-height: 100vh;
 }
 

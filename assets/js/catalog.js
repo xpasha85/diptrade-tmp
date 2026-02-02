@@ -467,7 +467,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       // --- 5. СБОРКА КАРТОЧКИ ---
       // --- 5. СБОРКА КАРТОЧКИ ---
       htmlParts.push(`
-        <div class="${cardClass}" onclick="window.location.href='car.html?id=${encodeURIComponent(car.id)}'">
+        <a class="${cardClass}" href="car.html?id=${encodeURIComponent(car.id)}" target="_blank" style="display:block; text-decoration:none; color:inherit;">
           <div class="car-img-wrap">
             
             ${photosHTML}
