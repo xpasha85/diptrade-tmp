@@ -443,6 +443,7 @@
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
+/* --- СТАТУСНЫЕ ПЛАШКИ (SIDEBAR CHIPS) --- */
 .sidebar-chips {
     display: flex;
     flex-wrap: wrap;
@@ -451,14 +452,43 @@
 }
 
 .chip-status {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: 600;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
 }
 
-.chip-passable { background: #EFF6FF; color: #3B82F6; }
-.chip-discount { background: #FEF3C7; color: #D97706; }
+/* 1. ПРОХОДНОЙ (Зеленый насыщенный) */
+.chip-green {
+    background-color: #16A34A; /* Цвет как на скрине */
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2);
+}
+
+/* 2. ВЫСОКАЯ СТАВКА (Красный) */
+.chip-red {
+    background-color: #DC2626; /* Яркий красный */
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* 3. ЛЬГОТНЫЙ (Желтый/Золотой) */
+.chip-yellow {
+    background-color: #F59E0B; /* Насыщенный желтый */
+    color: #ffffff; /* Белый текст читается лучше на темном желтом */
+    /* Если хочешь черный текст, раскомментируй строку ниже: */
+    /* color: #422006; */ 
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+/* 4. В НАЛИЧИИ (Светло-зеленый, оставляем для разнообразия или меняем на chip-green) */
+.chip-stock {
+    background-color: #10B981;
+    color: white;
+}
 
 .tg-btn {
     background-color: #24A1DE;
@@ -475,14 +505,260 @@
     box-shadow: 0 4px 12px rgba(36, 161, 222, 0.3);
 }
 
-/* --- BLOCK 2: CALCULATION --- */
+/* =========================================
+   SIDEBAR: PRICE & AUCTION LOGIC (CLEAN)
+   ========================================= */
+
+/* --- СТРУКТУРА ШАПКИ (Цена + Флаг) --- */
+.sb-header-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #F1F5F9;
+    
+    /* ВАЖНО: Разрешаем вылетать тултипам */
+    position: relative;
+    z-index: 20; 
+}
+
+/* ЛЕВАЯ ЧАСТЬ (Цена и контент) */
+.sb-left {
+    flex: 1;
+    /* Разрешаем элементам выходить за границы */
+    overflow: visible; 
+}
+
+.main-price {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text-main);
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+/* ПРАВАЯ ЧАСТЬ (Флаг) */
+.sb-right {
+    width: 60px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.sb-right img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #E2E8F0;
+    margin-bottom: 4px;
+}
+.sb-right span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+/* --- ВАРИАНТ 1: ОБЫЧНОЕ АВТО (Стандартные подписи) --- */
+.price-note-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    position: relative; /* Контекст для тултипа */
+}
+.price-note-row span {
+    font-size: 12px;
+    color: #94A3B8;
+    line-height: 1.3;
+}
+.info-icon-img {
+    width: 14px;
+    height: 14px;
+    opacity: 0.4;
+    transition: 0.2s;
+    cursor: help;
+}
+.price-note-row:hover .info-icon-img {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+
+/* --- ВАРИАНТ 2: АУКЦИОННОЕ АВТО (Оформление) --- */
+
+/* Желтая рамка вокруг блока */
+.price-main-block.is-auction {
+    background-color: #ffffff;
+    border: 2px solid #F59E0B;
+    position: relative;
+    margin-top: 10px;
+    /* КРИТИЧНО: Разрешаем тултипу перекрывать кнопки */
+    overflow: visible !important; 
+    z-index: 10;
+}
+
+/* Бейдж "АУКЦИОН" на рамке */
+.auction-label-badge {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: #F59E0B;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.badge-hammer-icon {
+    width: 14px;
+    height: 14px;
+    filter: brightness(0) invert(1);
+}
+
+/* Обертка выравнивания (Прижимаем выгоду вправо к концу цены) */
+.price-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Выравнивание по правому краю */
+    width: fit-content;    /* Ширина по контенту */
+}
+
+/* Зеленая капсула выгоды */
+.benefit-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    /* 1. ПРИЖИМАЕМ К ЦЕНЕ */
+    margin-top: 0px; /* Было 4px. Сделали меньше, чтобы стояла плотнее */
+    margin-bottom: 4px;
+    
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+
+    /* 2. ДЕЛАЕМ "ТАБЛЕТКУ" */
+    padding: 4px 10px 4px 12px; /* Чуть добавил воздуха по бокам */
+    border-radius: 50px;        /* Максимальное скругление (pill shape) */
+    
+    font-size: 12px;
+    color: #15803D;
+    font-weight: 700;
+    
+    position: relative; /* Якорь для тултипа */
+    cursor: help;
+    z-index: 50; /* Чтобы быть выше всего */
+}
+.benefit-info-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+    transition: 0.2s;
+    margin-left: 2px;
+}
+.benefit-row:hover .benefit-info-icon { opacity: 1; }
+
+
+/* =========================================
+   TOOLTIPS (ЕДИНАЯ ЛОГИКА)
+   ========================================= */
+
+.tooltip-box {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    
+    background-color: #1E293B;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+    text-align: left;
+    
+    width: 260px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+    z-index: 1000; /* Самый верхний слой */
+    
+    /* Важно для фикса сплющивания */
+    white-space: normal; 
+    height: auto;
+}
+
+/* 1. ТУЛТИП ДЛЯ ОБЫЧНОГО АВТО (Появляется СВЕРХУ) */
+.price-note-row .tooltip-box {
+    bottom: 100%; /* Над иконкой */
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    margin-bottom: 8px;
+    text-align: center;
+}
+/* Стрелка вниз */
+.price-note-row .tooltip-box::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1E293B transparent transparent transparent;
+}
+.price-note-row:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+/* 2. ТУЛТИП ДЛЯ АУКЦИОНА (Появляется СНИЗУ) */
+.benefit-row .tooltip-box {
+    top: 100%; /* Под капсулой */
+    right: 0;  /* Прижат к правому краю */
+    left: auto;
+    margin-top: 8px;
+    transform: translateY(-5px);
+}
+/* Стрелка вверх */
+.benefit-row .tooltip-box::before {
+    content: "";
+    position: absolute;
+    bottom: 100%; /* Торчит сверху тултипа */
+    right: 15px;  /* Под иконкой i */
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #1E293B transparent;
+}
+.benefit-row:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   BLOCK 2: CALCULATION (Калькулятор)
+   ========================================= */
 .block-title-small {
     font-size: 16px;
     font-weight: 700;
     margin-bottom: 16px;
     color: var(--text-main);
 }
-
 .calc-row {
     display: flex;
     justify-content: space-between;
@@ -492,10 +768,8 @@
     color: var(--text-main);
 }
 .calc-row:last-child { margin-bottom: 0; }
-
 .c-label { color: var(--text-secondary); }
 .c-val { font-weight: 500; white-space: nowrap; }
-
 .c-dots {
     flex-grow: 1;
     border-bottom: 1px dotted #CBD5E1;
@@ -504,13 +778,11 @@
     top: -4px;
     opacity: 0.5;
 }
-
 .calc-divider {
     height: 1px;
     background: #E2E8F0;
     margin: 12px 0;
 }
-
 .calc-total-footer {
     display: flex;
     justify-content: space-between;
@@ -521,6 +793,5 @@
     border-top: 1px solid var(--border);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
-
 .calc-total-footer span { font-size: 14px; color: var(--text-secondary); }
 .total-price-small { font-size: 18px; font-weight: 800; color: var(--text-main); }

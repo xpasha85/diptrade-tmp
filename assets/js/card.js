@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderGallery(car); 
                 renderSpecs(car);   
                 renderAccidents(car);
+                renderSidebar(car);
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
             }
@@ -298,4 +299,270 @@ function renderAccidents(car) {
             `;
         }
     }
+}
+
+/**
+ * ЭТАП 5. ПРАВАЯ КОЛОНКА (Сайдбар) - FINAL CLEAN VERSION
+ */
+function renderSidebar(car) {
+    const mainBlock = document.querySelector('.price-main-block');
+    
+    // Данные
+    const isAuction = car.is_auction === true; 
+    const benefitAmount = car.auction_benefit || 0; 
+
+    // === 1. ОФОРМЛЕНИЕ ГЛАВНОГО БЛОКА (Рамка, Бейдж) ===
+    if (mainBlock) {
+        // Сброс классов и удаление старых элементов
+        mainBlock.classList.remove('is-auction');
+        const oldBadge = mainBlock.querySelector('.auction-label-badge');
+        if (oldBadge) oldBadge.remove();
+
+        if (isAuction) {
+            mainBlock.classList.add('is-auction');
+
+            // Бейдж "Аукцион"
+            const badge = document.createElement('div');
+            badge.className = 'auction-label-badge';
+            badge.innerHTML = `
+                <img src="assets/img/hammer.png" class="badge-hammer-icon" alt="">
+                Аукцион
+            `;
+            mainBlock.prepend(badge);
+        }
+    }
+
+    // === 2. ГЕНЕРАЦИЯ ЛЕВОЙ КОЛОНКИ (Цена + Логика) ===
+    const sbLeft = document.querySelector('.sb-left');
+    
+    if (sbLeft) {
+        sbLeft.innerHTML = ''; // Чистим контент
+
+        if (isAuction) {
+            // --- СЦЕНАРИЙ: АУКЦИОН ---
+            // Обертка для выравнивания по правому краю
+            const wrapper = document.createElement('div');
+            wrapper.className = 'price-content-wrapper';
+
+            // Цена
+            const priceDiv = document.createElement('div');
+            priceDiv.className = 'main-price';
+            priceDiv.textContent = formatPrice(car.price);
+            wrapper.appendChild(priceDiv);
+
+            // Выгода (капсула)
+            if (benefitAmount > 0) {
+                const benefitDiv = document.createElement('div');
+                benefitDiv.className = 'benefit-row';
+                benefitDiv.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 18l-9.5-9.5-5 5L1 6"></path>
+                        <path d="M17 18h6v-6"></path>
+                    </svg>
+                    <span>Выгода: ${formatNumber(benefitAmount)} ₽</span>
+                    
+                    <img src="assets/img/icons/info-circle.png" class="benefit-info-icon" alt="i">
+
+                    <div class="tooltip-box">
+                        Цена указана "под ключ" во Владивостоке. Расчтиана из статистики за 3 месяца.<br><br>
+                        <span style="color:#4ade80">Выгода</span> рассчитана относительно средней рыночной цены аналогичного авто в наличии в РФ.
+                    </div>
+                `;
+                wrapper.appendChild(benefitDiv);
+            }
+            sbLeft.appendChild(wrapper);
+
+        } else {
+            // --- СЦЕНАРИЙ: ОБЫЧНОЕ АВТО ---
+            // Просто цена
+            const priceDiv = document.createElement('div');
+            priceDiv.className = 'main-price';
+            priceDiv.textContent = formatPrice(car.price);
+            sbLeft.appendChild(priceDiv);
+
+            // Строка "* до Владивостока" + Тултип
+            const noteRow = document.createElement('div');
+            noteRow.className = 'price-note-row';
+            noteRow.innerHTML = `
+                <span>* до Владивостока</span>
+                
+                <img src="assets/img/icons/info-circle.png" alt="Info" class="info-icon-img">
+                
+                <div class="tooltip-box">
+                    Со всеми расходами до Владивостока, включая таможенные пошлины, утилизационный сбор и услуги брокера. <br>
+                    <strong>Больше ни за что платить не нужно.</strong>
+                </div>
+            `;
+            sbLeft.appendChild(noteRow);
+        }
+    }
+
+    // === 3. СТРАНА (Правая часть) ===
+    const countryBlock = document.getElementById('countryBlock');
+    let countryName = 'Импорт';
+    let flagIcon = 'assets/img/flags/default.png';
+    let currency = '';
+
+    if (car.country_code === 'KR') {
+        countryName = 'Корея';
+        flagIcon = 'assets/img/flags/kr.png';
+        currency = '₩';
+    } else if (car.country_code === 'CN') {
+        countryName = 'Китай';
+        flagIcon = 'assets/img/flags/cn.png';
+        currency = '¥';
+    } else if (car.country_code === 'RU') {
+        countryName = 'Россия';
+        flagIcon = 'assets/img/flags/ru.png';
+        currency = '₽';
+    }
+
+    if (countryBlock) {
+        countryBlock.innerHTML = `
+            <img src="${flagIcon}" alt="${countryName}">
+            <span>${countryName}</span>
+        `;
+    }
+
+    // === 4. ПЛАШКИ (Chips) ===
+    const chipsContainer = document.getElementById('statusChips');
+    if (chipsContainer) {
+        const currentYear = new Date().getFullYear();
+        // Используем car.year. Если нужна точность до месяца, нужно поле production_month
+        const carYear = car.year; 
+        const age = currentYear - carYear;
+        
+        // Получаем л.с. (пробуем разные поля, так как я не вижу твой JSON прямо сейчас)
+        const hp = car.horse_power || (car.specs ? car.specs.hp : 0) || 0;
+
+        let chipsHTML = '';
+        
+        // 1. ЛОГИКА ВОЗРАСТА (Проходной / Непроходной)
+        if (age >= 3 && age <= 5) {
+            // Проходной (3-5 лет) -> Зеленый
+            chipsHTML += `<span class="chip-status chip-green">Проходной (3-5 лет)</span>`;
+        } else if (age < 3) {
+            // Новый (< 3 лет) -> Красный
+            chipsHTML += `<span class="chip-status chip-red">Высокая ставка (< 3 лет)</span>`;
+        } else {
+            // Старый (> 5 лет) -> Красный
+            chipsHTML += `<span class="chip-status chip-red">Высокая ставка (> 5 лет)</span>`;
+        }
+
+        // 2. ЛОГИКА ЛЬГОТЫ (< 160 л.с.)
+        if (hp > 0 && hp <= 160) {
+            chipsHTML += `<span class="chip-status chip-yellow">Льготный (< 160 л.с.)</span>`;
+        }
+
+        // 3. В НАЛИЧИИ
+        if (car.in_stock) {
+            chipsHTML += `<span class="chip-status chip-stock">В наличии</span>`;
+        }
+        
+        chipsContainer.innerHTML = chipsHTML;
+    }
+
+    // === 5. ССЫЛКИ ===
+    const tgBtn = document.getElementById('tgLink');
+    if (tgBtn) {
+        // 1. Формируем текст сообщения (название + ID)
+        // car.web_title - это поле из JSON с названием машины
+        const msgText = `Здравствуйте! Интересует авто: ${car.web_title} (ID: ${car.id}). Подскажите детали.`;
+
+        // 2. Кодируем текст для URL (превращаем пробелы в %20 и т.д.)
+        const encodedText = encodeURIComponent(msgText);
+
+        // 3. Ставим ссылку
+        // Ссылка вида https://t.me/username?text=Сообщение
+        tgBtn.href = `https://t.me/diptrade_ru?text=${encodedText}`;
+    }
+
+    // === 6. КАЛЬКУЛЯТОР ===
+    renderCalculator(car, currency);
+}
+
+/**
+ * Рендер блока расчета стоимости
+ */
+function renderCalculator(car, currency) {
+    const calcContainer = document.getElementById('calcBlock');
+    if (!calcContainer) return;
+
+    // Временные заглушки, так как в JSON пока только итоговая цена
+    // Позже привяжем реальные формулы
+    let rowsHTML = '';
+
+    if (car.country_code === 'RU') {
+        // ДЛЯ РОССИИ (Просто)
+        rowsHTML = `
+            <div class="calc-row">
+                <span class="c-label">Стоимость авто</span>
+                <span class="c-dots"></span>
+                <span class="c-val">${formatPrice(car.price)}</span>
+            </div>
+            <div class="calc-row">
+                <span class="c-label">Оформление документов</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Включено</span>
+            </div>
+        `;
+    } else {
+        // ДЛЯ КОРЕИ И КИТАЯ (Подробно)
+        // Если реальных данных нет, ставим прочерки или слова
+        
+        rowsHTML = `
+            <div class="calc-row">
+                <span class="c-label">Цена в ${car.country_code === 'KR' ? 'Корее' : 'Китае'}</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Запрос ${currency}</span>
+            </div>
+            
+            <div class="calc-row">
+                <span class="c-label">Расходы по стране</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Включено</span>
+            </div>
+
+            <div class="calc-row">
+                <span class="c-label">Доставка до РФ</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Включено</span>
+            </div>
+
+            <div class="calc-divider"></div>
+
+            <div class="calc-row">
+                <span class="c-label">Таможенный платеж</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Рассчитывается</span>
+            </div>
+             <div class="calc-row">
+                <span class="c-label">Утильсбор</span>
+                <span class="c-dots"></span>
+                <span class="c-val">По тарифам РФ</span>
+            </div>
+             <div class="calc-row">
+                <span class="c-label">Комиссия / Брокер</span>
+                <span class="c-dots"></span>
+                <span class="c-val">Включено</span>
+            </div>
+        `;
+    }
+
+    // Собираем весь блок
+    calcContainer.innerHTML = `
+        <h3 class="block-title-small">Примерный расчет</h3>
+        ${rowsHTML}
+        
+        <div class="calc-total-footer">
+            <span>Итого под ключ:</span>
+            <strong class="total-price-small">${formatPrice(car.price)}</strong>
+        </div>
+    `;
+}
+
+// Вспомогательная: Формат цены (1000000 -> 1 000 000 ₽)
+function formatPrice(price) {
+    if (!price) return 'По запросу';
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₽';
 }
