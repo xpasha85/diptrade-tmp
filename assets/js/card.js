@@ -18,7 +18,12 @@ const UI_TEXT = {
     // Тултипы (можно дополнять)
     tooltipKoreaOps: "Доставка до порта, снятие с учета, экспортная декларация, стоянка.",
     tooltipRussiaCustoms: "Пошлина, утильсбор и оформление рассчитываются по курсу евро.",
-    tooltipRussiaServices: "СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера."
+    tooltipRussiaServices: "СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера.",
+
+    // --- НОВЫЕ ТУЛТИПЫ ДЛЯ ЦЕНЫ (ДОБАВИТЬ ЭТО) ---
+    tooltipPriceSimple: `Со всеми расходами до Владивостока, включая таможенные пошлины, утилизационный сбор и услуги брокера.<br><br><strong>Больше ни за что платить не нужно.</strong>`,
+    
+    tooltipPriceAuction: `Цена указана "под ключ" во Владивостоке. Рассчитана из статистики за 3 месяца.<br><br><span style="color:#16A34A; font-weight:700;">Выгода</span> рассчитана относительно средней рыночной цены аналогичного авто в наличии в РФ.`
 };
 
 /* =========================================
@@ -78,21 +83,30 @@ function openBottomSheet(htmlContent) {
         body.appendChild(sheet);
     }
     
-    // Вставляем контент и полоску-ручку
+    // Вставляем: Заголовок + Текст + Кнопку "Понятно"
     sheet.innerHTML = `
         <div class="sheet-handle"></div>
-        <div class="sheet-content">${htmlContent}</div>
+        <div class="sheet-content">
+            <h3>Информация о цене</h3>
+            
+            <div class="sheet-text-body">
+                ${htmlContent}
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="closeBottomSheet()" style="margin-top: 25px; width: 100%;">
+                Понятно
+            </button>
+        </div>
     `;
     
-    // Показываем (добавляем классы для анимации)
-    // Небольшая задержка, чтобы CSS transition сработал
+    // Показываем (анимация)
     overlay.style.display = 'block';
     sheet.style.display = 'block';
     
     setTimeout(() => {
         overlay.classList.add('active');
         sheet.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+        document.body.style.overflow = 'hidden'; 
     }, 10);
 }
 
@@ -483,7 +497,6 @@ function renderSidebar(car) {
 
         if (isAuction) {
             // --- СЦЕНАРИЙ: АУКЦИОН ---
-            // Обертка для выравнивания по правому краю
             const wrapper = document.createElement('div');
             wrapper.className = 'price-content-wrapper';
 
@@ -497,6 +510,7 @@ function renderSidebar(car) {
             if (benefitAmount > 0) {
                 const benefitDiv = document.createElement('div');
                 benefitDiv.className = 'benefit-row';
+                // Используем текст из UI_TEXT для десктопного тултипа
                 benefitDiv.innerHTML = `
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M23 18l-9.5-9.5-5 5L1 6"></path>
@@ -506,18 +520,27 @@ function renderSidebar(car) {
                     
                     <img src="assets/img/icons/info-circle.png" class="benefit-info-icon" alt="i">
 
-                    <div class="tooltip-box">
-                        Цена указана "под ключ" во Владивостоке. Расчтиана из статистики за 3 месяца.<br><br>
-                        <span style="color:#4ade80">Выгода</span> рассчитана относительно средней рыночной цены аналогичного авто в наличии в РФ.
-                    </div>
+                    <div class="tooltip-box">${UI_TEXT.tooltipPriceAuction}</div>
                 `;
+                
+                // === КЛИК ДЛЯ МОБИЛОК (АУКЦИОН) ===
+                const icon = benefitDiv.querySelector('.benefit-info-icon');
+                if (icon) {
+                    icon.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Чтобы не сработал клик по карточке, если он есть
+                        if (window.innerWidth <= 768) {
+                            // Открываем шторку с тем же текстом
+                            openBottomSheet(UI_TEXT.tooltipPriceAuction);
+                        }
+                    });
+                }
+
                 wrapper.appendChild(benefitDiv);
             }
             sbLeft.appendChild(wrapper);
 
         } else {
             // --- СЦЕНАРИЙ: ОБЫЧНОЕ АВТО ---
-            // Просто цена
             const priceDiv = document.createElement('div');
             priceDiv.className = 'main-price';
             priceDiv.textContent = formatPrice(car.price);
@@ -526,16 +549,26 @@ function renderSidebar(car) {
             // Строка "* до Владивостока" + Тултип
             const noteRow = document.createElement('div');
             noteRow.className = 'price-note-row';
+            // Используем текст из UI_TEXT
             noteRow.innerHTML = `
                 <span>* до Владивостока</span>
                 
                 <img src="assets/img/icons/info-circle.png" alt="Info" class="info-icon-img">
                 
-                <div class="tooltip-box">
-                    Со всеми расходами до Владивостока, включая таможенные пошлины, утилизационный сбор и услуги брокера. <br>
-                    <strong>Больше ни за что платить не нужно.</strong>
-                </div>
+                <div class="tooltip-box">${UI_TEXT.tooltipPriceSimple}</div>
             `;
+
+            // === КЛИК ДЛЯ МОБИЛОК (ОБЫЧНОЕ) ===
+            const icon = noteRow.querySelector('.info-icon-img');
+            if (icon) {
+                icon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (window.innerWidth <= 768) {
+                        openBottomSheet(UI_TEXT.tooltipPriceSimple);
+                    }
+                });
+            }
+
             sbLeft.appendChild(noteRow);
         }
     }

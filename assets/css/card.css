@@ -670,8 +670,8 @@
     transform: translateX(-50%) translateY(5px);
     margin-bottom: 8px;
     text-align: center;
-    
 }
+
 /* Стрелка вниз */
 .price-note-row .tooltip-box::after {
     content: "";
@@ -683,11 +683,8 @@
     border-style: solid;
     border-color: #1E293B transparent transparent transparent;
 }
-.price-note-row:hover .tooltip-box {
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+
+/* УДАЛЕНО: .price-note-row:hover ... (перенесено в медиа-запрос ниже) */
 
 
 /* 2. ТУЛТИП ДЛЯ АУКЦИОНА (Появляется СНИЗУ) */
@@ -698,6 +695,7 @@
     margin-top: 8px;
     transform: translateY(-5px);
 }
+
 /* Стрелка вверх */
 .benefit-row .tooltip-box::before {
     content: "";
@@ -708,10 +706,32 @@
     border-style: solid;
     border-color: transparent transparent #1E293B transparent;
 }
-.benefit-row:hover .tooltip-box {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
+
+/* =========================================
+   TOOLTIPS: ПОКАЗЫВАТЬ ТОЛЬКО НА ПК
+   ========================================= */
+
+@media (min-width: 769px) {
+    
+    /* 1. ТУЛТИП ДЛЯ ОБЫЧНОГО АВТО */
+    .price-note-row:hover .tooltip-box {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    /* 2. ТУЛТИП ДЛЯ АУКЦИОНА */
+    .benefit-row:hover .tooltip-box {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Эффект увеличения иконки тоже оставим только для ПК */
+    .price-note-row:hover .info-icon-img {
+        opacity: 1;
+        transform: scale(1.1);
+    }
 }
 
 
@@ -990,17 +1010,29 @@
     margin: 8px auto 20px;
 }
 
+/* Текст внутри шторки (Мобильный) */
 .sheet-content {
     color: #1E293B;
-    font-size: 14px;
-    line-height: 1.5;
+    /* Настройки шрифта для основного текста */
+    font-size: 15px;       /* <-- РАЗМЕР ШРИФТА (покрупнее для пальцев) */
+    line-height: 1.6;      /* Чтобы текст дышал */
+    font-weight: 400;
 }
+
+/* Заголовок "Информация о цене" */
 .sheet-content h3 {
     margin-top: 0;
-    font-size: 18px;
-    font-weight: 700;
     margin-bottom: 12px;
+    font-size: 20px;       /* <-- РАЗМЕР ЗАГОЛОВКА */
+    font-weight: 800;      /* Жирный */
+    color: #0F172A;
 }
+
+/* Кнопка "Понятно" наследует стили от .btn, но если хочешь поменять шрифт ей: 
+.sheet-content .btn {
+    font-size: 15px;
+    font-weight: 300;
+}*/
 
 /* --- 4. ПЕРЕСТАНОВКА БЛОКОВ (ФОТО НАВЕРХ) --- */
     .car-main {
@@ -1233,6 +1265,59 @@
         /* Если бейджей много, они могут сжиматься, но обычно их там 1-2 */
         flex-shrink: 0; 
     }
+
+/* --- 7. БЛОК ЦЕНЫ И ДЕЙСТВИЙ --- */
+    
+    .price-main-block {
+        /* Убеждаемся, что отступы такие же комфортные, как в заголовке */
+        padding: 20px !important; 
+        
+        /* Если вдруг рамки нет (из-за старых тестов), возвращаем её явно */
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        
+        /* Отступ снизу до калькулятора */
+        margin-bottom: 15px !important;
+    }
+
+    /* Главная цена */
+    .main-price {
+        font-size: 28px !important; /* Чуть уменьшаем с 32px, чтобы не ломала верстку */
+        line-height: 1.1;
+    }
+
+    /* Блок с флагом справа */
+    .sb-right {
+        /* Если цена длинная, флаг не должен сжиматься */
+        flex-shrink: 0; 
+        margin-left: 10px;
+    }
+
+    /* Кнопки (Telegram и Позвонить) */
+    .sidebar-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* Расстояние между кнопками */
+        margin-top: 20px;
+    }
+
+    .sidebar-actions .btn {
+        height: 50px; /* Делаем кнопки высокими, удобно для пальца */
+        font-size: 16px; /* Текст крупнее */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px !important; /* Единый стиль скругления */
+    }
+    
+    /* Кнопка "Позвонить" (которая outline) */
+    .sidebar-actions .btn-outline {
+        border: 2px solid #E2E8F0; /* Чуть толще рамка для удобства */
+        color: #1E293B;
+        font-weight: 600;
+    }    
 
 }
 
