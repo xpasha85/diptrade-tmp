@@ -659,7 +659,7 @@ function renderSidebar(car) {
 }
 
 /**
- * ЭТАП 6. КАЛЬКУЛЯТОР (С "АККОРДЕОНОМ" ДЛЯ МОБИЛОК)
+ * ЭТАП 6. КАЛЬКУЛЯТОР (С ШТОРКАМИ ДЛЯ МОБИЛОК)
  */
 function renderCalculator(car, currency) {
     const calcContainer = document.getElementById('calcBlock');
@@ -700,10 +700,8 @@ function renderCalculator(car, currency) {
                     <span class="c-label">
                         Внутренние расходы
                         <div class="calc-tooltip-wrapper">
-                            <img src="assets/img/icons/info-circle.png" class="calc-info-icon" alt="i">
-                            <div class="tooltip-box">
-                                ${UI_TEXT.tooltipKoreaOps}
-                            </div>
+                            <img src="assets/img/icons/info-circle.png" class="calc-info-icon" alt="i" data-tooltip-key="tooltipKoreaOps">
+                            <div class="tooltip-box">${UI_TEXT.tooltipKoreaOps}</div>
                         </div>
                     </span>
                     <span class="c-dots"></span>
@@ -717,7 +715,13 @@ function renderCalculator(car, currency) {
                 <div class="calc-section-title">Расходы в России</div>
 
                 <div class="calc-subheader-row">
-                    <span>Таможенные расходы</span>
+                    <span style="display:flex; align-items:center;">
+                        Таможенные расходы
+                        <div class="calc-tooltip-wrapper">
+                            
+                            <div class="tooltip-box">${UI_TEXT.tooltipRussiaCustoms}</div>
+                        </div>
+                    </span>
                     <span>~ 572 656 ₽</span>
                 </div>
 
@@ -738,7 +742,13 @@ function renderCalculator(car, currency) {
                 </div>
 
                 <div class="calc-subheader-row">
-                    <span>Услуги во Владивостоке</span>
+                    <span style="display:flex; align-items:center;">
+                        Услуги во Владивостоке
+                        <div class="calc-tooltip-wrapper">
+                            
+                            <div class="tooltip-box">${UI_TEXT.tooltipRussiaServices}</div>
+                        </div>
+                    </span>
                     <span>100 000 ₽</span>
                 </div>
                 <div class="calc-desc-text">
@@ -754,7 +764,7 @@ function renderCalculator(car, currency) {
         `;
     }
 
-    // Собираем всё вместе с учетом кнопки-аккордеона
+    // Собираем HTML
     calcContainer.innerHTML = `
         <div class="calc-mobile-toggle" onclick="toggleCalc(this)">
             <span class="toggle-title">Детальный расчет</span>
@@ -775,6 +785,26 @@ function renderCalculator(car, currency) {
             <strong class="total-price-small">${formatPrice(car.price)}</strong>
         </div>
     `;
+
+    // === МАГИЯ: ПОДКЛЮЧАЕМ ШТОРКУ К ИКОНКАМ ===
+    // Ищем все иконки с атрибутом data-tooltip-key
+    const icons = calcContainer.querySelectorAll('.calc-info-icon[data-tooltip-key]');
+    
+    icons.forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            // Проверяем, мобилка ли это
+            if (window.innerWidth <= 768) {
+                e.stopPropagation(); // Чтобы не закрылся аккордеон или еще что-то
+                
+                const key = icon.getAttribute('data-tooltip-key'); // Например 'tooltipKoreaOps'
+                const text = UI_TEXT[key]; // Берем текст из констант
+                
+                if (text) {
+                    openBottomSheet(text); // Открываем шторку
+                }
+            }
+        });
+    });
 }
 
 // === ФУНКЦИЯ КЛИКА ПО АККОРДЕОНУ ===

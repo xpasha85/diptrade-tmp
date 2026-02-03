@@ -959,11 +959,13 @@
     border-color: #1E293B transparent transparent transparent;
 }
 
-/* 3. При наведении показываем */
-.calc-tooltip-wrapper:hover .tooltip-box {
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(-50%) translateY(0); /* Всплывает вверх */
+/* 3. При наведении показываем (ТОЛЬКО НА ПК) */
+@media (min-width: 769px) {
+    .calc-tooltip-wrapper:hover .tooltip-box {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 /* =========================================
