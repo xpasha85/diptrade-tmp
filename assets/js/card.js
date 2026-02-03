@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderAccidents(car);
                 renderSidebar(car);
                 adaptLayoutForMobile();
+                initMobileSwipeGallery(car);
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
             }
@@ -788,6 +789,59 @@ function adaptLayoutForMobile() {
             }
         }
     }
+}
+
+/* =========================================
+   MOBILE GALLERY (Свайп-лента)
+   ========================================= */
+function initMobileSwipeGallery(car) {
+    // 1. Проверяем, мобилка ли это
+    if (window.innerWidth > 768) return;
+
+    const galleryContainer = document.querySelector('.car-gallery');
+    if (!galleryContainer) return;
+
+    // 2. Если лента уже есть - не создаем дубликатов
+    if (document.querySelector('.mobile-gallery-wrapper')) return;
+
+    // 3. Собираем пути к фото
+    // Если car.photos нет, ставим заглушку
+    const photos = (car.photos && car.photos.length) 
+        ? car.photos.map(p => `${car.assets_folder}/${p}`) 
+        : ['assets/img/placeholder.png'];
+
+    // 4. Создаем HTML структуру ленты
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mobile-gallery-wrapper';
+
+    // Трак (лента) с картинками
+    let slidesHtml = '';
+    photos.forEach((src, index) => {
+        // loading="lazy" для всех, кроме первой
+        const loading = index === 0 ? 'eager' : 'lazy';
+        slidesHtml += `<img src="${src}" class="mobile-slide" loading="${loading}" alt="Photo ${index+1}">`;
+    });
+
+    wrapper.innerHTML = `
+        <div class="mobile-track" id="mobileTrack">
+            ${slidesHtml}
+        </div>
+        <div class="mobile-counter" id="mobileCounter">1 / ${photos.length}</div>
+    `;
+
+    // 5. Вставляем в начало блока .car-gallery
+    galleryContainer.prepend(wrapper);
+
+    // 6. Слушаем скролл, чтобы обновлять цифры (1/12)
+    const track = wrapper.querySelector('#mobileTrack');
+    const counter = wrapper.querySelector('#mobileCounter');
+    
+    track.addEventListener('scroll', () => {
+        const width = track.offsetWidth;
+        // Вычисляем текущий слайд (округление позиции скролла)
+        const current = Math.round(track.scrollLeft / width) + 1;
+        counter.textContent = `${current} / ${photos.length}`;
+    });
 }
 
 window.addEventListener('resize', adaptLayoutForMobile);

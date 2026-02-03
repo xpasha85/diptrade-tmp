@@ -1002,6 +1002,43 @@
     margin-bottom: 12px;
 }
 
+/* --- 4. ПЕРЕСТАНОВКА БЛОКОВ (ФОТО НАВЕРХ) --- */
+    .car-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 1. ГАЛЕРЕЯ (Самый верх) */
+    .car-gallery {
+        order: -10; 
+        
+        margin-bottom: 15px;
+    }
+    
+    .gallery-main {
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+    }
+
+    /* 2. ЗАГОЛОВОК */
+    .car-title {
+        order: -5;
+        margin-bottom: 4px;
+        padding: 0 4px;
+    }
+
+    /* 3. МЕТА (ID и Дата) - СРАЗУ ПОД ЗАГОЛОВКОМ */
+    .car-meta-row {
+        order: -4;
+        padding: 0 4px;
+        margin-bottom: 15px; /* Отступ до цены */
+        
+        /* Если стили "слетели", вернем их тут */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none; /* Убираем лишние рамки если были */
+    }
 
 /* =========================================
    MOBILE ADAPTIVE (max-width: 768px)
@@ -1066,42 +1103,136 @@
         height: 20px;
         stroke-width: 2px;
     }
-}
 
-/* --- 4. ПЕРЕСТАНОВКА БЛОКОВ (ФОТО НАВЕРХ) --- */
-    .car-main {
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* 1. ГАЛЕРЕЯ (Самый верх) */
-    .car-gallery {
-        order: -10; 
-        
-        margin-bottom: 15px;
-    }
+    /* --- 5. МОБИЛЬНАЯ ГАЛЕРЕЯ (СВАЙП) --- */
     
-    .gallery-main {
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
+    /* Скрываем старую галерею (которая на кликах) */
+    .gallery-main, 
+    .gallery-thumbs {
+        display: none !important;
     }
 
-    /* 2. ЗАГОЛОВОК */
+    /* Обертка новой галереи */
+    .mobile-gallery-wrapper {
+        position: relative;
+        width: 100%;
+        /* Пропорции фото (можно поменять на 16/9 или 4/3) */
+        aspect-ratio: 4/3; 
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #E2E8F0;
+        background: #F1F5F9;
+        margin-bottom: 15px; /* Отступ снизу */
+    }
+
+    /* Лента с картинками */
+    .mobile-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        
+        overflow-x: auto; /* Разрешаем скролл */
+        
+        /* === МАГИЯ СВАЙПА === */
+        scroll-snap-type: x mandatory; /* Обязательное прилипание по оси X */
+        -webkit-overflow-scrolling: touch; /* Плавность на iOS */
+        
+        /* Скрываем скроллбар */
+        scrollbar-width: none; 
+    }
+    .mobile-track::-webkit-scrollbar { display: none; }
+
+    /* Сами слайды */
+    .mobile-slide {
+        min-width: 100%; /* Каждый слайд на весь экран */
+        height: 100%;
+        object-fit: cover;
+        
+        /* === ПРИЛИПАНИЕ === */
+        scroll-snap-align: start; /* Слайд должен начинаться у края */
+        scroll-snap-stop: always; /* ВАЖНО: Останавливать скролл на каждом слайде! */
+    }
+
+    /* Счетчик (1 / 15) поверх фото */
+    .mobile-counter {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+        pointer-events: none;
+    }
+
+
+/* --- 6. НАЗВАНИЕ И МЕТА (В ЕДИНОЙ РАМКЕ) --- */
+
+    /* ВЕРХНЯЯ ЧАСТЬ КОРОБКИ (Заголовок) */
     .car-title {
         order: -5;
-        margin-bottom: 4px;
-        padding: 0 4px;
+        
+        /* Визуальный стиль */
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-bottom: none;          
+        border-radius: 16px 16px 0 0; 
+        
+        /* Отступы */
+        padding: 20px 20px 8px 20px;  
+        margin-bottom: 0 !important;  
+        
+        /* ТЕКСТ: Настройки для переноса строк */
+        font-size: 20px !important;
+        line-height: 1.3;      /* Комфортный межстрочный интервал */
+        font-weight: 800;
+        
+        white-space: normal;   /* Разрешаем перенос */
+        word-wrap: break-word; /* Разбиваем длинные слова, если нужно */
+        height: auto;          /* Блок растянется по высоте текста */
     }
 
-    /* 3. МЕТА (ID и Дата) - СРАЗУ ПОД ЗАГОЛОВКОМ */
+    /* НИЖНЯЯ ЧАСТЬ КОРОБКИ (ID и Дата) */
     .car-meta-row {
         order: -4;
-        padding: 0 4px;
-        margin-bottom: 15px; /* Отступ до цены */
         
-        /* Если стили "слетели", вернем их тут */
+        /* Визуальный стиль карточки */
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-top: none;             /* Убираем линию сверху, чтобы слилось с Title */
+        border-radius: 0 0 16px 16px; /* Скругляем только низ */
+        
+        /* Внутренние отступы */
+        padding: 0 20px 20px 20px;    /* Сверху 0, так как отступ дал заголовок */
+        margin-bottom: 15px !important; /* Отступ от этого блока до Цены */
+        
+        /* Настройки флекса внутри */
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        border: none; /* Убираем лишние рамки если были */
+        align-items: flex-end;
+        gap: 10px;
     }
+
+    /* Стили текста внутри мета-блока */
+    .meta-left {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .meta-tag {
+        font-size: 11px;
+        color: #94A3B8;
+    }
+
+    /* Правая часть (Бейджи в хедере, если они там есть) */
+    .meta-right {
+        /* Если бейджей много, они могут сжиматься, но обычно их там 1-2 */
+        flex-shrink: 0; 
+    }
+
+}
+
