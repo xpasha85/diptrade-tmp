@@ -1,7 +1,125 @@
+/* ==========================================================================
+   CONFIG & CONSTANTS
+   ========================================================================== */
+const UI_TEXT = {
+    backToCatalog: "Назад в каталог",
+    currencyKor: "₩",
+    currencyChn: "¥",
+    currencyRus: "₽",
+    calcTitle: "Примерный расчет",
+    calcKorea: "Расходы по Корее",
+    calcChina: "Расходы по Китаю",
+    calcRussia: "Расходы в России",
+    calcCustoms: "Таможенные расходы",
+    calcServices: "Услуги во Владивостоке",
+    calcTotal: "Итого расходы РФ",
+    calcFullPrice: "Полная стоимость",
+    
+    // Тултипы (можно дополнять)
+    tooltipKoreaOps: "Доставка до порта, снятие с учета, экспортная декларация, стоянка.",
+    tooltipRussiaCustoms: "Пошлина, утильсбор и оформление рассчитываются по курсу евро.",
+    tooltipRussiaServices: "СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера."
+};
+
+/* =========================================
+   МОБИЛЬНОЕ МЕНЮ (ШАПКА)
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    const burgerBtn = document.getElementById('burgerBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    // Функция открытия/закрытия
+    function toggleMenu(show) {
+        if (!mobileMenu) return;
+        
+        if (show) {
+            mobileMenu.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Блокируем прокрутку сайта
+        } else {
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = ''; // Разблокируем
+        }
+    }
+
+    if (burgerBtn) {
+        burgerBtn.addEventListener('click', () => toggleMenu(true));
+    }
+
+    if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', () => toggleMenu(false));
+    }
+});
+
+
+/* ==========================================================================
+   MOBILE UTILS (Шторки и Перенос блоков)
+   ========================================================================== */
+
+// 1. Функция открытия Шторки (Bottom Sheet)
+function openBottomSheet(htmlContent) {
+    let sheet = document.getElementById('mobileBottomSheet');
+    let overlay = document.getElementById('mobileSheetOverlay');
+    
+    // Если шторки нет в HTML, создаем её на лету
+    if (!sheet) {
+        const body = document.body;
+        
+        overlay = document.createElement('div');
+        overlay.id = 'mobileSheetOverlay';
+        overlay.className = 'bottom-sheet-overlay';
+        overlay.onclick = closeBottomSheet; // Клик по фону закрывает
+        
+        sheet = document.createElement('div');
+        sheet.id = 'mobileBottomSheet';
+        sheet.className = 'bottom-sheet';
+        
+        body.appendChild(overlay);
+        body.appendChild(sheet);
+    }
+    
+    // Вставляем контент и полоску-ручку
+    sheet.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div class="sheet-content">${htmlContent}</div>
+    `;
+    
+    // Показываем (добавляем классы для анимации)
+    // Небольшая задержка, чтобы CSS transition сработал
+    overlay.style.display = 'block';
+    sheet.style.display = 'block';
+    
+    setTimeout(() => {
+        overlay.classList.add('active');
+        sheet.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Блокируем скролл фона
+    }, 10);
+}
+
+// 2. Функция закрытия Шторки
+function closeBottomSheet() {
+    const sheet = document.getElementById('mobileBottomSheet');
+    const overlay = document.getElementById('mobileSheetOverlay');
+    
+    if (sheet && overlay) {
+        sheet.classList.remove('active');
+        overlay.classList.remove('active');
+        
+        document.body.style.overflow = ''; // Разблокируем скролл
+        
+        // Ждем окончания анимации (0.3s) перед скрытием
+        setTimeout(() => {
+            sheet.style.display = 'none';
+            overlay.style.display = 'none';
+        }, 300);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Получаем ID из URL
     const params = new URLSearchParams(window.location.search);
     const carId = params.get('id');
+    
 
     if (!carId) {
         console.error('ID не найден');
@@ -16,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const car = cars.find(item => item.id == carId);
 
             if (car) {
+                initMobileBreadcrumbs();
                 renderHeaderInfo(car);
                 renderGallery(car); 
                 renderSpecs(car);   
@@ -300,6 +419,25 @@ function renderAccidents(car) {
         }
     }
 }
+
+
+function initMobileBreadcrumbs() {
+    if (window.innerWidth <= 768) {
+        const breadcrumbs = document.querySelector('.breadcrumbs');
+        if (breadcrumbs) {
+            // Очищаем старое и ставим одну ссылку
+            breadcrumbs.innerHTML = `
+                <a href="index.html" style="display:flex; align-items:center; color:#64748B; text-decoration:none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px">
+                        <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+                    </svg>
+                    ${UI_TEXT.backToCatalog}
+                </a>
+            `;
+        }
+    }
+}
+
 
 /**
  * ЭТАП 5. ПРАВАЯ КОЛОНКА (Сайдбар) - FINAL CLEAN VERSION

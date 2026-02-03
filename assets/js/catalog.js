@@ -463,11 +463,14 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       }
 
       const cardClass = car.is_auction ? 'car-card auction-card' : 'car-card';
+      // === НОВАЯ ЛОГИКА ОТКРЫТИЯ ССЫЛКИ ===
+      // Если ширина меньше 768px -> открываем в текущем окне (_self)
+      // Иначе -> в новой вкладке (_blank)
+      const targetAttr = window.innerWidth < 768 ? '_self' : '_blank';
 
       // --- 5. СБОРКА КАРТОЧКИ ---
-      // --- 5. СБОРКА КАРТОЧКИ ---
       htmlParts.push(`
-        <a class="${cardClass}" href="car.html?id=${encodeURIComponent(car.id)}" target="_blank" style="display:block; text-decoration:none; color:inherit;">
+        <a class="${cardClass}" href="car.html?id=${encodeURIComponent(car.id)}" target="${targetAttr}" style="display:block; text-decoration:none; color:inherit;">
           <div class="car-img-wrap">
             
             ${photosHTML}
@@ -506,7 +509,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
               </div>
             </div>
           </div>
-        </div>
+        </a>
       `);
     }
 
