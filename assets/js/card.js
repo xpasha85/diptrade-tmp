@@ -525,8 +525,16 @@ function renderCalculator(car, currency) {
                 <div class="calc-row">
                     <span class="c-label">
                         Внутренние расходы
-                        <img src="assets/img/icons/info-circle.png" class="calc-info-icon" title="Доставка до порта, снятие с учета, экспортная декларация">
+                        
+                        <div class="calc-tooltip-wrapper">
+                            <img src="assets/img/icons/info-circle.png" class="calc-info-icon" alt="i">
+                            
+                            <div class="tooltip-box">
+                                Доставка до порта, снятие с учета, экспортная декларация, стоянка.
+                            </div>
+                        </div>
                     </span>
+                    
                     <span class="c-dots"></span>
                     <span class="c-val">100 000 ${currency}</span>
                 </div>

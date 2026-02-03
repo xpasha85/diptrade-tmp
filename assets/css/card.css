@@ -406,42 +406,6 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-/* --- BLOCK 1: PRICE & ACTIONS --- */
-.price-top-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 4px;
-}
-
-.main-price {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--text-main);
-    line-height: 1;
-}
-
-.price-note {
-    font-size: 12px;
-    color: #94A3B8;
-    margin-bottom: 16px;
-}
-
-.country-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 16px;
-    color: var(--text-main);
-}
-.country-indicator img {
-    width: 20px;
-    height: auto;
-    border-radius: 2px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
 
 /* --- СТАТУСНЫЕ ПЛАШКИ (SIDEBAR CHIPS) --- */
 .sidebar-chips {
@@ -706,13 +670,14 @@
     transform: translateX(-50%) translateY(5px);
     margin-bottom: 8px;
     text-align: center;
+    
 }
 /* Стрелка вниз */
 .price-note-row .tooltip-box::after {
     content: "";
     position: absolute;
     top: 100%;
-    left: 50%;
+    left: 37%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
@@ -784,6 +749,13 @@
     /* Отступ от заголовка вниз до первой строки цифр */
     margin-bottom: 14px;
     margin-top: 0;
+}
+
+/* Настройка для текста слева (чтобы иконка не падала вниз) */
+.c-label {
+    display: inline-flex; /* Принудительно ставим в ряд */
+    align-items: center;  /* Выравниваем иконку и текст по центру */
+    white-space: nowrap;  /* Запрещаем перенос строки внутри этого блока */
 }
 
 /* 3. ОБЫЧНАЯ СТРОКА (Текст ....... Цена) */
@@ -924,4 +896,52 @@
 .calc-block-wrapper {
     display: flex;
     flex-direction: column;
+}
+
+/* === ТУЛТИП В КАЛЬКУЛЯТОРЕ === */
+
+/* 1. Обертка для иконки (чтобы тултип позиционировался относительно неё) */
+.calc-tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    margin-left: 5px;
+}
+
+/* 2. Настраиваем позицию тултипа (он будет снизу или сверху) */
+.calc-tooltip-wrapper .tooltip-box {
+    bottom: 100%;       /* Появляется НАД иконкой */
+    left: 50%;          /* По центру иконки */
+    transform: translateX(-50%) translateY(10px); /* Начальная позиция для анимации */
+    margin-bottom: 8px; /* Отступ от иконки */
+    
+    width: 200px;       /* Ширина подсказки в калькуляторе */
+    text-align: center;
+    
+    /* === СКОРОСТЬ ПОЯВЛЕНИЯ === */
+    /* 0.2s - это время анимации (быстро). Хочешь медленнее - ставь 0.5s */
+    transition: all 0.2s ease-out; 
+    
+    /* Если нужна ЗАДЕРЖКА перед появлением, добавь: */
+    /* transition-delay: 0.1s; */
+}
+
+/* Стрелочка вниз */
+.calc-tooltip-wrapper .tooltip-box::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1E293B transparent transparent transparent;
+}
+
+/* 3. При наведении показываем */
+.calc-tooltip-wrapper:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0); /* Всплывает вверх */
 }
