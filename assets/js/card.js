@@ -658,19 +658,18 @@ function renderSidebar(car) {
 }
 
 /**
- * ЭТАП 6. КАЛЬКУЛЯТОР (С ЛИНИЯМИ-РАЗДЕЛИТЕЛЯМИ)
+ * ЭТАП 6. КАЛЬКУЛЯТОР (С "АККОРДЕОНОМ" ДЛЯ МОБИЛОК)
  */
 function renderCalculator(car, currency) {
     const calcContainer = document.getElementById('calcBlock');
     if (!calcContainer) return;
 
-    let contentHTML = '';
+    let rowsHTML = '';
 
     // === СЦЕНАРИЙ 1: АВТО ИЗ РОССИИ ===
     if (car.country_code === 'RU') {
-        contentHTML = `
-            <h3 class="block-title-small">Расчет стоимости</h3>
-            <div class="calc-line"></div> <div class="calc-row">
+        rowsHTML = `
+            <div class="calc-row">
                 <span class="c-label">Стоимость авто</span>
                 <span class="c-dots"></span>
                 <span class="c-val">${formatPrice(car.price)}</span>
@@ -686,10 +685,8 @@ function renderCalculator(car, currency) {
     else {
         const countryName = car.country_code === 'CN' ? 'Китаю' : 'Корее';
         
-        contentHTML = `
-            <h3 class="block-title-small">Расчет стоимости</h3>
-            
-            <div class="calc-line"></div> <div class="calc-block-wrapper">
+        rowsHTML = `
+            <div class="calc-block-wrapper">
                 <div class="calc-section-title">Расходы по ${countryName}</div>
                 
                 <div class="calc-row">
@@ -701,22 +698,21 @@ function renderCalculator(car, currency) {
                 <div class="calc-row">
                     <span class="c-label">
                         Внутренние расходы
-                        
                         <div class="calc-tooltip-wrapper">
                             <img src="assets/img/icons/info-circle.png" class="calc-info-icon" alt="i">
-                            
                             <div class="tooltip-box">
-                                Доставка до порта, снятие с учета, экспортная декларация, стоянка.
+                                ${UI_TEXT.tooltipKoreaOps}
                             </div>
                         </div>
                     </span>
-                    
                     <span class="c-dots"></span>
                     <span class="c-val">100 000 ${currency}</span>
                 </div>
             </div>
 
-            <div class="calc-line"></div> <div class="calc-block-wrapper">
+            <div class="calc-line"></div> 
+
+            <div class="calc-block-wrapper">
                 <div class="calc-section-title">Расходы в России</div>
 
                 <div class="calc-subheader-row">
@@ -757,9 +753,21 @@ function renderCalculator(car, currency) {
         `;
     }
 
-    // Собираем всё вместе
+    // Собираем всё вместе с учетом кнопки-аккордеона
     calcContainer.innerHTML = `
-        ${contentHTML}
+        <div class="calc-mobile-toggle" onclick="toggleCalc(this)">
+            <span class="toggle-title">Детальный расчет</span>
+            <svg class="toggle-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+            </svg>
+        </div>
+
+        <div class="calc-details-wrapper">
+            <h3 class="block-title-small desktop-only-title">Расчет стоимости</h3>
+            <div class="calc-line desktop-only-line"></div> 
+            
+            ${rowsHTML}
+        </div>
         
         <div class="calc-total-footer">
             <span>Полная стоимость:</span>
@@ -767,6 +775,18 @@ function renderCalculator(car, currency) {
         </div>
     `;
 }
+
+// === ФУНКЦИЯ КЛИКА ПО АККОРДЕОНУ ===
+window.toggleCalc = function(header) {
+    // Ищем родителя (весь блок #calcBlock или .calc-block-wrapper)
+    const container = document.getElementById('calcBlock');
+    
+    // Переключаем класс active (для смены фона и стрелки)
+    header.classList.toggle('active');
+    
+    // Переключаем класс open у контейнера (чтобы показать контент)
+    container.classList.toggle('open');
+};
 
 // Вспомогательная: Формат цены (1000000 -> 1 000 000 ₽)
 function formatPrice(price) {
