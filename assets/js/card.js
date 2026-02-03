@@ -482,80 +482,103 @@ function renderSidebar(car) {
 }
 
 /**
- * Рендер блока расчета стоимости
+ * ЭТАП 6. КАЛЬКУЛЯТОР (С ЛИНИЯМИ-РАЗДЕЛИТЕЛЯМИ)
  */
 function renderCalculator(car, currency) {
     const calcContainer = document.getElementById('calcBlock');
     if (!calcContainer) return;
 
-    // Временные заглушки, так как в JSON пока только итоговая цена
-    // Позже привяжем реальные формулы
-    let rowsHTML = '';
+    let contentHTML = '';
 
+    // === СЦЕНАРИЙ 1: АВТО ИЗ РОССИИ ===
     if (car.country_code === 'RU') {
-        // ДЛЯ РОССИИ (Просто)
-        rowsHTML = `
-            <div class="calc-row">
+        contentHTML = `
+            <h3 class="block-title-small">Расчет стоимости</h3>
+            <div class="calc-line"></div> <div class="calc-row">
                 <span class="c-label">Стоимость авто</span>
                 <span class="c-dots"></span>
                 <span class="c-val">${formatPrice(car.price)}</span>
             </div>
             <div class="calc-row">
-                <span class="c-label">Оформление документов</span>
+                <span class="c-label">Оформление</span>
                 <span class="c-dots"></span>
                 <span class="c-val">Включено</span>
             </div>
         `;
-    } else {
-        // ДЛЯ КОРЕИ И КИТАЯ (Подробно)
-        // Если реальных данных нет, ставим прочерки или слова
+    } 
+    // === СЦЕНАРИЙ 2: ИМПОРТ (Корея / Китай) ===
+    else {
+        const countryName = car.country_code === 'CN' ? 'Китаю' : 'Корее';
         
-        rowsHTML = `
-            <div class="calc-row">
-                <span class="c-label">Цена в ${car.country_code === 'KR' ? 'Корее' : 'Китае'}</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Запрос ${currency}</span>
-            </div>
+        contentHTML = `
+            <h3 class="block-title-small">Расчет стоимости</h3>
             
-            <div class="calc-row">
-                <span class="c-label">Расходы по стране</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Включено</span>
+            <div class="calc-line"></div> <div class="calc-block-wrapper">
+                <div class="calc-section-title">Расходы по ${countryName}</div>
+                
+                <div class="calc-row">
+                    <span class="c-label">Выкуп авто</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val" style="color:#64748B">Рассчитывается ${currency}</span>
+                </div>
+
+                <div class="calc-row">
+                    <span class="c-label">
+                        Внутренние расходы
+                        <img src="assets/img/icons/info-circle.png" class="calc-info-icon" title="Доставка до порта, снятие с учета, экспортная декларация">
+                    </span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">100 000 ${currency}</span>
+                </div>
             </div>
 
-            <div class="calc-row">
-                <span class="c-label">Доставка до РФ</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Включено</span>
-            </div>
+            <div class="calc-line"></div> <div class="calc-block-wrapper">
+                <div class="calc-section-title">Расходы в России</div>
 
-            <div class="calc-divider"></div>
+                <div class="calc-subheader-row">
+                    <span>Таможенные расходы</span>
+                    <span>~ 572 656 ₽</span>
+                </div>
 
-            <div class="calc-row">
-                <span class="c-label">Таможенный платеж</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Рассчитывается</span>
-            </div>
-             <div class="calc-row">
-                <span class="c-label">Утильсбор</span>
-                <span class="c-dots"></span>
-                <span class="c-val">По тарифам РФ</span>
-            </div>
-             <div class="calc-row">
-                <span class="c-label">Комиссия / Брокер</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Включено</span>
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Таможенная пошлина</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">-- ₽</span>
+                </div>
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Таможенное оформление</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">-- ₽</span>
+                </div>
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Утильсбор</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">-- ₽</span>
+                </div>
+
+                <div class="calc-subheader-row">
+                    <span>Услуги во Владивостоке</span>
+                    <span>100 000 ₽</span>
+                </div>
+                <div class="calc-desc-text">
+                    (СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера)
+                </div>
+
+                <div class="calc-row calc-subtotal">
+                    <span class="c-label">Итого расходы РФ</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">~ 672 656 ₽</span>
+                </div>
             </div>
         `;
     }
 
-    // Собираем весь блок
+    // Собираем всё вместе
     calcContainer.innerHTML = `
-        <h3 class="block-title-small">Примерный расчет</h3>
-        ${rowsHTML}
+        ${contentHTML}
         
         <div class="calc-total-footer">
-            <span>Итого под ключ:</span>
+            <span>Полная стоимость:</span>
             <strong class="total-price-small">${formatPrice(car.price)}</strong>
         </div>
     `;

@@ -750,48 +750,178 @@
 }
 
 
-/* =========================================
-   BLOCK 2: CALCULATION (Калькулятор)
-   ========================================= */
-.block-title-small {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text-main);
+/* ==========================================================================
+   СТИЛИ ДЛЯ КАЛЬКУЛЯТОРА (FINAL PLAYGROUND)
+   ========================================================================== */
+
+/* 1. ГЛАВНАЯ ЛИНИЯ-РАЗДЕЛИТЕЛЬ (Между большими блоками) */
+.calc-line {
+    height: 1px;                /* Толщина линии */
+    background-color: #E2E8F0;  /* Цвет линии (светло-серый) */
+    border: none;
+    
+    /* --- НАСТРОЙКИ ОТСТУПОВ (ВОЗДУХ) --- */
+    margin-top: 10px !important;    /* Отступ СВЕРХУ от предыдущего текста */
+    margin-bottom: 10px !important; /* Отступ СНИЗУ до следующего заголовка */
 }
+
+/* ЗАГОЛОВОК ВСЕГО БЛОКА ("Расчет стоимости") */
+.block-title-small {
+    font-size: 22px;       /* Размер шрифта */
+    font-weight: 700;      /* Жирность */
+    color: #1E293B;        /* Цвет */
+    margin-bottom: 0;      /* Отступ снизу (у нас там дальше идет линия .calc-line, она сама даст отступ) */
+    margin-top: 0;
+}
+
+/* 2. ЗАГОЛОВКИ СЕКЦИЙ ("Расходы по Корее", "Расходы в России") */
+.calc-section-title {
+    font-size: 18px;      /* Размер шрифта заголовка */
+    font-weight: 700;     /* Жирность (700 = bold) */
+    color: #1E293B;       /* Темно-синий цвет текста */
+    
+   
+    /* Отступ от заголовка вниз до первой строки цифр */
+    margin-bottom: 14px;
+    margin-top: 0;
+}
+
+/* 3. ОБЫЧНАЯ СТРОКА (Текст ....... Цена) */
 .calc-row {
+    padding-left: 12px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline; /* Выравнивание по нижней границе букв */
+    
+    font-size: 13px;       /* Размер шрифта обычных строк */
+    color: #334155;        /* Основной цвет текста */
+    
+    margin-bottom: 8px;    /* Расстояние между строками */
+}
+
+/* 4. ТОЧКИ (Пунктирная линия между текстом и ценой) */
+.c-dots {
+    flex-grow: 1;          /* Заставляет точки растягиваться на всё свободное место */
+    border-bottom: 1px dotted #CBD5E1; /* Стиль точек (dotted) и цвет */
+    
+    margin: 0 10px;         /* Отступы от текста слева и справа до точек */
+    opacity: 0.6;          /* Прозрачность точек (чтобы не рябили) */
+    
+    /* Микро-коррекция высоты, чтобы точки были на уровне низа букв */
+    position: relative;
+    top: 0px; 
+}
+
+/* 5. ЗНАЧЕНИЕ (ЦЕНА) СПРАВА */
+.c-val {
+    font-weight: 500;      /* Чуть жирнее обычного текста */
+    white-space: nowrap;   /* Запрещаем переносить цену на новую строку */
+    text-align: right;
+}
+
+/* 6. ПОДЗАГОЛОВОК ВНУТРИ БЛОКА ("Таможенные расходы") */
+.calc-subheader-row {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 13px;
-    margin-bottom: 10px;
-    color: var(--text-main);
+    
+    font-size: 14px;
+    font-weight: 700;      /* Жирный */
+    color: #1E293B;        /* Темный цвет */
+    
+    margin-top: 12px;      /* Отступ сверху от предыдущей группы */
+    margin-bottom: 6px;    /* Отступ снизу до списка */
 }
-.calc-row:last-child { margin-bottom: 0; }
-.c-label { color: var(--text-secondary); }
-.c-val { font-weight: 500; white-space: nowrap; }
-.c-dots {
-    flex-grow: 1;
-    border-bottom: 1px dotted #CBD5E1;
-    margin: 0 8px;
-    position: relative;
-    top: -4px;
-    opacity: 0.5;
+
+/* 7. ВЛОЖЕННЫЕ СТРОКИ (Пошлина, Утиль...) - С ОТСТУПОМ */
+.calc-sub-row {
+    padding-left: 12px;    /* Сдвиг вправо (отступ лесенкой) */
+    font-size: 13px;       /* Шрифт чуть меньше основного */
+    color: #64748B;        /* Цвет более блеклый (серый) */
+    margin-bottom: 6px;    /* Строки стоят плотнее */
 }
-.calc-divider {
-    height: 1px;
-    background: #E2E8F0;
-    margin: 12px 0;
+
+/* 8. МЕЛКИЙ ТЕКСТ ОПИСАНИЯ (СБКТС, Лаборатория...) */
+.calc-desc-text {
+    font-size: 10px;       /* Совсем мелкий шрифт */
+    line-height: 1.4;      /* Межстрочный интервал */
+    color: #94A3B8;        /* Светло-серый */
+    
+    margin-top: -2px;      /* Подтягиваем ближе к заголовку сверху */
+    margin-bottom: 12px;   /* Отступ снизу */
+    padding-left: 12px;    /* Выравниваем с вложенными строками */
 }
+
+/* 9. ПРОМЕЖУТОЧНЫЙ ИТОГ ("Итого расходы РФ") */
+.calc-subtotal {
+    /* Легкая линия сверху, чтобы отделить итог группы */
+    border-top: 1px dashed #E2E8F0; 
+    padding-left: 0px; 
+    padding-top: 12px;     /* Отступ от линии до текста */
+    margin-top: 12px;      /* Отступ от текста сверху до линии */
+    
+    font-weight: 700;      /* Жирный */
+    color: #0F172A;        /* Почти черный */
+}
+
+/* Настройка ЦИФРЫ только в строке "Итого расходы РФ" */
+.calc-subtotal .c-val {
+    font-size: 15px;       /* Можно сделать чуть крупнее (было 13px) */
+    /*  color: #DC2626;        Можно сделать красным (если это расходы) или оставить темным */
+    font-weight: 800;      /* Еще жирнее */
+}
+
+/* 10. ГЛАВНЫЙ ПОДВАЛ ("Полная стоимость") */
 .calc-total-footer {
+    /* Фон и рамка */
+    background: #F8FAFC; 
+    border-top: 1px solid #E2E8F0;
+    
+    /* Растягиваем блок на ширину родителя (компенсация padding родителя) */
+    /* Если у .sidebar-block padding: 24px, то здесь ставим -24px */
+    margin: 15px -24px -24px; 
+    
+    /* Внутренние отступы подвала */
+    padding: 16px 24px;
+    
+    /* Скругление только нижних углов */
+    border-radius: 0 0 16px 16px; 
+    
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #F8FAFC;
-    margin: 15px -24px -24px;
-    padding: 15px 24px;
-    border-top: 1px solid var(--border);
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
-.calc-total-footer span { font-size: 14px; color: var(--text-secondary); }
-.total-price-small { font-size: 18px; font-weight: 800; color: var(--text-main); }
+
+.calc-total-footer span {
+    font-size: 14px;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.total-price-small {
+    font-size: 20px;       /* Размер главной цены */
+    font-weight: 800;      /* Самая большая жирность */
+    color: #0F172A;
+}
+
+/* 11. ИКОНКА (i) В КАЛЬКУЛЯТОРЕ */
+.calc-info-icon {
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
+    opacity: 0.4;
+    cursor: help;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    transition: 0.2s;
+}
+.calc-info-icon:hover {
+    opacity: 1;
+}
+
+/* Обертка для блоков (техническая) */
+.calc-block-wrapper {
+    display: flex;
+    flex-direction: column;
+}
