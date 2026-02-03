@@ -115,6 +115,27 @@ function closeBottomSheet() {
     }
 }
 
+
+/* === МОБИЛЬНЫЕ КРОШКИ (Хлебные крошки -> Кнопка Назад) === */
+function initMobileBreadcrumbs() {
+    // Проверяем, что это мобилка (ширина <= 768px)
+    if (window.innerWidth <= 768) {
+        const breadcrumbs = document.querySelector('.breadcrumbs');
+        if (breadcrumbs) {
+            // Заменяем весь HTML внутри на одну ссылку
+            breadcrumbs.innerHTML = `
+                <a href="catalog.html" class="mobile-back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5"></path>
+                        <path d="M12 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Назад в каталог</span>
+                </a>
+            `;
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Получаем ID из URL
     const params = new URLSearchParams(window.location.search);
@@ -135,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (car) {
                 initMobileBreadcrumbs();
+            
                 renderHeaderInfo(car);
                 renderGallery(car); 
                 renderSpecs(car);   
@@ -415,24 +437,6 @@ function renderAccidents(car) {
                         <p>По базе страховых выплат Южной Кореи инцидентов не зафиксировано.</p>
                     </div>
                 </div>
-            `;
-        }
-    }
-}
-
-
-function initMobileBreadcrumbs() {
-    if (window.innerWidth <= 768) {
-        const breadcrumbs = document.querySelector('.breadcrumbs');
-        if (breadcrumbs) {
-            // Очищаем старое и ставим одну ссылку
-            breadcrumbs.innerHTML = `
-                <a href="index.html" style="display:flex; align-items:center; color:#64748B; text-decoration:none;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px">
-                        <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
-                    </svg>
-                    ${UI_TEXT.backToCatalog}
-                </a>
             `;
         }
     }

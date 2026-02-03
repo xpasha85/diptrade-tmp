@@ -1010,9 +1010,9 @@
 
     /* 1. СБРОС СЕТКИ (Одна колонка) */
     .car-layout {
-        display: flex;       /* Меняем Grid на Flex */
+        display: flex;
         flex-direction: column;
-        gap: 0;              /* Отступы будем задавать внутри блоков */
+        gap: 0;
     }
     
     .car-main, .car-sidebar {
@@ -1020,57 +1020,50 @@
         min-width: 0;
     }
 
-    /* 2. ШАПКА (Отменяем липкость, если она была) */
+    /* 2. ШАПКА (Отменяем липкость) */
     .header {
-        position: static !important; /* Не закреплена */
+        position: static !important;
     }
     
-    /* Отступ страницы сверху уменьшаем */
     .car-page {
         padding-top: 15px; 
     }
 
-    /* 3. КРОШКИ (BREADCRUMBS) - "Назад в каталог" */
+    /* 3. КРОШКИ (BREADCRUMBS) - Поддержка JS-замены */
     .breadcrumbs {
         display: flex;
         align-items: center;
-        margin-bottom: 15px;
-        padding: 0 4px; /* Чуть отступа от края экрана */
+        margin-bottom: 12px;
+        padding-left: 0;
+        /* Убираем старые хаки с font-size: 0, если они были */
     }
 
-    /* Скрываем все элементы крошек по умолчанию */
-    .breadcrumbs a, 
-    .breadcrumbs .sep, 
-    .breadcrumbs .current {
-        display: none;
-    }
+    /* Скрываем старые ссылки на всякий случай, если JS не успел сработать (опционально) */
+    /* Но JS работает быстро, так что здесь просто стилизуем новую ссылку */
 
-    /* Показываем только ПЕРВУЮ ссылку (обычно это "Главная" или "Каталог") */
-    /* Но мы сделаем хитрее через ::before, чтобы текст был "Назад" */
-    
-    .breadcrumbs {
-        font-size: 0; /* Скрываем весь текст контейнера */
-    }
-
-    /* Создаем псевдо-кнопку "Назад" */
-    .breadcrumbs::before {
-        content: url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2364748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>');
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 8px;
-    }
-
-    .breadcrumbs::after {
-        content: "Назад в каталог"; /* Текст константой в CSS для простоты */
+    /* Стиль для ссылки, которую создает JS */
+    .mobile-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;            
+        
+        text-decoration: none;
         font-size: 14px;
         font-weight: 500;
         color: #64748B;
-        vertical-align: middle;
+        
+        padding: 4px 0;      
+        transition: color 0.2s;
+    }
+
+    .mobile-back-link:hover,
+    .mobile-back-link:active {
+        color: #1E293B;
     }
     
-    /* Делаем весь блок кликабельным (ссылка на каталог) */
-    /* ПРИМЕЧАНИЕ: Это визуальный хак. 
-       Чтобы ссылка реально вела в каталог, убедись, что в HTML 
-       первая ссылка <a href="/catalog"> есть. 
-       Если её нет, мы добавим JS для этого. */
+    .mobile-back-link svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2px;
+    }
 }
