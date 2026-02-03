@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderSidebar(car);
                 adaptLayoutForMobile();
                 initMobileSwipeGallery(car);
+                initScrollTopButton();
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
             }
@@ -894,6 +895,38 @@ function initMobileSwipeGallery(car) {
         // Вычисляем текущий слайд (округление позиции скролла)
         const current = Math.round(track.scrollLeft / width) + 1;
         counter.textContent = `${current} / ${photos.length}`;
+    });
+}
+
+/* =========================================
+   SCROLL TO TOP BUTTON
+   ========================================= */
+function initScrollTopButton() {
+    // 1. Создаем кнопку
+    const btn = document.createElement('div');
+    btn.className = 'scroll-top-btn';
+    btn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    `;
+    document.body.appendChild(btn);
+
+    // 2. Логика клика (плавный скролл наверх)
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // 3. Логика появления (показывать после 400px прокрутки)
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
     });
 }
 

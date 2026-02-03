@@ -1334,6 +1334,49 @@
     display: block; /* На ПК детали всегда видны */
 }
 
+/* =========================================
+   КНОПКА "НАВЕРХ" (SCROLL TO TOP)
+   ========================================= */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    
+    background-color: #3E89C2; /* Бренд-цвет */
+    color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(62, 137, 194, 0.4);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 900; /* Поверх контента, но под шторками */
+    
+    /* Скрыта по умолчанию */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+    background-color: #2c6ea0;
+    transform: translateY(-2px); /* Легкий подъем при наведении */
+}
+
+/* Состояние "Активна" (когда проскроллили) */
+.scroll-top-btn.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+
+
 /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
 @media (max-width: 768px) {
     
@@ -1453,5 +1496,63 @@
         text-align: right;
         max-width: 60%; /* Ограничиваем ширину значения, чтобы не слипалось */
         line-height: 1.3;
+    }
+
+    /* --- 9. ОТЧЕТ ДТП (ACCIDENTS) --- */
+    
+    /* Общие стили для обоих блоков */
+    .car-report,
+    .report-orange {
+        padding: 16px !important; /* Уменьшаем с 20-24px */
+        margin-bottom: 20px !important;
+        border-radius: 16px;      /* Скругления как у остальных блоков */
+        gap: 12px;                /* Расстояние между иконкой и текстом (для зеленого) */
+    }
+
+    /* --- ЗЕЛЕНЫЙ ВАРИАНТ (ЧИСТО) --- */
+    .report-clean .report-icon {
+        font-size: 20px; /* Чуть меньше иконка галочки */
+    }
+    
+    .report-content h4 {
+        font-size: 16px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .report-content p {
+        font-size: 13px !important;
+        line-height: 1.4;
+        color: #065F46; /* Темно-зеленый для читаемости */
+    }
+
+    /* --- ОРАНЖЕВЫЙ ВАРИАНТ (ЕСТЬ ДТП) --- */
+    .report-orange h4 {
+        font-size: 18px !important; /* Заголовок блока */
+        margin-bottom: 12px !important;
+    }
+
+    /* Строки с суммами */
+    .report-row-line {
+        font-size: 13px !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 0 !important; /* Убираем лишние отступы между строками */
+    }
+
+    /* Если там есть dashed-линии, делаем их тоньше или светлее */
+    .report-row-line {
+        border-bottom-color: rgba(234, 88, 12, 0.15) !important;
+    }
+
+    /* Убираем лишний отступ сверху у контейнера ДТП */
+    #accidentReportContainer {
+        margin-top: 0 !important; /* Перебиваем style="30px" из HTML */
+    }
+
+    .scroll-top-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 20px;
+        right: 15px;
     }
 }
