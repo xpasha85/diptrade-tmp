@@ -1067,3 +1067,41 @@
         stroke-width: 2px;
     }
 }
+
+/* --- 4. ПЕРЕСТАНОВКА БЛОКОВ (ФОТО НАВЕРХ) --- */
+    .car-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 1. ГАЛЕРЕЯ (Самый верх) */
+    .car-gallery {
+        order: -10; 
+        
+        margin-bottom: 15px;
+    }
+    
+    .gallery-main {
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+    }
+
+    /* 2. ЗАГОЛОВОК */
+    .car-title {
+        order: -5;
+        margin-bottom: 4px;
+        padding: 0 4px;
+    }
+
+    /* 3. МЕТА (ID и Дата) - СРАЗУ ПОД ЗАГОЛОВКОМ */
+    .car-meta-row {
+        order: -4;
+        padding: 0 4px;
+        margin-bottom: 15px; /* Отступ до цены */
+        
+        /* Если стили "слетели", вернем их тут */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none; /* Убираем лишние рамки если были */
+    }

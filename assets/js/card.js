@@ -156,12 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (car) {
                 initMobileBreadcrumbs();
-            
                 renderHeaderInfo(car);
                 renderGallery(car); 
                 renderSpecs(car);   
                 renderAccidents(car);
                 renderSidebar(car);
+                adaptLayoutForMobile();
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
             }
@@ -739,3 +739,55 @@ function formatPrice(price) {
     if (!price) return 'По запросу';
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₽';
 }
+
+/* =========================================
+   MOBILE LAYOUT MANAGER (Перенос блоков)
+   ========================================= */
+function adaptLayoutForMobile() {
+    const isMobile = window.innerWidth <= 768;
+
+    // Блоки, которые будем двигать
+    const priceBlock = document.querySelector('.price-main-block');
+    const calcBlock = document.querySelector('#calcBlock'); // Или .calc-block-wrapper
+    
+    // Якоря (Куда вставлять / Откуда брать)
+    const metaRow = document.querySelector('.car-meta-row'); // Вставляем ПОСЛЕ этого блока в Main
+    const sidebar = document.querySelector('.car-sidebar');  // Возвращаем СЮДА (в Sidebar)
+
+    if (isMobile) {
+        // --- МОБИЛЬНЫЙ РЕЖИМ ---
+        // Если блоки существуют и еще не перенесены, вставляем их в .car-main после meta-row
+        if (metaRow && priceBlock && metaRow.nextElementSibling !== priceBlock) {
+            metaRow.after(priceBlock);
+            // Если есть калькулятор, вставляем его после цены
+            if (calcBlock) priceBlock.after(calcBlock);
+            
+            // Визуальная коррекция: убираем тени и границы, чтобы выглядело нативно
+            // priceBlock.style.border = 'none';
+            // priceBlock.style.boxShadow = 'none';
+            // priceBlock.style.padding = '0 4px 20px'; // Чуть меньше отступов
+            priceBlock.style.marginBottom = '20px';
+
+            if (calcBlock) {
+                //calcBlock.style.border = 'none';
+                //calcBlock.style.boxShadow = 'none';
+                //calcBlock.style.padding = '0 4px 20px';
+                calcBlock.style.marginBottom = '20px';
+            }
+        }
+    } else {
+        // --- ПК РЕЖИМ ---
+        if (sidebar) {
+            if (priceBlock && sidebar.firstElementChild !== priceBlock) {
+                sidebar.prepend(priceBlock);
+                priceBlock.style.marginBottom = ''; // Сброс
+            }
+            if (calcBlock && sidebar.contains(priceBlock)) {
+                sidebar.appendChild(calcBlock);
+                calcBlock.style.marginBottom = ''; // Сброс
+            }
+        }
+    }
+}
+
+window.addEventListener('resize', adaptLayoutForMobile);
