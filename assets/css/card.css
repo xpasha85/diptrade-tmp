@@ -1417,4 +1417,41 @@
         border-top: 1px solid #E2E8F0;
         background: #FFFFFF;
     }
+
+    /* --- 8. ХАРАКТЕРИСТИКИ (SPECS) --- */
+    
+    .content-box {
+        padding: 20px !important; /* Уменьшаем с 24px, чтобы было больше места тексту */
+        margin-bottom: 20px;      /* Отступ снизу */
+        
+        /* Если хочешь, чтобы блок был на всю ширину без рамок (как в приложениях),
+           раскомментируй строки ниже. Если нравится "карточка" — не трогай. */
+        /* border-radius: 16px; */
+        /* border: 1px solid #E2E8F0; */
+    }
+
+    .box-title {
+        font-size: 20px !important; /* Чуть меньше заголовок (было 24px) */
+        margin-bottom: 15px !important;
+    }
+
+    /* Сами строки характеристик */
+    .spec-row-line {
+        padding-top: 10px;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+        font-size: 14px !important; /* Уменьшаем шрифт (было 16px) */
+    }
+
+    /* Названия (Марка, Год...) */
+    .spec-row-line .s-label {
+        font-size: 14px; /* Вторичный текст чуть меньше */
+    }
+    
+    /* Значения (Hyundai, 2024...) */
+    .spec-row-line .s-val {
+        text-align: right;
+        max-width: 60%; /* Ограничиваем ширину значения, чтобы не слипалось */
+        line-height: 1.3;
+    }
 }
