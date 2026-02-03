@@ -953,7 +953,10 @@ if (resetMobileBtn) {
 // Делаем функцию доступной для HTML (window.openPriceInfo)
 window.openPriceInfo = function(event, textType) {
     // 1. Останавливаем клик, чтобы не открылась карточка авто
-    if (event) event.stopPropagation();
+    if (event) {
+        event.stopPropagation(); // Не даем событию подняться к карточке
+        event.preventDefault();  // ЗАПРЕЩАЕМ переход по ссылке (<a>)
+    }
 
     // 2. Если это ПК (ширина > 768), ничего не делаем (там работает наведение мыши)
     if (window.innerWidth > 768) return;
