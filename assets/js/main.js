@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const closeSheetBtn = document.getElementById('closeSheetBtn');
     const closeOrderSheetBtn = document.getElementById('closeOrderSheetBtn');
+    initScrollTopButton();
 
     // --- 2. ЛОГИКА МЕНЮ ---
     const toggleMenu = () => {
@@ -182,19 +183,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 7. BACK TO TOP ---
-    const backToTop = document.getElementById('backToTop');
-    const heroSection = document.querySelector('.hero');
-    if (backToTop && heroSection) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > heroSection.offsetHeight) {
-                backToTop.classList.add('show');
-            } else {
-                backToTop.classList.remove('show');
-            }
-        });
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
+    
 });
+
+/* =========================================
+   SCROLL TO TOP BUTTON (Генерация кнопки)
+   ========================================= */
+function initScrollTopButton() {
+    // 1. Создаем кнопку
+    const btn = document.createElement('div');
+    btn.className = 'scroll-top-btn';
+    btn.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    `;
+    document.body.appendChild(btn);
+
+    // 2. Логика клика (плавный скролл наверх)
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // 3. Логика появления (показывать после 400px прокрутки)
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}

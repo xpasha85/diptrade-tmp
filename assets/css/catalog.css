@@ -1211,3 +1211,53 @@
         position: relative !important;
     }
 }
+
+/* =========================================
+   КНОПКА "НАВЕРХ" (SCROLL TO TOP)
+   ========================================= */
+.scroll-top-btn {
+    display: flex;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    
+    background-color: #3E89C2; /* Бренд-цвет */
+    color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(62, 137, 194, 0.4);
+    
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 900;
+    
+    /* Скрыта, пока не проскроллишь */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+    background-color: #2c6ea0;
+    transform: translateY(-2px);
+}
+
+.scroll-top-btn.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Адаптив для мобилок: чуть меньше и ближе к краю */
+@media (max-width: 768px) {
+    .scroll-top-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 20px;
+        right: 15px; /* Чтобы не перекрывалась кнопкой фильтров, если они рядом */
+        z-index: 1001; /* Поверх всего */
+    }
+}

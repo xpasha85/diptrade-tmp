@@ -99,19 +99,7 @@ img { display: block; max-width: 100%; }
 /* Bottom Sheets (Base hidden styles) */
 .bottom-sheet, .bottom-sheet-overlay { display: none; }
 
-/* Back to Top Button */
-.back-to-top {
-    position: fixed; bottom: 20px; right: 20px;
-    width: 44px; height: 44px;
-    background-color: var(--text-main); color: var(--white);
-    border: none; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; cursor: pointer; z-index: 999;
-    opacity: 0; visibility: hidden; transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-.back-to-top.show { opacity: 0.5; visibility: visible; }
-.back-to-top:active { opacity: 1; transform: scale(0.9); }
+
 
 /* ==========================================================================
    3. HEADER & HERO
@@ -568,4 +556,53 @@ img { display: block; max-width: 100%; }
    ========================================================================== */
 @media (min-width: 769px) {
     .back-to-top { display: none; }
+}
+
+/* =========================================
+   КНОПКА "НАВЕРХ" (SCROLL TO TOP)
+   ========================================= */
+.scroll-top-btn {
+    display: flex; /* Показываем везде */
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    
+    background-color: #3E89C2; /* Бренд-цвет */
+    color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(62, 137, 194, 0.4);
+    
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 900;
+    
+    /* Скрыта, пока не проскроллишь */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+    background-color: #2c6ea0;
+    transform: translateY(-2px);
+}
+
+.scroll-top-btn.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Адаптив для мобилок: чуть меньше и ближе к краю */
+@media (max-width: 768px) {
+    .scroll-top-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 20px;
+        right: 15px;
+    }
 }
