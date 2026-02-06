@@ -1,0 +1,18 @@
+📦code_v1
+ ┣ 📂assets
+ ┃ ┣ 📂cars
+ ┃ ┣ 📂css
+ ┃ ┃ ┣ 📜card.css
+ ┃ ┃ ┣ 📜catalog.css
+ ┃ ┃ ┗ 📜style.css
+ ┃ ┣ 📂img
+ ┃ ┗ 📂js
+ ┃ ┃ ┣ 📜card.js
+ ┃ ┃ ┣ 📜catalog.js
+ ┃ ┃ ┗ 📜main.js
+ ┣ 📂data
+ ┃ ┗ 📜cars.json
+ ┣ 📜.gitignore
+ ┣ 📜car.html
+ ┣ 📜catalog.html
+ ┣ 📜index.html
