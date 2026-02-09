@@ -248,7 +248,7 @@ function renderGallery(car) {
 
     // Инициализируем данные
     carPhotos = car.photos;
-    assetsFolder = car.assets_folder;
+    assetsFolder = `assets/cars/${car.assets_folder}`;
     currentPhotoIndex = 0;
 
     // 1. Генерируем миниатюры
@@ -891,7 +891,7 @@ function initMobileSwipeGallery(car) {
     // 3. Собираем пути к фото
     // Если car.photos нет, ставим заглушку
     const photos = (car.photos && car.photos.length) 
-        ? car.photos.map(p => `${car.assets_folder}/${p}`) 
+        ? car.photos.map(p => `assets/cars/${car.assets_folder}/${p}`)
         : ['assets/img/placeholder.png'];
 
     // 4. Создаем HTML структуру ленты

@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 1. ФОТО: Собираем путь или ставим заглушку
                     let photoSrc = 'assets/img/no-photo.png';
                     if (car.photos && car.photos.length > 0) {
-                        photoSrc = `${car.assets_folder}/${car.photos[0]}`;
+                        photoSrc = `assets/cars/${car.assets_folder}/${car.photos[0]}`;
                     }
 
                     // 2. ЗАГОЛОВОК: Web title или Марка+Модель

@@ -111,7 +111,7 @@ function getPageSize() {
 
     car.auction_benefit = Number(car.auction_benefit) || 0;
 
-    car.assets_folder = car.assets_folder || 'assets/img';
+    car.assets_folder = car.assets_folder || '';
 
     if (!car.specs) car.specs = {};
     car.specs.hp = Number(car.specs.hp) || 0;
@@ -359,7 +359,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     for (const car of visibleCars) {
       // --- 1. ФОТО И СЛАЙДЕР (Адаптивный: 5 тегов img) ---
       const safePhotos = (car.photos && car.photos.length > 0)
-        ? car.photos.map(f => `${car.assets_folder}/${f}`)
+        ? car.photos.map(f => `assets/cars/${car.assets_folder}/${f}`)
         : ['assets/img/no-photo.png'];
 
       const photosToShow = safePhotos.slice(0, 5);
