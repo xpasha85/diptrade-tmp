@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (grid) {
-        fetch('data/cars.json')
+        fetch('data/cars.json?v=' + Date.now())
             .then(res => res.json())
             .then(data => {
                 const featured = data.filter(car => car.featured);

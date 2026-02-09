@@ -163,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Загружаем базу
-    fetch('data/cars.json')
+    
+    fetch('data/cars.json?v=' + Date.now())
         .then(response => response.json())
         .then(cars => {
             const car = cars.find(item => item.id == carId);

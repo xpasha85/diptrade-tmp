@@ -661,7 +661,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   // ---------------------------
   // ЗАГРУЗКА ДАННЫХ
   // ---------------------------
-fetch('data/cars.json')
+fetch('data/cars.json?v=' + Date.now())
   .then(res => res.json())
   .then(data => {
     allCars = (Array.isArray(data) ? data : [])
