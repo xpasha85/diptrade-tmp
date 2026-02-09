@@ -665,9 +665,67 @@ function renderCalculator(car, currency) {
     const calcContainer = document.getElementById('calcBlock');
     if (!calcContainer) return;
 
+    // 1. ПОДГОТОВКА ДАННЫХ
+    // Проверяем, есть ли новый блок costs
+    const hasCosts = !!(car.costs && car.costs.russia && car.costs.buyout);
+    
+    const costs = car.costs || {};
+    const buyout = costs.buyout || {};
+    const ru = costs.russia || {};
+
+    // --- БЛОК 1: РАСХОДЫ ПО СТРАНЕ (Корея/Китай) ---
+    // Если есть точная цена выкупа — ставим её, иначе "Рассчитывается"
+    let priceLocalStr = `Рассчитывается ${currency}`;
+    if (hasCosts && buyout.car_price_local) {
+        priceLocalStr = formatNumber(buyout.car_price_local) + ` ${currency}`;
+    }
+
+    // Внутренние расходы (по Корее/Китаю)
+    // Если есть точные — ставим, иначе дефолт 100 000
+    let internalExpStr = `100 000 ${currency}`;
+    if (hasCosts && buyout.internal_costs_local) {
+        internalExpStr = formatNumber(buyout.internal_costs_local) + ` ${currency}`;
+    }
+
+
+    // --- БЛОК 2: РАСХОДЫ В РФ ---
+    
+    // Переменные для сумм
+    let dutyVal = '-- ₽';
+    let utilVal = '-- ₽';
+    let clearanceVal = '-- ₽';
+    let customsSumStr = '~ 572 656 ₽'; // Дефолт для старых (заглушка)
+    
+    let servicesVal = '100 000 ₽';     // Дефолт
+    let totalRuStr = '~ 672 656 ₽';    // Дефолт сумма
+
+    // Если есть реальные данные — считаем математику
+    if (hasCosts) {
+        // Достаем значения (или 0, если вдруг null)
+        const d = ru.duty_rub || 0;
+        const u = ru.recycling_fee_rub || 0;
+        const c = ru.customs_clearance_rub || 0;
+        const s = ru.vladivostok_services_rub || 0;
+
+        // Форматируем строки для вывода
+        dutyVal = formatPrice(d);
+        utilVal = formatPrice(u);
+        clearanceVal = formatPrice(c);
+        servicesVal = formatPrice(s);
+
+        // Считаем суммы
+        const customsSum = d + u + c;
+        const totalRu = customsSum + s;
+
+        customsSumStr = formatPrice(customsSum);
+        totalRuStr = formatPrice(totalRu);
+    }
+
+
+    // 2. ГЕНЕРАЦИЯ HTML
     let rowsHTML = '';
 
-    // === СЦЕНАРИЙ 1: АВТО ИЗ РОССИИ ===
+    // СЦЕНАРИЙ: АВТО ИЗ РОССИИ (простой)
     if (car.country_code === 'RU') {
         rowsHTML = `
             <div class="calc-row">
@@ -682,7 +740,7 @@ function renderCalculator(car, currency) {
             </div>
         `;
     } 
-    // === СЦЕНАРИЙ 2: ИМПОРТ (Корея / Китай) ===
+    // СЦЕНАРИЙ: ИМПОРТ (Корея / Китай)
     else {
         const countryName = car.country_code === 'CN' ? 'Китаю' : 'Корее';
         
@@ -693,7 +751,7 @@ function renderCalculator(car, currency) {
                 <div class="calc-row">
                     <span class="c-label">Выкуп авто</span>
                     <span class="c-dots"></span>
-                    <span class="c-val" style="color:#64748B">Рассчитывается ${currency}</span>
+                    <span class="c-val" style="color:#64748B">${priceLocalStr}</span>
                 </div>
 
                 <div class="calc-row">
@@ -705,7 +763,7 @@ function renderCalculator(car, currency) {
                         </div>
                     </span>
                     <span class="c-dots"></span>
-                    <span class="c-val">100 000 ${currency}</span>
+                    <span class="c-val">${internalExpStr}</span>
                 </div>
             </div>
 
@@ -718,38 +776,36 @@ function renderCalculator(car, currency) {
                     <span style="display:flex; align-items:center;">
                         Таможенные расходы
                         <div class="calc-tooltip-wrapper">
-                            
-                            <div class="tooltip-box">${UI_TEXT.tooltipRussiaCustoms}</div>
+                             <div class="tooltip-box">${UI_TEXT.tooltipRussiaCustoms}</div>
                         </div>
                     </span>
-                    <span>~ 572 656 ₽</span>
+                    <span>${customsSumStr}</span>
                 </div>
 
                 <div class="calc-row calc-sub-row">
                     <span class="c-label">Таможенная пошлина</span>
                     <span class="c-dots"></span>
-                    <span class="c-val">-- ₽</span>
+                    <span class="c-val">${dutyVal}</span>
                 </div>
                 <div class="calc-row calc-sub-row">
                     <span class="c-label">Таможенное оформление</span>
                     <span class="c-dots"></span>
-                    <span class="c-val">-- ₽</span>
+                    <span class="c-val">${clearanceVal}</span>
                 </div>
                 <div class="calc-row calc-sub-row">
                     <span class="c-label">Утильсбор</span>
                     <span class="c-dots"></span>
-                    <span class="c-val">-- ₽</span>
+                    <span class="c-val">${utilVal}</span>
                 </div>
 
                 <div class="calc-subheader-row">
                     <span style="display:flex; align-items:center;">
                         Услуги во Владивостоке
                         <div class="calc-tooltip-wrapper">
-                            
                             <div class="tooltip-box">${UI_TEXT.tooltipRussiaServices}</div>
                         </div>
                     </span>
-                    <span>100 000 ₽</span>
+                    <span>${servicesVal}</span>
                 </div>
                 <div class="calc-desc-text">
                     (СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера)
@@ -758,13 +814,13 @@ function renderCalculator(car, currency) {
                 <div class="calc-row calc-subtotal">
                     <span class="c-label">Итого расходы РФ</span>
                     <span class="c-dots"></span>
-                    <span class="c-val">~ 672 656 ₽</span>
+                    <span class="c-val">${totalRuStr}</span>
                 </div>
             </div>
         `;
     }
 
-    // Собираем HTML
+    // 3. ВСТАВЛЯЕМ В DOM
     calcContainer.innerHTML = `
         <div class="calc-mobile-toggle" onclick="toggleCalc(this)">
             <span class="toggle-title">Детальный расчет</span>
@@ -786,21 +842,19 @@ function renderCalculator(car, currency) {
         </div>
     `;
 
-    // === МАГИЯ: ПОДКЛЮЧАЕМ ШТОРКУ К ИКОНКАМ ===
-    // Ищем все иконки с атрибутом data-tooltip-key
+    // 4. ВОССТАНАВЛИВАЕМ РАБОТУ ТУЛТИПОВ (для мобилок)
     const icons = calcContainer.querySelectorAll('.calc-info-icon[data-tooltip-key]');
     
     icons.forEach(icon => {
         icon.addEventListener('click', (e) => {
-            // Проверяем, мобилка ли это
             if (window.innerWidth <= 768) {
-                e.stopPropagation(); // Чтобы не закрылся аккордеон или еще что-то
+                e.stopPropagation();
                 
-                const key = icon.getAttribute('data-tooltip-key'); // Например 'tooltipKoreaOps'
-                const text = UI_TEXT[key]; // Берем текст из констант
+                const key = icon.getAttribute('data-tooltip-key');
+                const text = UI_TEXT[key];
                 
                 if (text) {
-                    openBottomSheet(text); // Открываем шторку
+                    openBottomSheet(text);
                 }
             }
         });
