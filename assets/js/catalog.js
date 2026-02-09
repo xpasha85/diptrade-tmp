@@ -107,7 +107,7 @@ function getPageSize() {
 
     car.is_auction = !!car.is_auction;
     car.in_stock = !!car.in_stock;
-    car.full_time = !!car.full_time;
+    car.full_time = !!(car.specs && car.specs.is_4wd);
 
     car.auction_benefit = Number(car.auction_benefit) || 0;
 
@@ -661,10 +661,22 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   // ---------------------------
   // ЗАГРУЗКА ДАННЫХ
   // ---------------------------
-  fetch('data/cars.json')
-    .then(res => res.json())
-    .then(data => {
-      allCars = (Array.isArray(data) ? data : []).map(normalizeCar);
+fetch('data/cars.json')
+  .then(res => res.json())
+  .then(data => {
+    allCars = (Array.isArray(data) ? data : [])
+      .map(normalizeCar)
+      // --- ВСТАВИТЬ ЭТОТ БЛОК ---
+      .filter(car => {
+          // 1. Если явно скрыто (is_visible === false) -> не показываем
+          if (car.is_visible === false) return false;
+          
+          // 2. Если продано (is_sold === true) -> не показываем
+          if (car.is_sold === true) return false;
+
+          return true;
+      });
+      // ---------------------------
 
       // Сортировка по дате добавления
       allCars.sort((a, b) => new Date(b.added_at || 0) - new Date(a.added_at || 0));
