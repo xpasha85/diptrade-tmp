@@ -665,67 +665,63 @@ function renderCalculator(car, currency) {
     const calcContainer = document.getElementById('calcBlock');
     if (!calcContainer) return;
 
-    // 1. ПОДГОТОВКА ДАННЫХ
-    // Проверяем, есть ли новый блок costs
-    const hasCosts = !!(car.costs && car.costs.russia && car.costs.buyout);
+    // 1. ИНИЦИАЛИЗАЦИЯ (ПО УМОЛЧАНИЮ — ПРОЧЕРКИ)
+    // Если данных не будет, эти значения так и останутся
+    let priceLocalStr = '--';
+    let internalExpStr = '--';
     
-    const costs = car.costs || {};
-    const buyout = costs.buyout || {};
-    const ru = costs.russia || {};
-
-    // --- БЛОК 1: РАСХОДЫ ПО СТРАНЕ (Корея/Китай) ---
-    // Если есть точная цена выкупа — ставим её, иначе "Рассчитывается"
-    let priceLocalStr = `Рассчитывается ${currency}`;
-    if (hasCosts && buyout.car_price_local) {
-        priceLocalStr = formatNumber(buyout.car_price_local) + ` ${currency}`;
-    }
-
-    // Внутренние расходы (по Корее/Китаю)
-    // Если есть точные — ставим, иначе дефолт 100 000
-    let internalExpStr = `100 000 ${currency}`;
-    if (hasCosts && buyout.internal_costs_local) {
-        internalExpStr = formatNumber(buyout.internal_costs_local) + ` ${currency}`;
-    }
-
-
-    // --- БЛОК 2: РАСХОДЫ В РФ ---
-    
-    // Переменные для сумм
     let dutyVal = '-- ₽';
     let utilVal = '-- ₽';
     let clearanceVal = '-- ₽';
-    let customsSumStr = '~ 572 656 ₽'; // Дефолт для старых (заглушка)
+    let servicesVal = '-- ₽';
     
-    let servicesVal = '100 000 ₽';     // Дефолт
-    let totalRuStr = '~ 672 656 ₽';    // Дефолт сумма
+    let customsSumStr = '-- ₽'; // Сумма таможни
+    let totalRuStr = '-- ₽';    // Итого РФ
 
-    // Если есть реальные данные — считаем математику
+    // 2. ПРОВЕРКА ДАННЫХ
+    // Есть ли блок costs в JSON?
+    const hasCosts = !!(car.costs && car.costs.russia && car.costs.buyout);
+
     if (hasCosts) {
-        // Достаем значения (или 0, если вдруг null)
-        const d = ru.duty_rub || 0;
-        const u = ru.recycling_fee_rub || 0;
-        const c = ru.customs_clearance_rub || 0;
-        const s = ru.vladivostok_services_rub || 0;
+        const buyout = car.costs.buyout;
+        const ru = car.costs.russia;
 
-        // Форматируем строки для вывода
+        // --- Считаем "ТАМ" (Китай/Корея) ---
+        if (buyout.car_price_local) {
+            priceLocalStr = formatNumber(buyout.car_price_local) + ` ${currency}`;
+        }
+        if (buyout.internal_costs_local) {
+            internalExpStr = formatNumber(buyout.internal_costs_local) + ` ${currency}`;
+        }
+
+        // --- Считаем "ТУТ" (РФ) ---
+        const d = ru.duty_rub || 0;              // Пошлина
+        const u = ru.recycling_fee_rub || 0;     // Утиль
+        const c = ru.customs_clearance_rub || 0; // Оформление
+        const s = ru.vladivostok_services_rub || 0; // Услуги Влад.
+
+        // Форматируем отдельные строки
         dutyVal = formatPrice(d);
         utilVal = formatPrice(u);
         clearanceVal = formatPrice(c);
         servicesVal = formatPrice(s);
 
         // Считаем суммы
+        // 1. Таможенные расходы = Пошлина + Утиль + Оформление
         const customsSum = d + u + c;
-        const totalRu = customsSum + s;
-
         customsSumStr = formatPrice(customsSum);
+
+        // 2. Итого расходы РФ = Таможенные расходы + Услуги Владивостока
+        const totalRu = customsSum + s;
         totalRuStr = formatPrice(totalRu);
     }
+    // Если hasCosts === false, то везде останутся прочерки, как ты и просил.
 
 
-    // 2. ГЕНЕРАЦИЯ HTML
+    // 3. ГЕНЕРАЦИЯ HTML
     let rowsHTML = '';
 
-    // СЦЕНАРИЙ: АВТО ИЗ РОССИИ (простой)
+    // СЦЕНАРИЙ: АВТО ИЗ РОССИИ
     if (car.country_code === 'RU') {
         rowsHTML = `
             <div class="calc-row">
@@ -798,7 +794,7 @@ function renderCalculator(car, currency) {
                     <span class="c-val">${utilVal}</span>
                 </div>
 
-                <div class="calc-subheader-row">
+                <div class="calc-subheader-row" style="margin-top: 10px;">
                     <span style="display:flex; align-items:center;">
                         Услуги во Владивостоке
                         <div class="calc-tooltip-wrapper">
@@ -820,7 +816,7 @@ function renderCalculator(car, currency) {
         `;
     }
 
-    // 3. ВСТАВЛЯЕМ В DOM
+    // 4. ВСТАВКА В DOM
     calcContainer.innerHTML = `
         <div class="calc-mobile-toggle" onclick="toggleCalc(this)">
             <span class="toggle-title">Детальный расчет</span>
@@ -842,20 +838,15 @@ function renderCalculator(car, currency) {
         </div>
     `;
 
-    // 4. ВОССТАНАВЛИВАЕМ РАБОТУ ТУЛТИПОВ (для мобилок)
+    // 5. ИНИЦИАЛИЗАЦИЯ ТУЛТИПОВ (Мобилка)
     const icons = calcContainer.querySelectorAll('.calc-info-icon[data-tooltip-key]');
-    
     icons.forEach(icon => {
         icon.addEventListener('click', (e) => {
             if (window.innerWidth <= 768) {
                 e.stopPropagation();
-                
                 const key = icon.getAttribute('data-tooltip-key');
                 const text = UI_TEXT[key];
-                
-                if (text) {
-                    openBottomSheet(text);
-                }
+                if (text) openBottomSheet(text);
             }
         });
     });
