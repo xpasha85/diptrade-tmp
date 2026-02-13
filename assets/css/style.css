@@ -345,30 +345,175 @@ img { display: block; max-width: 100%; }
 .footer-bottom a { text-decoration: none; color: var(--primary); }
 .footer-bottom a:hover { text-decoration: underline; }
 
-/* Mobile Menu (Dark Premium) */
-.mobile-menu {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #0F172A; z-index: 9999;
-    padding: 30px 24px; display: flex; flex-direction: column;
-    transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0; pointer-events: none;
+/* ================================
+   Mobile Menu (Dark Premium) — FINAL
+   Заменить ВЕСЬ старый блок Mobile Menu этим (одним куском).
+   Включает: нормальную высоту, прокрутку, компактность, 2 телефона, TG/WA/MAX.
+================================ */
+
+/* Контейнер меню */
+.mobile-menu{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100dvh;              /* корректно на Android/Chrome */
+  background-color: #0F172A;
+  z-index: 9999;
+
+  padding: 18px 20px;          /* было 30/24 — слишком жирно по высоте */
+  display: flex;
+  flex-direction: column;
+
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0;
+  pointer-events: none;
+
+  overflow: hidden;            /* прокрутка будет только у nav */
 }
-.mobile-menu.active { transform: translateX(0); opacity: 1; pointer-events: all; }
-.mobile-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-.menu-logo { height: 40px; width: auto; }
-.close-btn {
-    background: rgba(255,255,255,0.1); border: none; color: #fff; width: 44px; height: 44px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+
+@supports not (height: 100dvh){
+  .mobile-menu{ height: 100vh; }
 }
-.close-btn:active { background: var(--primary); }
-.mobile-nav { display: flex; flex-direction: column; gap: 30px; }
-.mobile-nav a { font-size: 22px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.2s; opacity: 0; transform: translateX(30px); }
-.mobile-nav a:active { color: var(--primary); }
-.mobile-menu.active .mobile-nav a { opacity: 1; transform: translateX(0); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-.mobile-footer { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; }
-.mobile-phone { display: block; font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
-.mobile-socials { display: flex; gap: 15px; margin-bottom: 15px; }
-.mobile-socials a { background: rgba(255,255,255,0.1); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; }
-.mobile-note { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+.mobile-menu.active{
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Верх меню */
+.mobile-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;         /* было 60 — съедало экран */
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 12px;
+}
+
+.menu-logo{ height: 34px; width: auto; }
+
+.close-btn{
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-btn:active{ background: var(--primary); }
+
+/* Навигация — СКРОЛЛИТСЯ, чтобы низ всегда был виден */
+.mobile-nav{
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;                   /* было 30 — слишком много */
+  padding: 6px 2px 14px;
+}
+
+.mobile-nav a{
+  font-size: 18px;             /* было 22 */
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: color 0.2s;
+
+  opacity: 0;
+  transform: translateX(18px);
+  padding: 10px 0;             /* контролируем высоту элемента */
+}
+.mobile-nav a:active{ color: var(--primary); }
+
+.mobile-menu.active .mobile-nav a{
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Низ меню */
+.mobile-footer{
+  flex: 0 0 auto;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 14px;           /* было 30 */
+  padding-bottom: 6px;
+}
+
+@supports (padding: env(safe-area-inset-bottom)){
+  .mobile-footer{
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Блок телефонов (новый) */
+.mobile-phones{ margin-bottom: 12px; }
+
+.mobile-phones-title{
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 8px;
+}
+
+.mobile-phone-item{ margin-bottom: 10px; }
+
+.mobile-name{
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.72);
+  margin-bottom: 2px;
+}
+
+.mobile-phone-link{
+  display: inline-block;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: none;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* Соц.кнопки */
+.mobile-socials{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mobile-socials a{
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mobile-note{
+  font-size: 12px;
+  color: rgba(255,255,255,0.58);
+}
+
+/* Очень низкие экраны — ещё компактнее */
+@media (max-height: 700px){
+  .mobile-menu{ padding: 16px 18px; }
+  .mobile-nav a{ font-size: 17px; padding: 9px 0; }
+  .mobile-phone-link{ font-size: 16px; }
+  .mobile-socials a{ padding: 8px 12px; font-size: 12px; }
+}
 
 /* ==========================================================================
    5. ADAPTIVE - TABLETS & INTERMEDIATE

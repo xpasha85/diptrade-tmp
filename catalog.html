@@ -16,318 +16,350 @@
 </head>
 <body>
 
-<header class="header">
-    <div class="container header-wrap">
-        <a href="/" class="logo"><img src="assets/img/logo.png" alt="DipTrade"></a>
-        <nav class="nav-desktop">
-            <a href="catalog.html" class="active">Каталог</a>
-            <a href="/#directions">Направления</a>
-            <a href="/#steps">Процесс</a>
-            <a href="/#advantages">Почему мы</a> 
-            <a href="#footer">Контакты</a>      
-        </nav>
-        <div class="header-cta">
-            <a href="tel:+79024888884" class="phone-link">+7 (902) 488-88-84</a>
-            <a href="#order" class="btn btn-primary">Оставить заявку</a>
+    <header class="header">
+        <div class="container header-wrap">
+            <a href="/" class="logo">
+                <img src="assets/img/logo.png" alt="DipTrade">
+            </a>
+            <nav class="nav-desktop">
+                <a href="catalog.html">Каталог</a>
+                <a href="/#directions">Направления</a>
+                <a href="/#steps">Как мы работаем</a>
+                <a href="/#advantages">Почему мы</a>
+                <a href="#footer">Контакты</a>
+            </nav>
+            <div class="header-cta">
+                <a href="tel:+79024888884" class="phone-link">+7 (902) 488-88-84</a>
+                <a href="/#order" class="btn btn-primary">Оставить заявку</a>
+            </div>
+            <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
         </div>
-        <button class="burger" id="burgerBtn"><span></span><span></span><span></span></button>
-    </div>
-</header>
+    </header>
 
-<div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-head">
-        <img src="assets/img/logo-white.png" alt="DipTrade" class="menu-logo">
-        <button class="close-btn" id="closeMenuBtn">&times;</button>
-    </div>
-    <nav class="mobile-nav">
-        <a href="catalog.html">Каталог авто</a> 
-        <a href="/#directions">Направления</a>
-        <a href="/#steps">Как мы работаем</a>
-        <a href="#footer">Контакты</a>
-    </nav>
-</div>
-
-<main class="catalog-page">
-    <div class="container">
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-head">
+            <img src="assets/img/logo-white.png" alt="DipTrade" class="menu-logo">
+            <button class="close-btn" id="closeMenuBtn">&times;</button>
+        </div>
         
-        <div class="mobile-filter-sticky">
-            <button type="button" class="btn btn-primary" id="openFiltersBtn">
-                <img src="assets/img/filter.png" alt="Фильтры">
-                <span>Параметры поиска</span>
-            </button>
+        <nav class="mobile-nav">
+            <a href="catalog.html">Каталог авто</a> 
+            <a href="/#directions">Направления</a>
+            <a href="/#steps">Как мы работаем</a>
+            <a href="/#advantages">Почему мы</a>
+            <a href="/#order">Оставить заявку</a>
+        </nav>
+
+        <div class="mobile-footer">
+            <div class="mobile-phones">
+                <div class="mobile-phones-title">Телефоны</div>
+
+                <div class="mobile-phone-item">
+                    <div class="mobile-name">Дмитрий</div>
+                    <a href="tel:+79024888884" class="mobile-phone-link">
+                        +7 (902) 488-88-84
+                    </a>
+                </div>
+
+                <div class="mobile-phone-item">
+                    <div class="mobile-name">Роман</div>
+                    <a href="tel:+79294299992" class="mobile-phone-link">
+                        +7 (929) 429-99-92
+                    </a>
+                </div>
+            </div>
+
+            <div class="mobile-socials">
+                <a href="https://t.me/Roman_Efimenko125" target="_blank" rel="noopener noreferrer">Telegram</a>
+                <a href="https://wa.me/79294299992" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a href="https://max.ru/u/f9LHodD0cOKN5%3Ctest%3EEhlx0f5sKC19spTZB4UhCU31TFrV7o" target="_blank" rel="noopener noreferrer">MAX</a>
+            </div>
+
+            <p class="mobile-note">Ежедневно с 9:00 до 19:00</p>
         </div>
+    </div>
 
-        <div class="catalog-layout">
+    <main class="catalog-page">
+        <div class="container">
             
-            <aside class="catalog-sidebar">
-                <form id="filterForm" class="filter-box">
+            <div class="mobile-filter-sticky">
+                <button type="button" class="btn btn-primary" id="openFiltersBtn">
+                    <img src="assets/img/filter.png" alt="Фильтры">
+                    <span>Параметры поиска</span>
+                </button>
+            </div>
 
-                    <div class="catalog-chips-inside">
-                        <div class="filter-title">Быстрый подбор</div>
-                        <div class="catalog-chips">
-                            <button type="button" class="chip" data-filter="power_low">до 160 л.с.</button>
-                            <button type="button" class="chip" data-filter="budget">До 2 млн</button>
-                            <button type="button" class="chip" data-filter="passable">Проходные (3-5 лет)</button>
-                            <button type="button" class="chip" data-filter="stock">В наличии</button>
+            <div class="catalog-layout">
+                
+                <aside class="catalog-sidebar">
+                    <form id="filterForm" class="filter-box">
+
+                        <div class="catalog-chips-inside">
+                            <div class="filter-title">Быстрый подбор</div>
+                            <div class="catalog-chips">
+                                <button type="button" class="chip" data-filter="power_low">до 160 л.с.</button>
+                                <button type="button" class="chip" data-filter="budget">До 2 млн</button>
+                                <button type="button" class="chip" data-filter="passable">Проходные (3-5 лет)</button>
+                                <button type="button" class="chip" data-filter="stock">В наличии</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <select name="country_code" id="hiddenCountry" style="display: none;">
-                        <option value="">all</option>
-                        <option value="KR">korea</option>
-                        <option value="CN">china</option>
-                        <option value="RU">russia</option>
-                    </select>
-                    <div class="filter-group">
-                        <label>Страна</label>
-                        <div class="country-buttons" role="group" aria-label="Страна">
-                            <button type="button"
-                                    class="country-btn active"
-                                    data-country=""
-                                    title="Все страны"
-                                    aria-pressed="true">
-                                <img src="assets/img/flags/globe.png" alt="World">
-                            </button>
-
-                            <button type="button"
-                                    class="country-btn"
-                                    data-country="KR"
-                                    title="Корея"
-                                    aria-pressed="false">
-                                <img src="assets/img/flags/kr.png" alt="Korea">
-                            </button>
-
-                            <button type="button"
-                                    class="country-btn"
-                                    data-country="CN"
-                                    title="Китай"
-                                    aria-pressed="false">
-                                <img src="assets/img/flags/cn.png" alt="China">
-                            </button>
-
-                            <button type="button"
-                                    class="country-btn"
-                                    data-country="RU"
-                                    title="Россия"
-                                    aria-pressed="false">
-                                <img src="assets/img/flags/ru.png" alt="Russia">
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="brand-model-row">
-    
+                        <select name="country_code" id="hiddenCountry" style="display: none;">
+                            <option value="">all</option>
+                            <option value="KR">korea</option>
+                            <option value="CN">china</option>
+                            <option value="RU">russia</option>
+                        </select>
                         <div class="filter-group">
-                            <label>Марка</label>
-                            <select name="brand" id="brandSelect">
-                                <option value="">Все марки</option>
+                            <label>Страна</label>
+                            <div class="country-buttons" role="group" aria-label="Страна">
+                                <button type="button"
+                                        class="country-btn active"
+                                        data-country=""
+                                        title="Все страны"
+                                        aria-pressed="true">
+                                    <img src="assets/img/flags/globe.png" alt="World">
+                                </button>
+
+                                <button type="button"
+                                        class="country-btn"
+                                        data-country="KR"
+                                        title="Корея"
+                                        aria-pressed="false">
+                                    <img src="assets/img/flags/kr.png" alt="Korea">
+                                </button>
+
+                                <button type="button"
+                                        class="country-btn"
+                                        data-country="CN"
+                                        title="Китай"
+                                        aria-pressed="false">
+                                    <img src="assets/img/flags/cn.png" alt="China">
+                                </button>
+
+                                <button type="button"
+                                        class="country-btn"
+                                        data-country="RU"
+                                        title="Россия"
+                                        aria-pressed="false">
+                                    <img src="assets/img/flags/ru.png" alt="Russia">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="brand-model-row">
+        
+                            <div class="filter-group">
+                                <label>Марка</label>
+                                <select name="brand" id="brandSelect">
+                                    <option value="">Все марки</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>Модель</label>
+                                <select name="model" id="modelSelect" disabled>
+                                    <option value="">Модель</option> </select>
+                            </div>
+
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Цена под ключ, ₽</label>
+                            <div class="inputs-row">
+                                <input type="number" name="price_from" placeholder="От">
+                                <input type="number" name="price_to" placeholder="До">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Год выпуска</label>
+                            <div class="inputs-row">
+                                <input type="number" name="year_from" placeholder="С 2020">
+                                <input type="number" name="year_to" placeholder="По 2026">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Объем двигателя, см³</label>
+                            <div class="inputs-row">
+                                <input type="number" name="volume_from" placeholder="От">
+                                <input type="number" name="volume_to" placeholder="До">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Мощность, л.с.</label>
+                            <div class="inputs-row">
+                                <input type="number" name="hp_from" placeholder="От">
+                                <input type="number" name="hp_to" placeholder="До">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="filter-title">Двигатель</div>
+                            <div class="checkbox-list">
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" name="fuel" value="Бензин">
+                                    <span class="checkmark"></span> <span>Бензин</span>
+                                </label>
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" name="fuel" value="Дизель">
+                                    <span class="checkmark"></span>
+                                    <span>Дизель</span>
+                                </label>
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" name="fuel" value="Гибрид">
+                                    <span class="checkmark"></span>
+                                    <span>Гибрид</span>
+                                </label>
+                                <label class="checkbox-wrapper">
+                                    <input type="checkbox" name="fuel" value="Электро">
+                                    <span class="checkmark"></span>
+                                    <span>Электро</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <div class="filter-title">Особенности</div>
+                            
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="full_time" value="true">
+                                <span class="checkmark"></span>
+                                <span>Только полный привод</span>
+                            </label>
+
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="is_auction" value="true">
+                                <span class="checkmark"></span>
+                                <span>Только аукционные</span>
+                            </label>
+
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" name="in_stock" value="true">
+                                <span class="checkmark"></span>
+                                <span>Только в наличии</span>
+                            </label>
+                        </div>
+
+                        <div class="filter-actions-placeholder"></div>
+
+                        <div class="filter-actions">
+                            <button type="button" id="resetFilters" class="btn btn-outline btn-full">Сбросить фильтры</button>
+
+                        </div>
+
+                    </form>
+                </aside>
+
+                <section class="catalog-content">
+                    
+                    <div class="catalog-chips-row">
+                        <div class="catalog-chips">
+                            <button class="chip" data-filter="power_low">до 160 л.с.</button>
+                            <button class="chip" data-filter="budget">До 2 млн</button>
+                            <button class="chip" data-filter="passable">Проходные (3-5 лет)</button>
+                            <button class="chip" data-filter="stock">В наличии</button>
+                        </div>
+                    </div>
+
+                    <div class="catalog-info-bar">
+                        <div class="results-count">Найдено: <strong id="totalCount">0</strong></div>
+                        
+                        <div class="sort-controls">
+                            <span style="font-size: 13px; color: var(--text-secondary); margin-right: 8px;">Сортировка ⇅</span>
+                            <select id="sortSelect">
+                                <option value="newest">Сначала свежие</option>
+                                <option value="cheap">Сначала дешевые</option>
+                                <option value="expensive">Сначала дорогие</option>
+                                <option value="year_new">Сначала новые (год)</option>
                             </select>
                         </div>
-                        
-                        <div class="filter-group">
-                            <label>Модель</label>
-                            <select name="model" id="modelSelect" disabled>
-                                <option value="">Модель</option> </select>
-                        </div>
-
                     </div>
 
-                    <div class="filter-group">
-                        <label>Цена под ключ, ₽</label>
-                        <div class="inputs-row">
-                            <input type="number" name="price_from" placeholder="От">
-                            <input type="number" name="price_to" placeholder="До">
-                        </div>
+                    <div class="catalog-grid" id="catalogGrid"></div>
+
+                    <div class="pagination-block">
+                        <button class="btn btn-outline" id="loadMoreBtn">Показать еще</button>
                     </div>
 
-                    <div class="filter-group">
-                        <label>Год выпуска</label>
-                        <div class="inputs-row">
-                            <input type="number" name="year_from" placeholder="С 2020">
-                            <input type="number" name="year_to" placeholder="По 2026">
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Объем двигателя, см³</label>
-                        <div class="inputs-row">
-                            <input type="number" name="volume_from" placeholder="От">
-                            <input type="number" name="volume_to" placeholder="До">
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Мощность, л.с.</label>
-                        <div class="inputs-row">
-                            <input type="number" name="hp_from" placeholder="От">
-                            <input type="number" name="hp_to" placeholder="До">
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <div class="filter-title">Двигатель</div>
-                        <div class="checkbox-list">
-                            <label class="checkbox-wrapper">
-                                <input type="checkbox" name="fuel" value="Бензин">
-                                <span class="checkmark"></span> <span>Бензин</span>
-                            </label>
-                            <label class="checkbox-wrapper">
-                                <input type="checkbox" name="fuel" value="Дизель">
-                                <span class="checkmark"></span>
-                                <span>Дизель</span>
-                            </label>
-                            <label class="checkbox-wrapper">
-                                <input type="checkbox" name="fuel" value="Гибрид">
-                                <span class="checkmark"></span>
-                                <span>Гибрид</span>
-                            </label>
-                            <label class="checkbox-wrapper">
-                                <input type="checkbox" name="fuel" value="Электро">
-                                <span class="checkmark"></span>
-                                <span>Электро</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="filter-group">
-                        <div class="filter-title">Особенности</div>
-                        
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" name="full_time" value="true">
-                            <span class="checkmark"></span>
-                            <span>Только полный привод</span>
-                        </label>
-
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" name="is_auction" value="true">
-                            <span class="checkmark"></span>
-                            <span>Только аукционные</span>
-                        </label>
-
-                        <label class="checkbox-wrapper">
-                            <input type="checkbox" name="in_stock" value="true">
-                            <span class="checkmark"></span>
-                            <span>Только в наличии</span>
-                        </label>
-                    </div>
-
-                    <div class="filter-actions-placeholder"></div>
-
-                    <div class="filter-actions">
-                        <button type="button" id="resetFilters" class="btn btn-outline btn-full">Сбросить фильтры</button>
-
-                    </div>
-
-                </form>
-            </aside>
-
-            <section class="catalog-content">
-                
-                <div class="catalog-chips-row">
-                    <div class="catalog-chips">
-                        <button class="chip" data-filter="power_low">до 160 л.с.</button>
-                        <button class="chip" data-filter="budget">До 2 млн</button>
-                        <button class="chip" data-filter="passable">Проходные (3-5 лет)</button>
-                        <button class="chip" data-filter="stock">В наличии</button>
-                    </div>
-                </div>
-
-                <div class="catalog-info-bar">
-                    <div class="results-count">Найдено: <strong id="totalCount">0</strong></div>
-                    
-                    <div class="sort-controls">
-                        <span style="font-size: 13px; color: var(--text-secondary); margin-right: 8px;">Сортировка ⇅</span>
-                        <select id="sortSelect">
-                            <option value="newest">Сначала свежие</option>
-                            <option value="cheap">Сначала дешевые</option>
-                            <option value="expensive">Сначала дорогие</option>
-                            <option value="year_new">Сначала новые (год)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="catalog-grid" id="catalogGrid"></div>
-
-                <div class="pagination-block">
-                    <button class="btn btn-outline" id="loadMoreBtn">Показать еще</button>
-                </div>
-
-            </section>
-        </div>
-    </div>
-    <div class="mobile-filter-drawer" id="filterDrawer">
-        <div class="drawer-overlay" id="drawerOverlay"></div>
-        <div class="drawer-content">
-            <div class="drawer-header">
-                <h3>Фильтры</h3>
-                <button type="button" class="drawer-close" id="closeDrawerBtn" style="font-size: 32px; background: none; border: none; line-height: 1; padding: 0 10px;">&times;</button>
-            </div>
-            <div class="drawer-body" id="mobileFilterPlace">
-                </div>
-            <div class="drawer-footer">
-                <button type="button" class="btn btn-primary btn-full" id="applyMobileFilters">Применить</button>
-                <button type="button" class="btn btn-outline btn-full" id="resetMobileFilters">Сбросить</button>
+                </section>
             </div>
         </div>
-    </div>
-</main>
-
-<footer class="footer" id="footer">
-    <div class="container">
-        <div class="footer-wrap">
-            <div class="footer-col footer-brand">
-                <a href="#" class="logo">
-                    <img src="assets/img/logo-white.png" alt="DipTrade">
-                </a>
-                <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи во Владивосток и по всей России.</p>
-                <div class="footer-social">
-                    <a href="#">Telegram</a>
-                    <a href="#">WhatsApp</a>
-                    <a href="#">MAX</a>
+        <div class="mobile-filter-drawer" id="filterDrawer">
+            <div class="drawer-overlay" id="drawerOverlay"></div>
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3>Фильтры</h3>
+                    <button type="button" class="drawer-close" id="closeDrawerBtn" style="font-size: 32px; background: none; border: none; line-height: 1; padding: 0 10px;">&times;</button>
                 </div>
-            </div>
-
-            <div class="footer-col">
-                <h4>Навигация</h4>
-                <ul>
-                    <li><a href="catalog.html">Каталог авто</a></li>
-                    <li><a href="/#directions">Направления</a></li>
-                    <li><a href="/#steps">Этапы работы</a></li>
-                    <li><a href="/#advantages">О компании</a></li>
-                    <li><a href="/#order">Заказать подбор</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h4>Контакты</h4>
-                <div class="footer-contacts">
-                    <p><strong>Адрес:</strong> г. Уссурийск, <br>ул. Тургенева, 73б</p>
-                    <p><strong>Телефон:</strong> +7 (902) 488-88-84</p>
-                    <p><strong>Email:</strong> info@diptrade.ru</p>
+                <div class="drawer-body" id="mobileFilterPlace">
+                    </div>
+                <div class="drawer-footer">
+                    <button type="button" class="btn btn-primary btn-full" id="applyMobileFilters">Применить</button>
+                    <button type="button" class="btn btn-outline btn-full" id="resetMobileFilters">Сбросить</button>
                 </div>
             </div>
         </div>
+    </main>
 
-        <div class="footer-bottom">
-            <p>&copy; 2026 DipTrade. Все права защищены.</p>
-            <p>Дизайн и разработка: <a href="#">Xpasha85</a></p>
+    <footer class="footer" id="footer">
+        <div class="container">
+            <div class="footer-wrap">
+                <div class="footer-col footer-brand">
+                    <a href="#" class="logo">
+                        <img src="assets/img/logo-white.png" alt="DipTrade">
+                    </a>
+                    <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи во Владивосток и по всей России.</p>
+                    <div class="footer-social">
+                        <a href="#">Telegram</a>
+                        <a href="#">WhatsApp</a>
+                        <a href="#">MAX</a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="catalog.html">Каталог авто</a></li>
+                        <li><a href="/#directions">Направления</a></li>
+                        <li><a href="/#steps">Этапы работы</a></li>
+                        <li><a href="/#advantages">О компании</a></li>
+                        <li><a href="/#order">Заказать подбор</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <div class="footer-contacts">
+                        <p><strong>Адрес:</strong> г. Уссурийск, <br>ул. Тургенева, 73б</p>
+                        <p><strong>Телефон:</strong> +7 (902) 488-88-84</p>
+                        <p><strong>Email:</strong> info@diptrade.ru</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 DipTrade. Все права защищены.</p>
+                <p>Дизайн и разработка: <a href="#">Xpasha85</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/catalog.js"></script> 
+
+    <div class="bottom-sheet-overlay" id="sheetOverlay"></div>
+
+    <div class="bottom-sheet" id="infoSheet">
+        <div class="sheet-content">
+            <div class="sheet-handle"></div>
+            <h3 id="sheetTitle">Информация о цене</h3>
+            <p id="sheetText">Текст описания...</p>
+            <button class="btn btn-primary btn-full" id="closeSheetBtn" style="margin-top: 20px;">Понятно</button>
         </div>
     </div>
-</footer>
-
-<script src="assets/js/main.js"></script>
-<script src="assets/js/catalog.js"></script> 
-
-<div class="bottom-sheet-overlay" id="sheetOverlay"></div>
-
-<div class="bottom-sheet" id="infoSheet">
-    <div class="sheet-content">
-        <div class="sheet-handle"></div>
-        <h3 id="sheetTitle">Информация о цене</h3>
-        <p id="sheetText">Текст описания...</p>
-        <button class="btn btn-primary btn-full" id="closeSheetBtn" style="margin-top: 20px;">Понятно</button>
-    </div>
-</div>
 
 </body>
 </html>
