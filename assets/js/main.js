@@ -174,11 +174,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 6. ФОРМА ---
+    // Находим форму один раз
     const form = document.querySelector('.actual-form');
+
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Спасибо! Заявка отправлена.');
+            
+            // 1. Убираем/удаляем строку: alert('Спасибо! Заявка отправлена.'); <-- ЭТО ПРИЧИНА
+
+            // 2. Показываем ваше красивое окно
+            const modal = document.getElementById('thankYouModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+
+            // 3. Очищаем форму
             form.reset();
         });
     }

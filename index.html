@@ -239,6 +239,12 @@
                 </div>
 
                 <div class="form-right-col">
+                    <div class="form-mobile-header">
+                        <h2>Оставить заявку</h2>
+                        <div class="info-icon" id="orderInfoBtn">
+                            <i>i</i>
+                        </div>
+                    </div>
                     <form class="actual-form">
                         <div class="input-row-new">
                             <input type="text" placeholder="Имя" required>
@@ -406,12 +412,24 @@
 <script src="assets/js/main.js?v=0.3"></script>
 <script>
     // Плавный скролл для всех внутренних ссылок
+    // Плавный скролл для всех внутренних ссылок
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                // Вычисляем позицию с учетом высоты хедера (80px)
+                const headerOffset = 90; 
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
         });
     });
 </script>
