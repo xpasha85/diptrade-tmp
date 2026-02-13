@@ -217,3 +217,110 @@ function initScrollTopButton() {
         }
     });
 }
+
+document.querySelectorAll('.chip, .color-chip').forEach(el => {
+    el.addEventListener('click', function(e) {
+        e.preventDefault();
+        const textarea = document.getElementById('car-request');
+        // Для кружков берем название из атрибута title
+        const val = this.classList.contains('color-chip') ? this.getAttribute('title') : this.textContent;
+        
+        this.classList.toggle('active');
+        
+        if (this.classList.contains('active')) {
+            textarea.value += (textarea.value ? ', ' : '') + val;
+        } else {
+            // Удаляем значение из поля
+            textarea.value = textarea.value
+                .split(', ')
+                .filter(item => item !== val)
+                .join(', ');
+        }
+    });
+});
+
+
+
+const textarea = document.getElementById('car-request');
+const phrases = [
+    "Например: Geely Monjaro, 2023, бюджет до 3.5 млн...",
+    "Например: Kia Sorento, полный привод, до 30.000км...",
+    "Например: Zeekr 001, новый, бюджет неограничен...",
+    "Например: Hyundai Santa Fe, дизель, до 2.5 млн...",
+    "Например: BMW X5 из Кореи, M-пакет, до 50.000км...",
+    "Например: Toyota Camry, 2.5л, черный, без окрасов...",
+    "Например: Минивэн для семьи, 7 мест, до 3 млн...",
+    "Например: Свежий китаец, гибрид, до 2.0 млн..."
+];
+
+let phraseIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+let typeSpeed = 70;
+
+function type() {
+    const currentPhrase = phrases[phraseIndex];
+    
+    if (isDeleting) {
+        // Уменьшаем строку (стираем)
+        textarea.placeholder = currentPhrase.substring(0, charIndex - 1);
+        charIndex--;
+        typeSpeed = 30;
+    } else {
+        // Увеличиваем строку (печатаем)
+        textarea.placeholder = currentPhrase.substring(0, charIndex + 1);
+        charIndex++;
+        typeSpeed = 70;
+    }
+
+    // Если фраза напечатана полностью
+    if (!isDeleting && charIndex === currentPhrase.length) {
+        isDeleting = true;
+        typeSpeed = 1000; // Пауза перед тем как начать стирать
+    } 
+    // Если фраза стерта полностью
+    else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        typeSpeed = 500;
+    }
+
+    setTimeout(type, typeSpeed);
+}
+
+// Запускаем эффект при загрузке страницы
+document.addEventListener('DOMContentLoaded', type);
+
+// Маска для телефона
+const phoneInput = document.querySelector('input[type="tel"]');
+
+phoneInput.addEventListener('input', function (e) {
+    let matrix = "+7 (___) ___ - __ - __",
+        i = 0,
+        def = matrix.replace(/\D/g, ""),
+        val = this.value.replace(/\D/g, "");
+    
+    if (def.length >= val.length) val = def;
+    
+    this.value = matrix.replace(/./g, function (a) {
+        return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a;
+    });
+});
+
+// Устанавливаем +7 при клике, если поле пустое
+phoneInput.addEventListener('focus', function() {
+    if (this.value.length < 4) {
+        this.value = "+7 (";
+    }
+});
+
+// Обработка формы и показ окна
+document.querySelector('.actual-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Тут будет твоя логика отправки на почту/телеграм
+    document.getElementById('thankYouModal').classList.add('active');
+});
+
+function closeModal() {
+    document.getElementById('thankYouModal').classList.remove('active');
+}

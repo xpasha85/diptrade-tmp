@@ -77,7 +77,7 @@
         <div class="mobile-socials">
             <a href="https://t.me/Roman_Efimenko125" target="_blank" rel="noopener noreferrer">Telegram</a>
             <a href="https://wa.me/79294299992" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            <a href="https://max.ru/u/f9LHodD0cOKN5%3Ctest%3EEhlx0f5sKC19spTZB4UhCU31TFrV7o" target="_blank" rel="noopener noreferrer">MAX</a>
+            <a href="https://max.ru/u/f9LHodD0cOIDW8jwoe-LblE-P_p0rop4hmxJVp5OElTyL64v3USydv3x5no" target="_blank" rel="noopener noreferrer">MAX</a>
         </div>
 
         <p class="mobile-note">Ежедневно с 9:00 до 19:00</p>
@@ -225,32 +225,90 @@
         <div class="form-wrapper">
             <div class="form-card-new">
                 <div class="form-content">
-                    <h2 class="section-title">Нужна помощь в выборе?</h2>
-                    <p>Оставьте заявку, и наш менеджер подготовит для вас подборку из 5-7 вариантов авто под ваш бюджет в течение часа.</p>
+                    <h2 class="section-title">Найдем ваш идеал</h2>
+                    <p>Подберем 5-7 лучших вариантов под ваши критерии за 60 минут.</p>
                     <ul class="form-advantages">
-                        <li><span class="dot"></span> Бесплатный расчет таможни</li>
+                        <li><span class="dot"></span> Расчет «под ключ» с таможней</li>
+                        <li><span class="dot"></span> Видео-отчет осмотра</li>
                         <li><span class="dot"></span> Проверка истории аукционов</li>
-                        <li><span class="dot"></span> Консультация по модификациям</li>
                     </ul>
                     <div class="form-contacts">
                         <a href="tel:+79024888884" class="f-phone">+7 (902) 488-88-84</a>
-                        <p>пн-пт: 9:00 – 19:00</p>
+                        <p>Консультируем ежедневно с 9:00 до 19:00</p>
                     </div>
                 </div>
 
-                <div class="form-right-col"> <div class="form-mobile-header">
-                        <h2>Оставить заявку</h2>
-                        <div class="info-icon" id="orderInfoBtn" style="cursor: pointer;"> <i>i</i>
-                        </div>
-                    </div>
-                    
+                <div class="form-right-col">
                     <form class="actual-form">
                         <div class="input-row-new">
                             <input type="text" placeholder="Имя" required>
-                            <input type="tel" placeholder="Телефон" required>
+                            <input type="tel" placeholder="+7 (___) ___ - __ - __" required>
                         </div>
-                        <textarea placeholder="Какое авто ищете? (Марка, бюджет, пожелания...)" rows="4"></textarea>
-                        <button type="submit" class="btn btn-primary btn-full">Получить расчет</button>
+                        
+                        <textarea id="car-request" placeholder="Какое авто ищете? (Марка, модель...)" rows="3"></textarea>
+
+                        <div class="form-selection">
+                            
+                            <div class="selection-row" data-category="Год">
+                                <span class="selection-label">Год:</span>
+                                <div class="chips-group">
+                                    <button type="button" class="chip">до 2021</button>
+                                    <button type="button" class="chip">2021-2023</button>
+                                    <button type="button" class="chip">2023-2026</button>
+                                </div>
+                            </div>
+
+                            <div class="selection-row" data-category="Пробег">
+                                <span class="selection-label">Пробег:</span>
+                                <div class="chips-group">
+                                    <button type="button" class="chip">до 30.000км</button>
+                                    <button type="button" class="chip">до 50.000км</button>
+                                    <button type="button" class="chip">до 70.000км</button>
+                                </div>
+                            </div>
+
+                            <div class="selection-row" data-category="Двигатель">
+                                <span class="selection-label">Объем:</span>
+                                <div class="chips-group">
+                                    <button type="button" class="chip">до 1.6л</button>
+                                    <button type="button" class="chip">до 2.0л</button>
+                                    <button type="button" class="chip">до 2.5л</button>
+                                    <button type="button" class="chip">2.5л+</button>
+                                </div>
+                            </div>
+
+                            <div class="selection-row" data-category="Бюджет">
+                                <span class="selection-label">Бюджет:</span>
+                                <div class="chips-group">
+                                    <button type="button" class="chip">1 млн ₽</button>
+                                    <button type="button" class="chip">2 млн ₽</button>
+                                   
+                                    <button type="button" class="chip">3 млн ₽</button>
+                                    <button type="button" class="chip" data-value="Неограничен">Неограничен</button>
+                                </div>
+                            </div>
+
+                            <div class="selection-row" data-category="Цвет">
+                                <span class="selection-label">Цвет:</span>
+                                <div class="chips-group color-swatches">
+                                    <button type="button" class="color-chip white" title="Белый"></button>
+                                    <button type="button" class="color-chip black" title="Черный"></button>
+                                    <button type="button" class="color-chip grey" title="Серый"></button>
+                                    <button type="button" class="color-chip blue" title="Синий"></button>
+                                    <button type="button" class="color-chip red" title="Красный"></button>
+                                </div>
+                            </div>
+
+                            <div class="selection-row" data-category="Окрасы">
+                                <span class="selection-label">Окрасы:</span>
+                                <div class="chips-group">
+                                    <button type="button" class="chip">Без окрасов</button>
+                                    <button type="button" class="chip">Допустимы</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 15px;">Получить расчет</button>
                         <p class="policy">Нажимая кнопку, вы соглашаетесь с обработкой данных</p>
                     </form>
                 </div>
@@ -270,14 +328,14 @@
                 <div class="footer-social">
                     <a href="https://t.me/Roman_Efimenko125" target="_blank" rel="noopener noreferrer">Telegram</a>
                     <a href="https://wa.me/79294299992" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-                    <a href="https://max.ru/u/f9LHodD0cOKN5%3Ctest%3EEhlx0f5sKC19spTZB4UhCU31TFrV7o" target="_blank" rel="noopener noreferrer">MAX</a>
+                    <a href="https://max.ru/u/f9LHodD0cOIDW8jwoe-LblE-P_p0rop4hmxJVp5OElTyL64v3USydv3x5no" target="_blank" rel="noopener noreferrer">MAX</a>
                 </div>
             </div>
 
             <div class="footer-col">
                 <h4>Навигация</h4>
                 <ul>
-                    <li><a href="#catalog">Каталог авто</a></li>
+                    <li><a href="catalog.html">Каталог авто</a></li>
                     <li><a href="#directions">Направления</a></li>
                     <li><a href="#steps">Как мы работаем</a></li>
                     <li><a href="#advantages">Почему мы</a></li>
@@ -357,5 +415,13 @@
         });
     });
 </script>
+<div class="modal-overlay" id="thankYouModal">
+    <div class="modal-content">
+        <div class="modal-icon">✓</div>
+        <h3>Заявка принята!</h3>
+        <p>Менеджер подготовит подборку авто и свяжется с вами в течение часа.</p>
+        <button class="btn btn-primary" onclick="closeModal()">Отлично</button>
+    </div>
+</div>
 </body>
 </html>
