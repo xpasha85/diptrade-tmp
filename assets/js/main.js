@@ -335,3 +335,28 @@ document.querySelector('.actual-form').addEventListener('submit', function(e) {
 function closeModal() {
     document.getElementById('thankYouModal').classList.remove('active');
 }
+
+// Подсветка активной карточки в блоке "Почему мы" на мобилках
+const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.7 // Карточка считается активной, когда видна на 70%
+};
+
+const advantageObserver = new IntersectionObserver((entries) => {
+    // Работаем только на мобильных устройствах (ширина < 1024px)
+    if (window.innerWidth > 1024) return;
+
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            // Убираем активный класс у всех и даем текущей
+            document.querySelectorAll('.adv-card').forEach(card => card.classList.remove('active'));
+            entry.target.classList.add('active');
+        }
+    });
+}, observerOptions);
+
+// Запускаем слежку за каждой карточкой
+document.querySelectorAll('.adv-card').forEach(card => {
+    advantageObserver.observe(card);
+});
