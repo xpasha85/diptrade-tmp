@@ -671,6 +671,77 @@ img { display: block; max-width: 100%; }
     }
 }
 
+
+/* Социальные кнопки в футере */
+.footer-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start; /* На ПК лучше оставить по левому краю */
+    gap: 10px;
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 120px; /* Базовая ширина для выравнивания */
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.social-link img {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%; /* Все иконки делаем круглыми */
+    object-fit: cover;
+    flex-shrink: 0; /* Чтобы иконка не сжималась */
+}
+
+.social-link:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    color: var(--white);
+}
+
+/* --- Адаптив для мобильных (2 ряда, кнопки на всю ширину) --- */
+@media (max-width: 768px) {
+    .footer-social {
+        display: grid !important;
+        /* Строго 2 колонки одинаковой ширины */
+        grid-template-columns: 1fr 1fr !important; 
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .social-link {
+        width: 100% !important;
+        /* Убираем фиксированную мин-ширину, чтобы сетка сама управляла размером */
+        min-width: 0 !important; 
+        /* Центрируем содержимое для лучшего вида в 2 ряда */
+        justify-content: center !important; 
+        padding: 12px 8px !important;
+        /* Чтобы длинный текст (WhatsApp) не ломал кнопку */
+        font-size: 13px !important; 
+    }
+    
+    .social-link img {
+        /* Немного уменьшаем иконку, чтобы влез длинный текст на узких экранах */
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+
+
 /* ==========================================================================
    6. ADAPTIVE - MOBILE (max-width: 768px)
    ========================================================================== */
