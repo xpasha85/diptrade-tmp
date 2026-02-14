@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История продаж — DipTrade</title>
+    <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png">
+    <link rel="icon" href="assets/favicon/favicon.ico" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/catalog.css"> 
+    <style>
+        .history-page { padding: 40px 0 80px; background-color: #f9f9f9; min-height: 100vh; }
+        .history-grid { display: flex; flex-direction: column; gap: 24px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container header-wrap">
+            <a href="/" class="logo">
+                <img src="assets/img/logo.png" alt="DipTrade">
+            </a>
+
+            <nav class="nav-desktop">
+                <a href="catalog.html">Каталог</a> 
+                <a href="/#directions">Направления</a>
+                <a href="/#steps">Как мы работаем</a>
+                <a href="/#advantages">Почему мы</a>
+                <a href="history.html">История продаж</a>
+                <a href="/#footer">Контакты</a>      
+            </nav>
+
+            <div class="header-cta">
+                <!-- <a href="tel:+79024888884" class="phone-link">+7 (902) 488-88-84</a> -->
+                <a href="/#order" class="btn btn-primary">Оставить заявку</a>
+            </div>
+
+            <button class="burger" id="burgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-head">
+            <img src="assets/img/logo-white.png" alt="DipTrade" class="menu-logo">
+            <button class="close-btn" id="closeMenuBtn">&times;</button>
+        </div>
+        
+        <nav class="mobile-nav">
+            <a href="catalog.html">Каталог авто</a> 
+            <a href="/#directions">Направления</a>
+            <a href="/#steps">Как мы работаем</a>
+            <a href="/#advantages">Почему мы</a>
+            <a href="history.html">История продаж</a>
+            <a href="/#order">Оставить заявку</a>
+        </nav>
+
+        <div class="mobile-footer">
+            <div class="mobile-phones">
+                <div class="mobile-phones-title">Телефоны</div>
+
+                <div class="mobile-phone-item">
+                    <div class="mobile-name">Дмитрий</div>
+                    <a href="tel:+79024888884" class="mobile-phone-link">
+                        +7 (902) 488-88-84
+                    </a>
+                </div>
+
+                <div class="mobile-phone-item">
+                    <div class="mobile-name">Роман</div>
+                    <a href="tel:+79294299992" class="mobile-phone-link">
+                        +7 (929) 429-99-92
+                    </a>
+                </div>
+            </div>
+
+            <div class="mobile-socials">
+                <a href="https://t.me/Roman_Efimenko125" target="_blank" rel="noopener noreferrer">Telegram</a>
+                <a href="https://wa.me/79294299992" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a href="https://max.ru/u/f9LHodD0cOIDW8jwoe-LblE-P_p0rop4hmxJVp5OElTyL64v3USydv3x5no" target="_blank" rel="noopener noreferrer">MAX</a>
+            </div>
+
+            <p class="mobile-note">Ежедневно с 9:00 до 19:00</p>
+        </div>
+    </div>
+
+    <main class="history-page">
+        <div class="container">
+            <div class="section-header">
+                <h1 class="section-title">История выполненных заказов</h1>
+                <p class="section-subtitle">Автомобили, которые уже нашли своих владельцев. Цены указаны итоговые, со всеми расходами до Владивостока.</p>
+            </div>
+
+            <div class="history-grid" id="historyGrid">
+                <p style="text-align: center; color: var(--text-secondary);">Загрузка истории заказов...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" id="footer">
+        <div class="container">
+            <div class="footer-wrap">
+                <div class="footer-col footer-brand">
+                    <a href="#" class="logo">
+                        <img src="assets/img/logo-white.png" alt="DipTrade">
+                    </a>
+                    <p>Профессиональный подбор и доставка автомобилей из Китая и Южной Кореи во Владивосток и по всей России.</p>
+                    <div class="footer-social">
+                        <a href="https://t.me/Roman_Efimenko125" target="_blank" rel="noopener noreferrer" class="social-link tg">
+                            <img src="assets/img/tg-icon.png" alt="TG">
+                            <span>Telegram</span>
+                        </a>
+                        <a href="https://wa.me/79294299992" target="_blank" rel="noopener noreferrer" class="social-link wa">
+                            <img src="assets/img/wa-icon.png" alt="WA">
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="https://max.ru/u/f9LHodD0cOIDW8jwoe-LblE-P_p0rop4hmxJVp5OElTyL64v3USydv3x5no" target="_blank" rel="noopener noreferrer" class="social-link max">
+                            <img src="assets/img/max-icon.png" alt="MAX">
+                            <span>MAX</span>
+                        </a>
+                        <a href="https://auto.drom.ru/uss/" target="_blank" rel="noopener noreferrer" class="social-link drom">
+                            <img src="assets/img/drom-icon.png" alt="Drom">
+                            <span>Drom</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="catalog.html">Каталог авто</a></li>
+                        <li><a href="/#directions">Направления</a></li>
+                        <li><a href="/#steps">Как мы работаем</a></li>
+                        <li><a href="/#advantages">Почему мы</a></li>
+                        <li><a href="history.html">История продаж</a></li>
+                        <li><a href="/#order">Заказать подбор</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <div class="footer-contacts">
+                        <div class="contacts-grid">
+                            <div class="contact-group phones">
+                                <strong>Телефоны:</strong>
+                                <p>Дмитрий: <a href="tel:+79024888884">+7 (902) 488-88-84</a></p>
+                                <p>Роман: <a href="tel:+79294299992">+7 (929) 429-99-92</a></p>
+                            </div>
+
+                            <div class="contact-group info">
+                                <strong>Адрес:</strong>
+                                <p>г. Уссурийск, ул. Тургенева, 73б</p>
+                                <strong>Email:</strong>
+                                <p><a href="mailto:info@diptrade.ru">info@diptrade.ru</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 DipTrade. Все права защищены.</p>
+                <p>Дизайн и разработка: <a href="#">Xpasha85</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/history.js"></script> 
+    <link rel="stylesheet" href="assets/css/history.css">
+</body>
+</html>

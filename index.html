@@ -443,6 +443,24 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Проверяем наличие параметра 'car' в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const carName = urlParams.get('car');
+        
+        // 2. Находим текстовое поле формы заказа
+        const carTextarea = document.getElementById('car-request');
+        
+        if (carName && carTextarea) {
+            // 3. Вставляем название авто в поле
+            carTextarea.value = `Хочу такой же авто: ${decodeURIComponent(carName)}`;
+            
+            // 4. Опционально: можно плавно проскроллить к форме сразу
+            // Но так как у нас в ссылке есть #order, браузер сделает это сам.
+        }
+    });
+</script>
 <div class="modal-overlay" id="thankYouModal">
     <div class="modal-content">
         <div class="modal-icon">✓</div>
