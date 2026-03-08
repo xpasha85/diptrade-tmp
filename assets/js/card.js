@@ -1,6 +1,13 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    CONFIG & CONSTANTS
    ========================================================================== */
+const cardIsLocal =
+    location.hostname === 'localhost' ||
+    location.hostname === '127.0.0.1';
+
+const CARD_API_BASE = cardIsLocal
+    ? 'http://localhost:3001'
+    : 'https://api.diptrade.ru';
 const UI_TEXT = {
     backToCatalog: "Назад в каталог",
     currencyKor: "₩",
@@ -158,15 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!carId) {
         console.error('ID не найден');
-        document.title = 'Автомобиль не найден';
+        document.title = 'Автомобиль не найден - DipTrade';
         return;
     }
 
     // 2. Загружаем базу
     
-    fetch('data/cars.json?v=' + Date.now())
+    fetch(`${CARD_API_BASE}/cars?v=` + Date.now())
         .then(response => response.json())
-        .then(cars => {
+        .then(data => {
+            const cars = Array.isArray(data) ? data : (data?.cars || []);
             const car = cars.find(item => item.id == carId);
 
             if (car) {
@@ -181,9 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 initScrollTopButton();
             } else {
                 document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
+                document.title = 'Автомобиль не найден - DipTrade';
             }
         })
-        .catch(error => console.error('Ошибка:', error));
+        .catch(error => {
+            console.error('Ошибка:', error);
+            document.title = 'Ошибка загрузки - DipTrade';
+        });
 });
 
 /**
@@ -201,7 +213,11 @@ function normalizeTitle(str) {
  * Вывод шапки, ID, даты и хлебных крошек
  */
 function renderHeaderInfo(car) {
-    const cleanTitle = normalizeTitle(car.web_title);
+    const titleSource =
+        car.web_title ||
+        `${car.brand || ''} ${car.model || ''}`.trim() ||
+        `Автомобиль #${car.id}`;
+    const cleanTitle = normalizeTitle(titleSource);
 
     // 1. Meta Title (вкладка браузера)
     document.title = `${cleanTitle} — DipTrade`;
@@ -249,7 +265,7 @@ function renderGallery(car) {
 
     // Инициализируем данные
     carPhotos = car.photos;
-    assetsFolder = `assets/cars/${car.assets_folder}`;
+    assetsFolder = `${CARD_API_BASE}/assets/cars/${car.assets_folder}`;
     currentPhotoIndex = 0;
 
     // 1. Генерируем миниатюры
@@ -937,7 +953,7 @@ function initMobileSwipeGallery(car) {
     // 3. Собираем пути к фото
     // Если car.photos нет, ставим заглушку
     const photos = (car.photos && car.photos.length) 
-        ? car.photos.map(p => `assets/cars/${car.assets_folder}/${p}`)
+        ? car.photos.map(p => `${CARD_API_BASE}/assets/cars/${car.assets_folder}/${p}`)
         : ['assets/img/placeholder.png'];
 
     // 4. Создаем HTML структуру ленты
@@ -1007,3 +1023,5 @@ function initScrollTopButton() {
 }
 
 window.addEventListener('resize', adaptLayoutForMobile);
+
+

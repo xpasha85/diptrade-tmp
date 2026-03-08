@@ -1,3 +1,10 @@
+﻿const historyIsLocal =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1';
+
+const HISTORY_API_BASE = historyIsLocal
+  ? 'http://localhost:3001'
+  : 'https://api.diptrade.ru';
 document.addEventListener('DOMContentLoaded', () => {
     const historyGrid = document.getElementById('historyGrid');
 
@@ -10,11 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     };
 
-    fetch('data/cars.json?v=' + Date.now())
+    fetch(`${HISTORY_API_BASE}/cars?v=` + Date.now())
         .then(res => res.json())
         .then(data => {
+            const cars = Array.isArray(data) ? data : (data?.cars || []);
             // Фильтруем только проданные авто
-            const soldCars = data.filter(car => car.is_sold === true);
+            const soldCars = cars.filter(car => car.is_sold === true);
 
             if (soldCars.length === 0) {
                 historyGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">История продаж пока пуста.</p>';
@@ -27,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             historyGrid.innerHTML = soldCars.map(car => {
                 // Все расчеты переменных должны быть ВНУТРИ map
                 const photoSrc = car.photos && car.photos.length > 0 
-                    ? `assets/cars/${car.assets_folder}/${car.photos[0]}` 
+                    ? `${HISTORY_API_BASE}/assets/cars/${car.assets_folder}/${car.photos[0]}` 
                     : 'assets/img/no-photo.png';
 
                 const title = car.web_title || `${car.brand} ${car.model}`;
@@ -104,3 +112,5 @@ document.addEventListener('DOMContentLoaded', () => {
             historyGrid.innerHTML = '<p style="text-align: center;">Не удалось загрузить историю продаж.</p>';
         });
 });
+
+

@@ -1,3 +1,10 @@
+﻿const catalogIsLocal =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1';
+
+const CATALOG_API_BASE = catalogIsLocal
+  ? 'http://localhost:3001'
+  : 'https://api.diptrade.ru';
 document.addEventListener('DOMContentLoaded', () => {
 
   initScrollTopButton();
@@ -359,7 +366,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     for (const car of visibleCars) {
       // --- 1. ФОТО И СЛАЙДЕР (Адаптивный: 5 тегов img) ---
       const safePhotos = (car.photos && car.photos.length > 0)
-        ? car.photos.map(f => `assets/cars/${car.assets_folder}/${f}`)
+        ? car.photos.map(f => `${CATALOG_API_BASE}/assets/cars/${car.assets_folder}/${f}`)
         : ['assets/img/no-photo.png'];
 
       const photosToShow = safePhotos.slice(0, 5);
@@ -661,10 +668,11 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   // ---------------------------
   // ЗАГРУЗКА ДАННЫХ
   // ---------------------------
-fetch('data/cars.json?v=' + Date.now())
+fetch(`${CATALOG_API_BASE}/cars?v=` + Date.now())
   .then(res => res.json())
   .then(data => {
-    allCars = (Array.isArray(data) ? data : [])
+    const apiCars = Array.isArray(data) ? data : (data?.cars || []);
+    allCars = apiCars
       .map(normalizeCar)
       // --- ВСТАВИТЬ ЭТОТ БЛОК ---
       .filter(car => {
@@ -1051,3 +1059,5 @@ function initScrollTopButton() {
         }
     });
 }
+
+

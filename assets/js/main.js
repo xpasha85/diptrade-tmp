@@ -1,3 +1,10 @@
+﻿const isLocal =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1';
+
+const API_BASE = isLocal
+  ? 'http://localhost:3001'
+  : 'https://api.diptrade.ru';
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ---
     const burger = document.getElementById('burgerBtn');
@@ -73,10 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (grid) {
-        fetch('data/cars.json?v=' + Date.now())
+        fetch(`${API_BASE}/cars?v=` + Date.now())
             .then(res => res.json())
             .then(data => {
-                const featured = data.filter(car => car.featured);
+                const cars = Array.isArray(data) ? data : (data?.cars || []);
+                const featured = cars.filter(car => car.featured);
                 // Перемешиваем
                 const shuffled = featured.sort(() => 0.5 - Math.random());
                 const isMobile = window.innerWidth < 768;
@@ -87,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 1. ФОТО: Собираем путь или ставим заглушку
                     let photoSrc = 'assets/img/no-photo.png';
                     if (car.photos && car.photos.length > 0) {
-                        photoSrc = `assets/cars/${car.assets_folder}/${car.photos[0]}`;
+                        photoSrc = `${API_BASE}/assets/cars/${car.assets_folder}/${car.photos[0]}`;
                     }
 
                     // 2. ЗАГОЛОВОК: Web title или Марка+Модель
@@ -233,6 +241,7 @@ document.querySelectorAll('.chip, .color-chip').forEach(el => {
     el.addEventListener('click', function(e) {
         e.preventDefault();
         const textarea = document.getElementById('car-request');
+        if (!textarea) return;
         // Для кружков берем название из атрибута title
         const val = this.classList.contains('color-chip') ? this.getAttribute('title') : this.textContent;
         
@@ -270,6 +279,7 @@ let isDeleting = false;
 let typeSpeed = 70;
 
 function type() {
+    if (!textarea) return;
     const currentPhrase = phrases[phraseIndex];
     
     if (isDeleting) {
@@ -300,40 +310,53 @@ function type() {
 }
 
 // Запускаем эффект при загрузке страницы
-document.addEventListener('DOMContentLoaded', type);
+if (textarea) {
+    document.addEventListener('DOMContentLoaded', type);
+}
 
 // Маска для телефона
 const phoneInput = document.querySelector('input[type="tel"]');
 
-phoneInput.addEventListener('input', function (e) {
-    let matrix = "+7 (___) ___ - __ - __",
-        i = 0,
-        def = matrix.replace(/\D/g, ""),
-        val = this.value.replace(/\D/g, "");
-    
-    if (def.length >= val.length) val = def;
-    
-    this.value = matrix.replace(/./g, function (a) {
-        return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a;
-    });
-});
+if (phoneInput) {
+    phoneInput.addEventListener('input', function (e) {
+        let matrix = "+7 (___) ___ - __ - __",
+            i = 0,
+            def = matrix.replace(/\D/g, ""),
+            val = this.value.replace(/\D/g, "");
 
-// Устанавливаем +7 при клике, если поле пустое
-phoneInput.addEventListener('focus', function() {
-    if (this.value.length < 4) {
-        this.value = "+7 (";
-    }
-});
+        if (def.length >= val.length) val = def;
+
+        this.value = matrix.replace(/./g, function (a) {
+            return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a;
+        });
+    });
+
+    // Устанавливаем +7 при клике, если поле пустое
+    phoneInput.addEventListener('focus', function() {
+        if (this.value.length < 4) {
+            this.value = "+7 (";
+        }
+    });
+}
 
 // Обработка формы и показ окна
-document.querySelector('.actual-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Тут будет твоя логика отправки на почту/телеграм
-    document.getElementById('thankYouModal').classList.add('active');
-});
+const actualForm = document.querySelector('.actual-form');
+if (actualForm) {
+    actualForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Тут будет твоя логика отправки на почту/телеграм
+        const thankYouModal = document.getElementById('thankYouModal');
+        if (thankYouModal) {
+            thankYouModal.classList.add('active');
+        }
+    });
+}
 
 function closeModal() {
-    document.getElementById('thankYouModal').classList.remove('active');
+    const thankYouModal = document.getElementById('thankYouModal');
+    if (thankYouModal) {
+        thankYouModal.classList.remove('active');
+    }
 }
 
 // Подсветка активной карточки в блоке "Почему мы" на мобилках
@@ -360,3 +383,4 @@ const advantageObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.adv-card').forEach(card => {
     advantageObserver.observe(card);
 });
+
