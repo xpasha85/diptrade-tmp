@@ -165,38 +165,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!carId) {
         console.error('ID не найден');
-        document.title = 'Автомобиль не найден - DipTrade';
+        showCarNotFound();
         return;
     }
 
-    // 2. Загружаем базу
-    
-    fetch(`${CARD_API_BASE}/cars?v=` + Date.now())
-        .then(response => response.json())
-        .then(data => {
-            const cars = Array.isArray(data) ? data : (data?.cars || []);
-            const car = cars.find(item => item.id == carId);
-
-            if (car) {
-                initMobileBreadcrumbs();
-                renderHeaderInfo(car);
-                renderGallery(car); 
-                renderSpecs(car);   
-                renderAccidents(car);
-                renderSidebar(car);
-                adaptLayoutForMobile();
-                initMobileSwipeGallery(car);
-                initScrollTopButton();
-            } else {
-                document.getElementById('pageTitle').textContent = 'Автомобиль не найден';
-                document.title = 'Автомобиль не найден - DipTrade';
+    // 2. Загружаем карточку по ID
+    fetch(`${CARD_API_BASE}/cars/${encodeURIComponent(carId)}?v=${Date.now()}`)
+        .then(response => {
+            if (response.status === 404) {
+                showCarNotFound();
+                return null;
             }
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            const car = data?.car || null;
+            if (!car) {
+                showCarNotFound();
+                return;
+            }
+
+            initMobileBreadcrumbs();
+            renderHeaderInfo(car);
+            renderGallery(car); 
+            renderSpecs(car);   
+            renderAccidents(car);
+            renderSidebar(car);
+            adaptLayoutForMobile();
+            initMobileSwipeGallery(car);
+            initScrollTopButton();
         })
         .catch(error => {
             console.error('Ошибка:', error);
+            const titleEl = document.getElementById('pageTitle');
+            if (titleEl) titleEl.textContent = 'Ошибка загрузки';
             document.title = 'Ошибка загрузки - DipTrade';
         });
 });
+
+function showCarNotFound() {
+    const titleEl = document.getElementById('pageTitle');
+    if (titleEl) titleEl.textContent = 'Автомобиль не найден';
+    document.title = 'Автомобиль не найден - DipTrade';
+}
 
 /**
  * Нормализация текста (убирает _ и лишние пробелы)

@@ -13,6 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------------------------
   let allCars = [];
   let filteredCars = [];
+  let itemsToShow = 0;
+  const serverState = {
+    page: 1,
+    perPage: 20,
+    hasNext: false,
+    total: 0,
+    isLoading: false
+  };
 
   function getColumnsCount() {
   const w = window.innerWidth;
@@ -29,7 +37,8 @@ function getPageSize() {
     }
 
 
-  itemsToShow = getPageSize();
+  serverState.perPage = getPageSize();
+  itemsToShow = serverState.perPage;
 
 
   const grid = document.getElementById('catalogGrid');
@@ -352,7 +361,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   function renderGrid() {
     if (!grid) return;
 
-    const visibleCars = filteredCars.slice(0, itemsToShow);
+    const visibleCars = filteredCars;
 
     // Если машин нет
     if (visibleCars.length === 0) {
@@ -525,26 +534,97 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
 
     // Управление кнопкой "Показать еще"
     if (loadMoreBtn) {
-      loadMoreBtn.style.display = itemsToShow >= filteredCars.length ? 'none' : 'inline-flex';
+      loadMoreBtn.style.display = serverState.hasNext ? 'inline-flex' : 'none';
+      loadMoreBtn.disabled = serverState.isLoading;
+      loadMoreBtn.textContent = serverState.isLoading ? 'Загрузка...' : 'Показать еще';
     }
   }
 
   function updateCounter() {
     if (!totalCountEl) return;
-    totalCountEl.textContent = `${filteredCars.length}`;
+    totalCountEl.textContent = `${serverState.total}`;
   }
 
-  // ---------------------------
-  // СОРТИРОВКА
-  // ---------------------------
-  function sortCars() {
-    const sortVal = sortSelect ? sortSelect.value : 'new';
-    filteredCars.sort((a, b) => {
-      if (sortVal === 'cheap') return (a.price - b.price);
-      if (sortVal === 'expensive') return (b.price - a.price);
-      if (sortVal === 'year_new') return (b.year - a.year);
-      return new Date(b.added_at || 0) - new Date(a.added_at || 0);
+  function addQueryParam(params, key, value) {
+    if (value === undefined || value === null || value === '') return;
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (item === undefined || item === null || item === '') return;
+        params.append(key, String(item));
+      });
+      return;
+    }
+    params.append(key, String(value));
+  }
+
+  function toBool(v) {
+    return v === true || v === 'true' || v === '1' || v === 1;
+  }
+
+  function applyLocalQueryFallback(cars, query) {
+    const fuelSet = new Set(
+      (Array.isArray(query.fuel) ? query.fuel : [])
+        .map(v => String(v || '').toLowerCase())
+        .filter(Boolean)
+    );
+
+    const brandNeedle = String(query.brand || '').toLowerCase();
+    const modelNeedle = String(query.model || '').toLowerCase();
+
+    const filtered = cars.filter((car) => {
+      const specs = car.specs || {};
+      const countryCode = String(car.country_code || car.country || '');
+      const brand = String(car.brand || '').toLowerCase();
+      const model = String(car.model || '').toLowerCase();
+      const fuel = String(specs.fuel || '').toLowerCase();
+
+      if (query.status === 'active' && (car.is_visible === false || car.is_sold === true)) return false;
+      if (query.status === 'featured' && !car.featured) return false;
+      if (query.status === 'auction' && !car.is_auction) return false;
+      if (query.status === 'stock' && !car.in_stock) return false;
+      if (query.status === 'sold' && !car.is_sold) return false;
+      if (query.status === 'hidden' && car.is_visible !== false) return false;
+
+      if (query.country_code && countryCode !== query.country_code) return false;
+      if (brandNeedle && !brand.includes(brandNeedle)) return false;
+      if (modelNeedle && !model.includes(modelNeedle)) return false;
+
+      if (query.price_from != null && Number(car.price || 0) < Number(query.price_from)) return false;
+      if (query.price_to != null && Number(car.price || 0) > Number(query.price_to)) return false;
+      if (query.year_from != null && Number(car.year || 0) < Number(query.year_from)) return false;
+      if (query.year_to != null && Number(car.year || 0) > Number(query.year_to)) return false;
+      if (query.volume_from != null && Number(specs.volume || 0) < Number(query.volume_from)) return false;
+      if (query.volume_to != null && Number(specs.volume || 0) > Number(query.volume_to)) return false;
+      if (query.hp_from != null && Number(specs.hp || 0) < Number(query.hp_from)) return false;
+      if (query.hp_to != null && Number(specs.hp || 0) > Number(query.hp_to)) return false;
+
+      if (fuelSet.size > 0 && !fuelSet.has(fuel)) return false;
+
+      if (query.full_time != null) {
+        const is4wd = Boolean(car.full_time || specs.is_4wd);
+        if (is4wd !== toBool(query.full_time)) return false;
+      }
+      if (query.is_auction != null && Boolean(car.is_auction) !== toBool(query.is_auction)) return false;
+      if (query.in_stock != null && Boolean(car.in_stock) !== toBool(query.in_stock)) return false;
+
+      return true;
     });
+
+    filtered.sort((a, b) => {
+      const sortVal = String(query.sort || 'newest');
+      if (sortVal === 'cheap' || sortVal === 'price_asc') return Number(a.price || 0) - Number(b.price || 0);
+      if (sortVal === 'expensive' || sortVal === 'price_desc') return Number(b.price || 0) - Number(a.price || 0);
+      if (sortVal === 'year_new' || sortVal === 'year_desc') return Number(b.year || 0) - Number(a.year || 0);
+      if (sortVal === 'year_asc') return Number(a.year || 0) - Number(b.year || 0);
+      if (sortVal === 'id_asc') return Number(a.id || 0) - Number(b.id || 0);
+      if (sortVal === 'id_desc') return Number(b.id || 0) - Number(a.id || 0);
+
+      const aTs = Date.parse(String(a.added_at || '')) || 0;
+      const bTs = Date.parse(String(b.added_at || '')) || 0;
+      return bTs - aTs;
+    });
+
+    return filtered;
   }
 
   // ---------------------------
@@ -613,93 +693,171 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   // ---------------------------
   // APPLY FILTERS (единая точка)
   // ---------------------------
-  function applyFilters() {
-    if (!filterForm) return;
+  function buildCarsQuery() {
+    if (!filterForm) return {};
 
     reconcileStateFromForm();
-
     const fd = new FormData(filterForm);
 
-    filteredCars = allCars.filter(car => {
-      // 1) СТРАНА
-      if (state.country && car.country_code !== state.country) return false;
+    const query = {
+      status: 'active',
+      sort: sortSelect ? sortSelect.value : 'newest',
+      page: serverState.page,
+      per_page: serverState.perPage
+    };
 
-      // 2) САЙДБАР
-      if (fd.get('brand') && car.brand !== fd.get('brand')) return false;
-      if (fd.get('model') && car.model !== fd.get('model')) return false;
+    if (state.country) query.country_code = state.country;
 
-      const pFrom = Number(fd.get('price_from')); if (pFrom && car.price < pFrom) return false;
-      const pTo = Number(fd.get('price_to'));     if (pTo && car.price > pTo) return false;
+    const brand = String(fd.get('brand') || '').trim();
+    const model = String(fd.get('model') || '').trim();
+    if (brand) query.brand = brand;
+    if (model) query.model = model;
 
-      const yFrom = Number(fd.get('year_from'));  if (yFrom && car.year < yFrom) return false;
-      const yTo = Number(fd.get('year_to'));      if (yTo && car.year > yTo) return false;
+    const readNumberField = (name) => {
+      const raw = String(fd.get(name) || '').trim();
+      if (!raw) return null;
+      const num = Number(raw);
+      return Number.isFinite(num) ? num : null;
+    };
 
-      const vFrom = Number(fd.get('volume_from')); if (vFrom && car.specs.volume < vFrom) return false;
-      const vTo = Number(fd.get('volume_to'));     if (vTo && car.specs.volume > vTo) return false;
+    let yearFrom = readNumberField('year_from');
+    let yearTo = readNumberField('year_to');
 
-      const hpFrom = Number(fd.get('hp_from'));   if (hpFrom && car.specs.hp < hpFrom) return false;
-      const hpTo = Number(fd.get('hp_to'));       if (hpTo && car.specs.hp > hpTo) return false;
+    if (state.chipFlags.has('passable')) {
+      const now = new Date();
+      const passableFromYear = now.getFullYear() - 5;
+      const passableToYear = now.getFullYear() - 3;
+      yearFrom = yearFrom == null ? passableFromYear : Math.max(yearFrom, passableFromYear);
+      yearTo = yearTo == null ? passableToYear : Math.min(yearTo, passableToYear);
+    }
 
-      const fuels = fd.getAll('fuel');
-      if (fuels.length > 0 && !fuels.includes(car.specs.fuel)) return false;
+    if (yearFrom != null) query.year_from = yearFrom;
+    if (yearTo != null) query.year_to = yearTo;
 
-      if (fd.get('full_time') && !car.full_time) return false;
-      if (fd.get('is_auction') && !car.is_auction) return false;
-      if (fd.get('in_stock') && !car.in_stock) return false;
-
-      // 3) ЧИПЫ-ФЛАГИ (multi)
-      if (state.chipFlags.has('budget') && car.price > 2000000) return false;
-      if (state.chipFlags.has('power_low') && car.specs.hp > 160) return false;
-      if (state.chipFlags.has('stock') && !car.in_stock) return false;
-      if (state.chipFlags.has('passable') && !car._isPassable) return false;
-
-      return true;
+    const ranges = [
+      'price_from',
+      'price_to',
+      'volume_from',
+      'volume_to',
+      'hp_from',
+      'hp_to'
+    ];
+    ranges.forEach((name) => {
+      const value = readNumberField(name);
+      if (value != null) query[name] = value;
     });
 
-    sortCars();
+    const invalidRange =
+      (query.price_from != null && query.price_to != null && query.price_from > query.price_to) ||
+      (query.year_from != null && query.year_to != null && query.year_from > query.year_to) ||
+      (query.volume_from != null && query.volume_to != null && query.volume_from > query.volume_to) ||
+      (query.hp_from != null && query.hp_to != null && query.hp_from > query.hp_to);
 
-    // пагинация: при любом изменении фильтров — показываем первые 20
-    itemsToShow = getPageSize();
+    if (invalidRange) {
+      return { __forceEmpty: true };
+    }
 
+    const fuels = fd.getAll('fuel').map(v => String(v || '').trim()).filter(Boolean);
+    if (fuels.length > 0) query.fuel = fuels;
+
+    if (fd.get('full_time')) query.full_time = 'true';
+    if (fd.get('is_auction')) query.is_auction = 'true';
+    if (fd.get('in_stock')) query.in_stock = 'true';
+
+    return query;
+  }
+
+  async function fetchCarsPage({ append = false } = {}) {
+    if (serverState.isLoading) return;
+    serverState.isLoading = true;
     renderGrid();
-    updateCounter();
+
+    try {
+      const query = buildCarsQuery();
+      if (query.__forceEmpty) {
+        filteredCars = [];
+        serverState.hasNext = false;
+        serverState.total = 0;
+        renderGrid();
+        updateCounter();
+        return;
+      }
+      const params = new URLSearchParams();
+      Object.entries(query).forEach(([key, value]) => addQueryParam(params, key, value));
+
+      const response = await fetch(`${CATALOG_API_BASE}/cars?${params.toString()}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const apiCars = Array.isArray(data) ? data : (Array.isArray(data?.cars) ? data.cars : []);
+      const normalizedAll = apiCars.map(normalizeCar);
+
+      let pagination = (data && typeof data === 'object') ? data.pagination : null;
+      let normalized = normalizedAll;
+
+      // Backward compatibility: если API не отдает pagination и игнорирует query,
+      // применяем фильтры/сорт/пагинацию локально (как было до Stage 4).
+      if (!pagination || !Number.isFinite(Number(pagination.total))) {
+        const locallyFiltered = applyLocalQueryFallback(normalizedAll, query);
+        const total = locallyFiltered.length;
+        const page = Math.max(1, Number(serverState.page || 1));
+        const perPage = Math.max(1, Number(serverState.perPage || getPageSize()));
+        const totalPages = Math.max(1, Math.ceil(total / perPage));
+        const start = (page - 1) * perPage;
+        normalized = locallyFiltered.slice(start, start + perPage);
+        pagination = {
+          page,
+          per_page: perPage,
+          total,
+          total_pages: totalPages,
+          has_prev: page > 1,
+          has_next: page < totalPages
+        };
+      }
+
+      if (append) filteredCars = filteredCars.concat(normalized);
+      else filteredCars = normalized;
+
+      serverState.hasNext = Boolean(pagination?.has_next);
+      serverState.total = Number(pagination?.total ?? filteredCars.length);
+      serverState.page = Number(pagination?.page ?? serverState.page);
+      serverState.perPage = Number(pagination?.per_page ?? serverState.perPage);
+
+      itemsToShow = filteredCars.length;
+      allCars = [...filteredCars];
+      updateBrandList();
+      renderGrid();
+      updateCounter();
+    } catch (err) {
+      console.error('Ошибка загрузки каталога:', err);
+      if (!append) {
+        filteredCars = [];
+        allCars = [];
+        serverState.total = 0;
+        serverState.hasNext = false;
+      }
+      renderGrid();
+      updateCounter();
+    } finally {
+      serverState.isLoading = false;
+      renderGrid();
+    }
+  }
+
+  function applyFilters() {
+    if (!filterForm) return;
+    serverState.page = 1;
+    serverState.perPage = getPageSize();
+    fetchCarsPage({ append: false });
   }
 
   // ---------------------------
   // ЗАГРУЗКА ДАННЫХ
   // ---------------------------
-fetch(`${CATALOG_API_BASE}/cars?v=` + Date.now())
-  .then(res => res.json())
-  .then(data => {
-    const apiCars = Array.isArray(data) ? data : (data?.cars || []);
-    allCars = apiCars
-      .map(normalizeCar)
-      // --- ВСТАВИТЬ ЭТОТ БЛОК ---
-      .filter(car => {
-          // 1. Если явно скрыто (is_visible === false) -> не показываем
-          if (car.is_visible === false) return false;
-          
-          // 2. Если продано (is_sold === true) -> не показываем
-          if (car.is_sold === true) return false;
-
-          return true;
-      });
-      // ---------------------------
-
-      // Сортировка по дате добавления
-      allCars.sort((a, b) => new Date(b.added_at || 0) - new Date(a.added_at || 0));
-      filteredCars = [...allCars];
-
-      // стартовое состояние — "all"
-      state.country = "";
-      syncCountryToForm();
-      syncChipsUI();
-
-      updateBrandList(); // заполнить бренды/модели
-      renderGrid();
-      updateCounter();
-    })
-    .catch(err => console.error('Ошибка:', err));
+  state.country = "";
+  syncCountryToForm();
+  syncChipsUI();
+  applyFilters();
 
   // ---------------------------
   // СОБЫТИЯ
@@ -708,8 +866,6 @@ fetch(`${CATALOG_API_BASE}/cars?v=` + Date.now())
   // Сайдбар -> фильтры
   if (filterForm) {
     filterForm.addEventListener('change', () => {
-      // если меняли бренд/страну/что-то — актуализируем списки
-      updateBrandList();
       applyFilters();
     });
   }
@@ -793,8 +949,7 @@ fetch(`${CATALOG_API_BASE}/cars?v=` + Date.now())
 
   if (sortSelect) {
     sortSelect.addEventListener('change', () => {
-      sortCars();
-      renderGrid();
+      applyFilters();
     });
   }
 
@@ -827,8 +982,9 @@ if (resetBtn && filterForm) {
 
   if (loadMoreBtn) {
     loadMoreBtn.addEventListener('click', () => {
-      itemsToShow += getPageSize();
-      renderGrid();
+      if (!serverState.hasNext || serverState.isLoading) return;
+      serverState.page += 1;
+      fetchCarsPage({ append: true });
     });
   }
 
