@@ -182,23 +182,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 6. ФОРМА ---
-    // Находим форму один раз
     const form = document.querySelector('.actual-form');
 
     if (form) {
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // 1. Убираем/удаляем строку: alert('Спасибо! Заявка отправлена.'); <-- ЭТО ПРИЧИНА
 
-            // 2. Показываем ваше красивое окно
-            const modal = document.getElementById('thankYouModal');
-            if (modal) {
-                modal.classList.add('active');
+            const nameInput = form.querySelector('input[type="text"]');
+            const phoneInput = form.querySelector('input[type="tel"]');
+            const messageInput = form.querySelector('textarea');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            const name = nameInput?.value?.trim() || '';
+            const phone = phoneInput?.value?.trim() || '';
+            const message = messageInput?.value?.trim() || '';
+
+            if (!name || !phone || phone.length < 5) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправляем...';
+
+            try {
+                const res = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, message })
+                });
+
+                if (!res.ok) throw new Error('Server error');
+
+                openThankYouModal();
+
+                form.reset();
+                document.querySelectorAll('.chip, .color-chip').forEach(c => c.classList.remove('active'));
+            } catch (err) {
+                console.error('Ошибка отправки заявки:', err);
+                alert('Не удалось отправить заявку. Позвоните нам: +7 (902) 488-88-84');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Получить расчет';
             }
-
-            // 3. Очищаем форму
-            form.reset();
         });
     }
 
@@ -339,23 +362,108 @@ if (phoneInput) {
     });
 }
 
-// Обработка формы и показ окна
-const actualForm = document.querySelector('.actual-form');
-if (actualForm) {
-    actualForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Тут будет твоя логика отправки на почту/телеграм
-        const thankYouModal = document.getElementById('thankYouModal');
-        if (thankYouModal) {
-            thankYouModal.classList.add('active');
-        }
+let thankYouModalReady = false;
+let thankYouModalTimerId = null;
+let thankYouModalInitialized = false;
+let thankYouModalGuardId = null;
+
+function initThankYouModal() {
+    if (thankYouModalInitialized) return;
+
+    const thankYouModal = document.getElementById('thankYouModal');
+    const thankYouModalContent = thankYouModal?.querySelector('.modal-content');
+
+    if (!thankYouModal || !thankYouModalContent) return;
+
+    thankYouModalContent.addEventListener('click', function(e) {
+        e.stopPropagation();
     });
+
+    // Закрываем по нажатию на фон. Используем pointerdown, чтобы не ловить отложенный click после submit на тач-устройствах.
+    thankYouModal.addEventListener('pointerdown', function(e) {
+        if (e.target !== this || !thankYouModalReady) return;
+        closeModal();
+    });
+
+    thankYouModalInitialized = true;
+}
+
+function openThankYouModal() {
+    const modal = document.getElementById('thankYouModal');
+    const modalContent = modal?.querySelector('.modal-content');
+    if (!modal) return;
+
+    initThankYouModal();
+    modal.classList.add('active');
+    thankYouModalReady = false;
+
+    // Блокируем любые клики по модалке и ее содержимому,
+    // чтобы завершающий tap по submit не закрыл окно сразу после открытия.
+    modal.style.pointerEvents = 'none';
+    if (modalContent) {
+        modalContent.style.pointerEvents = 'none';
+    }
+
+    if (thankYouModalTimerId) {
+        clearTimeout(thankYouModalTimerId);
+    }
+
+    if (thankYouModalGuardId) {
+        clearInterval(thankYouModalGuardId);
+    }
+
+    // Даже если какой-то сторонний/остаточный обработчик снимет active,
+    // удерживаем модалку открытой до конца защитного окна.
+    thankYouModalGuardId = window.setInterval(() => {
+        if (thankYouModalReady) {
+            clearInterval(thankYouModalGuardId);
+            thankYouModalGuardId = null;
+            return;
+        }
+
+        if (!modal.classList.contains('active')) {
+            modal.classList.add('active');
+        }
+    }, 50);
+
+    // Игнорируем стартовый клик, который открыл окно после submit.
+    thankYouModalTimerId = window.setTimeout(() => {
+        thankYouModalReady = true;
+        modal.style.pointerEvents = '';
+        if (modalContent) {
+            modalContent.style.pointerEvents = '';
+        }
+    }, 700);
 }
 
 function closeModal() {
-    const thankYouModal = document.getElementById('thankYouModal');
-    if (thankYouModal) {
-        thankYouModal.classList.remove('active');
+    const modal = document.getElementById('thankYouModal');
+    const modalContent = modal?.querySelector('.modal-content');
+
+    if (!thankYouModalReady) return;
+
+    if (thankYouModalTimerId) {
+        clearTimeout(thankYouModalTimerId);
+        thankYouModalTimerId = null;
+    }
+
+    if (thankYouModalGuardId) {
+        clearInterval(thankYouModalGuardId);
+        thankYouModalGuardId = null;
+    }
+
+    thankYouModalReady = false;
+
+    if (modal) {
+        modal.style.pointerEvents = '';
+    }
+
+    if (modalContent) {
+        modalContent.style.pointerEvents = '';
+    }
+
+    if (modal) {
+        modal.classList.remove('active');
     }
 }
 
