@@ -80,11 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (grid) {
-        fetch(`${API_BASE}/cars?v=` + Date.now())
+        const featuredParams = new URLSearchParams({
+            featured: 'true',
+            is_visible: 'true',
+            is_sold: 'false',
+            v: String(Date.now())
+        });
+
+        fetch(`${API_BASE}/cars?${featuredParams.toString()}`)
             .then(res => res.json())
             .then(data => {
                 const cars = Array.isArray(data) ? data : (data?.cars || []);
-                const featured = cars.filter(car => car.featured);
+                const featured = cars.filter(car => car.featured && car.is_visible !== false && car.is_sold !== true);
                 // Перемешиваем
                 const shuffled = featured.sort(() => 0.5 - Math.random());
                 const isMobile = window.innerWidth < 768;

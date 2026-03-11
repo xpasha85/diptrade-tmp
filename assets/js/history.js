@@ -17,7 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     };
 
-    fetch(`${HISTORY_API_BASE}/cars?v=` + Date.now())
+    const historyParams = new URLSearchParams({
+        is_sold: 'true',
+        v: String(Date.now())
+    });
+
+    fetch(`${HISTORY_API_BASE}/cars?${historyParams.toString()}`)
         .then(res => res.json())
         .then(data => {
             const cars = Array.isArray(data) ? data : (data?.cars || []);

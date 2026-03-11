@@ -137,8 +137,9 @@ function getPageSize() {
 
     // Кэши для ускорения на 1000+
     car._ageMonths = getAgeInMonths(car.year, car.month || 1);
-    car._isPassable = (car._ageMonths >= 36 && car._ageMonths < 60);
-    car._isLowPower = (car.specs.hp <= 160 && car.specs.volume > 0);
+    car._hasCustomsBadges = car.country_code !== 'RU';
+    car._isPassable = car._hasCustomsBadges && (car._ageMonths >= 36 && car._ageMonths < 60);
+    car._isLowPower = car._hasCustomsBadges && (car.specs.hp <= 160 && car.specs.volume > 0);
 
     // фото
     if (!Array.isArray(car.photos)) car.photos = [];
@@ -405,9 +406,11 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
 
       // --- 2. ВЕРХНИЕ БЕЙДЖИ И ФЛАГ ---
       const bottomBadges = [];
-      bottomBadges.push(car._isPassable
-        ? '<div class="badge-glass green">Проходной</div>'
-        : '<div class="badge-glass red">Высокая ставка</div>');
+      if (car._hasCustomsBadges) {
+        bottomBadges.push(car._isPassable
+          ? '<div class="badge-glass green">Проходной</div>'
+          : '<div class="badge-glass red">Высокая ставка</div>');
+      }
 
       if (car._isLowPower) bottomBadges.push('<div class="badge-glass yellow">Льготный</div>');
 
@@ -561,6 +564,10 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     return v === true || v === 'true' || v === '1' || v === 1;
   }
 
+  function compareInStockFirst(a, b) {
+    return Number(Boolean(b?.in_stock)) - Number(Boolean(a?.in_stock));
+  }
+
   function applyLocalQueryFallback(cars, query) {
     const fuelSet = new Set(
       (Array.isArray(query.fuel) ? query.fuel : [])
@@ -611,6 +618,9 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     });
 
     filtered.sort((a, b) => {
+      const stockDiff = compareInStockFirst(a, b);
+      if (stockDiff !== 0) return stockDiff;
+
       const sortVal = String(query.sort || 'newest');
       if (sortVal === 'cheap' || sortVal === 'price_asc') return Number(a.price || 0) - Number(b.price || 0);
       if (sortVal === 'expensive' || sortVal === 'price_desc') return Number(b.price || 0) - Number(a.price || 0);

@@ -643,24 +643,28 @@ function renderSidebar(car) {
         
         // Получаем л.с. (пробуем разные поля, так как я не вижу твой JSON прямо сейчас)
         const hp = car.horse_power || (car.specs ? car.specs.hp : 0) || 0;
+        const hasCustomsBadges = car.country_code !== 'RU';
 
         let chipsHTML = '';
         
-        // 1. ЛОГИКА ВОЗРАСТА (Проходной / Непроходной)
-        if (age >= 3 && age <= 5) {
-            // Проходной (3-5 лет) -> Зеленый
-            chipsHTML += `<span class="chip-status chip-green">Проходной (3-5 лет)</span>`;
-        } else if (age < 3) {
-            // Новый (< 3 лет) -> Красный
-            chipsHTML += `<span class="chip-status chip-red">Высокая ставка (< 3 лет)</span>`;
-        } else {
-            // Старый (> 5 лет) -> Красный
-            chipsHTML += `<span class="chip-status chip-red">Высокая ставка (> 5 лет)</span>`;
-        }
+        // Для авто из России таможенные плашки не нужны: машина уже растаможена.
+        if (hasCustomsBadges) {
+            // 1. ЛОГИКА ВОЗРАСТА (Проходной / Непроходной)
+            if (age >= 3 && age <= 5) {
+                // Проходной (3-5 лет) -> Зеленый
+                chipsHTML += `<span class="chip-status chip-green">Проходной (3-5 лет)</span>`;
+            } else if (age < 3) {
+                // Новый (< 3 лет) -> Красный
+                chipsHTML += `<span class="chip-status chip-red">Высокая ставка (< 3 лет)</span>`;
+            } else {
+                // Старый (> 5 лет) -> Красный
+                chipsHTML += `<span class="chip-status chip-red">Высокая ставка (> 5 лет)</span>`;
+            }
 
-        // 2. ЛОГИКА ЛЬГОТЫ (< 160 л.с.)
-        if (hp > 0 && hp <= 160) {
-            chipsHTML += `<span class="chip-status chip-yellow">Льготный (< 160 л.с.)</span>`;
+            // 2. ЛОГИКА ЛЬГОТЫ (< 160 л.с.)
+            if (hp > 0 && hp <= 160) {
+                chipsHTML += `<span class="chip-status chip-yellow">Льготный (< 160 л.с.)</span>`;
+            }
         }
 
         // 3. В НАЛИЧИИ
