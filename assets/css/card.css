@@ -302,6 +302,18 @@
 .spec-row-line .s-label { color: var(--text-secondary); }
 .spec-row-line .s-val { font-weight: 500; color: var(--text-main); text-align: right; }
 
+.description-box {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.description-text {
+    color: var(--text-main);
+    font-size: 15px;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
 /* --- REPORT BLOCK (ДТП) --- */
 .car-report {
     display: flex;
@@ -1078,6 +1090,10 @@
    MOBILE ADAPTIVE (max-width: 768px)
    ========================================= */
 @media (max-width: 768px) {
+    .description-box {
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
 
     /* 1. СБРОС СЕТКИ (Одна колонка) */
     .car-layout {

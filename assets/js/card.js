@@ -192,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             initMobileBreadcrumbs();
             renderHeaderInfo(car);
             renderGallery(car); 
+            renderDescription(car);
             renderSpecs(car);   
             renderAccidents(car);
             renderSidebar(car);
@@ -211,6 +212,15 @@ function showCarNotFound() {
     const titleEl = document.getElementById('pageTitle');
     if (titleEl) titleEl.textContent = 'Автомобиль не найден';
     document.title = 'Автомобиль не найден - DipTrade';
+}
+
+function formatVinPreview(vin) {
+    const normalized = String(vin || '').trim().toUpperCase();
+    if (!normalized) return 'Не указан';
+    if (normalized.length <= 8) {
+        return `...${normalized.slice(-4)}`;
+    }
+    return `${normalized.slice(0, 4)}...${normalized.slice(-4)}`;
 }
 
 /**
@@ -323,6 +333,37 @@ function renderGallery(car) {
     updateGalleryState(0);
 }
 
+function renderDescription(car) {
+    const container = document.getElementById('descriptionContainer');
+    if (!container) return;
+
+    const description = String(car?.description || '').trim();
+    if (!description) {
+        container.innerHTML = '';
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = '';
+
+    const box = document.createElement('div');
+    box.className = 'content-box description-box';
+
+    const title = document.createElement('h2');
+    title.className = 'box-title';
+    title.textContent = 'Описание автомобиля';
+
+    const text = document.createElement('div');
+    text.className = 'description-text';
+    text.textContent = description;
+
+    box.appendChild(title);
+    box.appendChild(text);
+
+    container.innerHTML = '';
+    container.appendChild(box);
+}
+
 /**
  * Главная функция обновления галереи
  * Меняет большое фото и активную миниатюру по индексу
@@ -355,6 +396,9 @@ function updateGalleryState(index) {
 function renderSpecs(car) {
     const container = document.getElementById('specsContainer');
     if (!container) return;
+    const specs = car.specs || {};
+    const vinPreview = formatVinPreview(car.vin);
+    const isFullTime = Boolean(car.full_time || specs.is_4wd);
 
     // Данные могут лежать в корне (car.year) или в car.specs (car.specs.hp)
     // Собираем всё в удобный конфиг. 
@@ -370,30 +414,32 @@ function renderSpecs(car) {
         },
         { 
             label: 'Пробег', 
-            value: car.specs.mileage ? `${formatNumber(car.specs.mileage)} км` : 'Не указан' 
+            value: specs.mileage ? `${formatNumber(specs.mileage)} км` : 'Не указан' 
         },
-        { label: 'Тип топлива', value: car.specs.fuel },
+        { label: 'Тип топлива', value: specs.fuel },
         { 
             label: 'Коробка передач', 
-            value: car.specs.transmission || 'Автомат' // В JSON часто null, ставим дефолт или берем из базы
+            value: specs.transmission || 'Автомат' // В JSON часто null, ставим дефолт или берем из базы
         },
         { label: 'Тип кузова', value: car.body_type || 'Не указан' }, // Если поля нет в JSON
         { label: 'Цвет', value: car.color || 'Не указан' },             // Если поля нет в JSON
         { 
             label: 'Объем двигателя', 
-            value: car.specs.volume ? `${(car.specs.volume / 1000).toFixed(1)} л` : '-' 
+            value: specs.volume ? `${(specs.volume / 1000).toFixed(1)} л` : '-' 
         },
         { 
             label: 'Мощность двигателя', 
-            value: car.specs.hp ? `${car.specs.hp} л.с.` : '-' 
-        }
+            value: specs.hp ? `${specs.hp} л.с.` : '-' 
+        },
+        { label: 'Полный привод', value: isFullTime ? 'Да' : 'Нет' },
+        { label: 'VIN', value: vinPreview, alwaysShow: true }
     ];
 
     let html = '';
 
     specsMap.forEach(item => {
         // Если значение есть (не null, не undefined и не пустая строка), выводим
-        if (item.value && item.value !== 'Не указан' && item.value !== '-') {
+        if (item.alwaysShow || (item.value && item.value !== 'Не указан' && item.value !== '-')) {
             html += `
             <div class="spec-row-line">
                 <span class="s-label">${item.label}</span>
