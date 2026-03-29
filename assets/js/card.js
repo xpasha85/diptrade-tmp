@@ -8,6 +8,7 @@ const cardIsLocal =
 const CARD_API_BASE = cardIsLocal
     ? 'http://localhost:3001'
     : 'https://api.diptrade.ru';
+const CARD_CARS_API_BASE = `${CARD_API_BASE}/site/cars`;
 const UI_TEXT = {
     backToCatalog: "Назад в каталог",
     currencyKor: "₩",
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Загружаем карточку по ID
-    fetch(`${CARD_API_BASE}/cars/${encodeURIComponent(carId)}?v=${Date.now()}`)
+    fetch(`${CARD_CARS_API_BASE}/${encodeURIComponent(carId)}?v=${Date.now()}`)
         .then(response => {
             if (response.status === 404) {
                 showCarNotFound();
@@ -399,12 +400,11 @@ function renderSpecs(car) {
     const specs = car.specs || {};
     const vinPreview = formatVinPreview(car.vin);
     const isFullTime = Boolean(car.full_time || specs.is_4wd);
+    const mileageKm = getSpecsMileageKm(specs);
+    const fuelLabel = getSpecsFuelLabel(specs);
+    const engineVolumeCc = getSpecsEngineVolumeCc(specs);
+    const powerHp = getSpecsPowerHp(specs);
 
-    // Данные могут лежать в корне (car.year) или в car.specs (car.specs.hp)
-    // Собираем всё в удобный конфиг. 
-    // label: Название строки
-    // value: Значение (может быть функцией для сложного форматирования)
-    
     const specsMap = [
         { label: 'Марка', value: car.brand },
         { label: 'Модель', value: car.model },
@@ -412,24 +412,24 @@ function renderSpecs(car) {
             label: 'Год выпуска', 
             value: car.year + (car.month ? ` / ${car.month}` : '') 
         },
-        { 
-            label: 'Пробег', 
-            value: specs.mileage ? `${formatNumber(specs.mileage)} км` : 'Не указан' 
+        {
+            label: 'Пробег',
+            value: mileageKm ? `${formatNumber(mileageKm)} км` : 'Не указан'
         },
-        { label: 'Тип топлива', value: specs.fuel },
+        { label: 'Тип топлива', value: fuelLabel || 'Не указан' },
         { 
             label: 'Коробка передач', 
             value: specs.transmission || 'Автомат' // В JSON часто null, ставим дефолт или берем из базы
         },
         { label: 'Тип кузова', value: car.body_type || 'Не указан' }, // Если поля нет в JSON
         { label: 'Цвет', value: car.color || 'Не указан' },             // Если поля нет в JSON
-        { 
-            label: 'Объем двигателя', 
-            value: specs.volume ? `${(specs.volume / 1000).toFixed(1)} л` : '-' 
+        {
+            label: 'Объем двигателя',
+            value: engineVolumeCc ? `${(engineVolumeCc / 1000).toFixed(1)} л` : '-'
         },
-        { 
-            label: 'Мощность двигателя', 
-            value: specs.hp ? `${specs.hp} л.с.` : '-' 
+        {
+            label: 'Мощность двигателя',
+            value: powerHp ? `${powerHp} л.с.` : '-'
         },
         { label: 'Полный привод', value: isFullTime ? 'Да' : 'Нет' },
         { label: 'VIN', value: vinPreview, alwaysShow: true }
@@ -455,6 +455,266 @@ function renderSpecs(car) {
 // Вспомогательная функция для пробелов в цифрах (10000 -> 10 000)
 function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+function getSpecsPowerHp(specs = {}) {
+    const value = Number(specs.power_hp);
+    return Number.isFinite(value) ? value : 0;
+}
+
+function getSpecsEngineVolumeCc(specs = {}) {
+    const value = Number(specs.engine_volume_cc);
+    return Number.isFinite(value) ? value : 0;
+}
+
+function getSpecsMileageKm(specs = {}) {
+    const value = Number(specs.mileage_km);
+    return Number.isFinite(value) ? value : 0;
+}
+
+function getSpecsFuelLabel(specs = {}) {
+    const engineType = String(specs.engine_type || '').toLowerCase();
+    if (engineType === 'gasoline') return 'Бензин';
+    if (engineType === 'diesel') return 'Дизель';
+    if (engineType === 'hybrid' || engineType === 'par_hybrid') return 'Гибрид';
+    if (engineType === 'electric') return 'Электро';
+    if (engineType === 'lpg') return 'LPG';
+    return '';
+}
+
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatRubAmount(value, fallback = '-- ₽') {
+    if (value === null || value === undefined || value === '') return fallback;
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return fallback;
+    return `${formatNumber(Math.round(numeric))} ₽`;
+}
+
+function formatDateTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+function getPublicPricing(car) {
+    return car && typeof car.public_pricing === 'object' ? car.public_pricing : null;
+}
+
+function formatRateRub(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return '';
+    return `${numeric.toLocaleString('ru-RU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })} ₽`;
+}
+
+function formatPublicLocalAmount(value, publicPricing, fallback = '--') {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return fallback;
+    const symbol = String(publicPricing?.currency?.symbol || '').trim();
+    const amount = numeric.toLocaleString('ru-RU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    return symbol ? `${amount} ${symbol}` : amount;
+}
+
+function getUsedRateLabel(entry) {
+    const code = String(entry?.code || '').trim().toUpperCase();
+    if (code === 'KRW') return '1000 ₩';
+    if (code === 'CNY') return '1 ¥';
+    if (code === 'EUR') return '1 €';
+    return code || 'Курс';
+}
+
+function renderUsedRatesInline(publicPricing) {
+    const rawRates = Array.isArray(publicPricing?.rates) ? publicPricing.rates : [];
+    const entries = rawRates
+        .filter((entry) => entry && Number.isFinite(Number(entry.value)))
+        .map((entry) => {
+            const left = getUsedRateLabel(entry);
+            return `${left} - ${formatRateRub(entry.value)}`;
+        });
+
+    if (!entries.length) return '';
+
+    return `
+        <div class="calc-used-rates">
+            <div class="calc-used-rates__title">Использованные курсы</div>
+            <div class="calc-used-rates__grid">
+                ${entries.map((value) => `<div class="calc-used-rates__item">${escapeHtml(value)}</div>`).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function buildCalculatorSections(car) {
+    const publicPricing = getPublicPricing(car);
+    const breakdown = publicPricing && typeof publicPricing.breakdown === 'object' ? publicPricing.breakdown : null;
+    const purchase = publicPricing && typeof publicPricing.purchase === 'object' ? publicPricing.purchase : null;
+    const servicesLocal = publicPricing && typeof publicPricing.services_local === 'object' ? publicPricing.services_local : null;
+    const hasBreakdown = Boolean(breakdown && typeof breakdown.grand_total === 'number');
+    const priceTotal = formatRubAmount((breakdown && breakdown.grand_total) ?? car.price, formatPrice(car.price));
+    const usedRatesHtml = renderUsedRatesInline(publicPricing);
+
+    if (car.country_code === 'RU') {
+        return {
+            rowsHTML: `
+                ${usedRatesHtml}
+                <div class="calc-block-wrapper">
+                    <div class="calc-section-title">Автомобиль в России</div>
+
+                    <div class="calc-row">
+                        <span class="c-label">Стоимость авто</span>
+                        <span class="c-dots"></span>
+                        <span class="c-val">${formatPrice(car.price)}</span>
+                    </div>
+
+                    <div class="calc-note-box">
+                        Автомобиль находится в России. Детальный импортный расчет для этой карточки не применяется.
+                    </div>
+                </div>
+            `,
+            footerPrice: priceTotal
+        };
+    }
+
+    if (!hasBreakdown) {
+        return {
+            rowsHTML: `
+                ${usedRatesHtml}
+                <div class="calc-block-wrapper">
+                    <div class="calc-section-title">Расчет стоимости</div>
+                    <div class="calc-note-box">
+                        Детальный расчет для этой карточки сейчас недоступен. Уточните breakdown у менеджера.
+                    </div>
+                </div>
+            `,
+            footerPrice: formatPrice(car.price)
+        };
+    }
+
+    const warnings = Array.isArray(breakdown.warnings) ? breakdown.warnings.filter(Boolean) : [];
+    const warningsHtml = warnings.length
+        ? `
+            <div class="calc-warning-list">
+                ${warnings.map((warning) => `<div class="calc-warning-item">${escapeHtml(warning)}</div>`).join('')}
+            </div>
+        `
+        : '';
+
+    const servicesLocalValue = Number(servicesLocal && servicesLocal.amount_local);
+    const hasServicesLocal = Number.isFinite(servicesLocalValue) && servicesLocalValue > 0;
+
+    const servicesLocalRowHtml = hasServicesLocal
+        ? `
+            <div class="calc-row">
+                <span class="c-label">Внутренние расходы</span>
+                <span class="c-dots"></span>
+                <span class="c-val">${escapeHtml(formatPublicLocalAmount(servicesLocalValue, publicPricing))}</span>
+            </div>
+            <div class="calc-desc-text">Доставка до порта, снятие с учета, экспортная декларация, стоянка.</div>
+        `
+        : '';
+
+    const extraRows = [];
+    if (Number.isFinite(Number(breakdown.services_russia_rub)) && Number(breakdown.services_russia_rub) > 0) {
+        extraRows.push(`
+            <div class="calc-row">
+                <span class="c-label">Услуги во Владивостоке</span>
+                <span class="c-dots"></span>
+                <span class="c-val">${formatRubAmount(breakdown.services_russia_rub)}</span>
+            </div>
+            <div class="calc-desc-text">СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера.</div>
+        `);
+    }
+    if (Number.isFinite(Number(breakdown.commission_rub)) && Number(breakdown.commission_rub) > 0) {
+        extraRows.push(`
+            <div class="calc-row">
+                <span class="c-label">Комиссия Diptrade</span>
+                <span class="c-dots"></span>
+                <span class="c-val">${formatRubAmount(breakdown.commission_rub)}</span>
+            </div>
+        `);
+    }
+
+    const countryName = car.country_code === 'CN' ? 'в Китае' : 'в Корее';
+
+    return {
+        rowsHTML: `
+            ${usedRatesHtml}
+            ${warningsHtml}
+
+            <div class="calc-block-wrapper">
+                <div class="calc-section-title">Покупка и расходы ${countryName}</div>
+
+                <div class="calc-row">
+                    <span class="c-label">Стоимость авто</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${escapeHtml(formatPublicLocalAmount(purchase && purchase.amount_local, publicPricing))}</span>
+                </div>
+
+                ${servicesLocalRowHtml}
+
+                <div class="calc-row calc-subtotal">
+                    <span class="c-label">Итого до РФ</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${formatRubAmount(breakdown.purchase_total_rub)}</span>
+                </div>
+            </div>
+
+            <div class="calc-block-wrapper">
+                <div class="calc-section-title">Таможня и оформление</div>
+
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Таможенная пошлина</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${formatRubAmount(breakdown.duty_rub)}</span>
+                </div>
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Таможенный сбор</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${formatRubAmount(breakdown.customs_fee)}</span>
+                </div>
+                <div class="calc-row calc-sub-row">
+                    <span class="c-label">Утильсбор</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${formatRubAmount(breakdown.util_fee)}</span>
+                </div>
+
+                <div class="calc-row calc-subtotal">
+                    <span class="c-label">Итого таможня</span>
+                    <span class="c-dots"></span>
+                    <span class="c-val">${formatRubAmount(breakdown.customs_total)}</span>
+                </div>
+            </div>
+
+            ${extraRows.length ? `
+                <div class="calc-block-wrapper">
+                    <div class="calc-section-title">Дополнительно в России</div>
+                    ${extraRows.join('')}
+                </div>
+            ` : ''}
+        `,
+        footerPrice: priceTotal
+    };
 }
 
 /**
@@ -656,20 +916,15 @@ function renderSidebar(car) {
     const countryBlock = document.getElementById('countryBlock');
     let countryName = 'Импорт';
     let flagIcon = 'assets/img/flags/default.png';
-    let currency = '';
-
     if (car.country_code === 'KR') {
         countryName = 'Корея';
         flagIcon = 'assets/img/flags/kr.png';
-        currency = '₩';
     } else if (car.country_code === 'CN') {
         countryName = 'Китай';
         flagIcon = 'assets/img/flags/cn.png';
-        currency = '¥';
     } else if (car.country_code === 'RU') {
         countryName = 'Россия';
         flagIcon = 'assets/img/flags/ru.png';
-        currency = '₽';
     }
 
     if (countryBlock) {
@@ -688,7 +943,7 @@ function renderSidebar(car) {
         const age = currentYear - carYear;
         
         // Получаем л.с. (пробуем разные поля, так как я не вижу твой JSON прямо сейчас)
-        const hp = car.horse_power || (car.specs ? car.specs.hp : 0) || 0;
+        const hp = car.horse_power || getSpecsPowerHp(car.specs || {});
         const hasCustomsBadges = car.country_code !== 'RU';
 
         let chipsHTML = '';
@@ -737,166 +992,17 @@ function renderSidebar(car) {
     }
 
     // === 6. КАЛЬКУЛЯТОР ===
-    renderCalculator(car, currency);
+    renderCalculator(car);
 }
 
 /**
  * ЭТАП 6. КАЛЬКУЛЯТОР (С ШТОРКАМИ ДЛЯ МОБИЛОК)
  */
-function renderCalculator(car, currency) {
+function renderCalculator(car) {
     const calcContainer = document.getElementById('calcBlock');
     if (!calcContainer) return;
-
-    // 1. ИНИЦИАЛИЗАЦИЯ (ПО УМОЛЧАНИЮ — ПРОЧЕРКИ)
-    // Если данных не будет, эти значения так и останутся
-    let priceLocalStr = '--';
-    let internalExpStr = '--';
-    
-    let dutyVal = '-- ₽';
-    let utilVal = '-- ₽';
-    let clearanceVal = '-- ₽';
-    let servicesVal = '-- ₽';
-    
-    let customsSumStr = '-- ₽'; // Сумма таможни
-    let totalRuStr = '-- ₽';    // Итого РФ
-
-    // 2. ПРОВЕРКА ДАННЫХ
-    // Есть ли блок costs в JSON?
-    const hasCosts = !!(car.costs && car.costs.russia && car.costs.buyout);
-
-    if (hasCosts) {
-        const buyout = car.costs.buyout;
-        const ru = car.costs.russia;
-
-        // --- Считаем "ТАМ" (Китай/Корея) ---
-        if (buyout.car_price_local) {
-            priceLocalStr = formatNumber(buyout.car_price_local) + ` ${currency}`;
-        }
-        if (buyout.internal_costs_local) {
-            internalExpStr = formatNumber(buyout.internal_costs_local) + ` ${currency}`;
-        }
-
-        // --- Считаем "ТУТ" (РФ) ---
-        const d = ru.duty_rub || 0;              // Пошлина
-        const u = ru.recycling_fee_rub || 0;     // Утиль
-        const c = ru.customs_clearance_rub || 0; // Оформление
-        const s = ru.vladivostok_services_rub || 0; // Услуги Влад.
-
-        // Форматируем отдельные строки
-        dutyVal = formatPrice(d);
-        utilVal = formatPrice(u);
-        clearanceVal = formatPrice(c);
-        servicesVal = formatPrice(s);
-
-        // Считаем суммы
-        // 1. Таможенные расходы = Пошлина + Утиль + Оформление
-        const customsSum = d + u + c;
-        customsSumStr = formatPrice(customsSum);
-
-        // 2. Итого расходы РФ = Таможенные расходы + Услуги Владивостока
-        const totalRu = customsSum + s;
-        totalRuStr = formatPrice(totalRu);
-    }
-    // Если hasCosts === false, то везде останутся прочерки, как ты и просил.
-
-
-    // 3. ГЕНЕРАЦИЯ HTML
-    let rowsHTML = '';
-
-    // СЦЕНАРИЙ: АВТО ИЗ РОССИИ
-    if (car.country_code === 'RU') {
-        rowsHTML = `
-            <div class="calc-row">
-                <span class="c-label">Стоимость авто</span>
-                <span class="c-dots"></span>
-                <span class="c-val">${formatPrice(car.price)}</span>
-            </div>
-            <div class="calc-row">
-                <span class="c-label">Оформление</span>
-                <span class="c-dots"></span>
-                <span class="c-val">Включено</span>
-            </div>
-        `;
-    } 
-    // СЦЕНАРИЙ: ИМПОРТ (Корея / Китай)
-    else {
-        const countryName = car.country_code === 'CN' ? 'Китаю' : 'Корее';
-        
-        rowsHTML = `
-            <div class="calc-block-wrapper">
-                <div class="calc-section-title">Расходы по ${countryName}</div>
-                
-                <div class="calc-row">
-                    <span class="c-label">Выкуп авто</span>
-                    <span class="c-dots"></span>
-                    <span class="c-val" style="color:#64748B">${priceLocalStr}</span>
-                </div>
-
-                <div class="calc-row">
-                    <span class="c-label">
-                        Внутренние расходы
-                        <div class="calc-tooltip-wrapper">
-                            <img src="assets/img/icons/info-circle.png" class="calc-info-icon" alt="i" data-tooltip-key="tooltipKoreaOps">
-                            <div class="tooltip-box">${UI_TEXT.tooltipKoreaOps}</div>
-                        </div>
-                    </span>
-                    <span class="c-dots"></span>
-                    <span class="c-val">${internalExpStr}</span>
-                </div>
-            </div>
-
-            <div class="calc-line"></div> 
-
-            <div class="calc-block-wrapper">
-                <div class="calc-section-title">Расходы в России</div>
-
-                <div class="calc-subheader-row">
-                    <span style="display:flex; align-items:center;">
-                        Таможенные расходы
-                        <div class="calc-tooltip-wrapper">
-                             <div class="tooltip-box">${UI_TEXT.tooltipRussiaCustoms}</div>
-                        </div>
-                    </span>
-                    <span>${customsSumStr}</span>
-                </div>
-
-                <div class="calc-row calc-sub-row">
-                    <span class="c-label">Таможенная пошлина</span>
-                    <span class="c-dots"></span>
-                    <span class="c-val">${dutyVal}</span>
-                </div>
-                <div class="calc-row calc-sub-row">
-                    <span class="c-label">Таможенное оформление</span>
-                    <span class="c-dots"></span>
-                    <span class="c-val">${clearanceVal}</span>
-                </div>
-                <div class="calc-row calc-sub-row">
-                    <span class="c-label">Утильсбор</span>
-                    <span class="c-dots"></span>
-                    <span class="c-val">${utilVal}</span>
-                </div>
-
-                <div class="calc-subheader-row" style="margin-top: 10px;">
-                    <span style="display:flex; align-items:center;">
-                        Услуги во Владивостоке
-                        <div class="calc-tooltip-wrapper">
-                            <div class="tooltip-box">${UI_TEXT.tooltipRussiaServices}</div>
-                        </div>
-                    </span>
-                    <span>${servicesVal}</span>
-                </div>
-                <div class="calc-desc-text">
-                    (СБКТС, ЭПТС, лаборатория, перегон, стоянка, услуги порта и брокера)
-                </div>
-
-                <div class="calc-row calc-subtotal">
-                    <span class="c-label">Итого расходы РФ</span>
-                    <span class="c-dots"></span>
-                    <span class="c-val">${totalRuStr}</span>
-                </div>
-            </div>
-        `;
-    }
+    const calculator = buildCalculatorSections(car);
+    const rowsHTML = calculator.rowsHTML;
 
     // 4. ВСТАВКА В DOM
     calcContainer.innerHTML = `
@@ -916,7 +1022,7 @@ function renderCalculator(car, currency) {
         
         <div class="calc-total-footer">
             <span>Полная стоимость:</span>
-            <strong class="total-price-small">${formatPrice(car.price)}</strong>
+            <strong class="total-price-small">${calculator.footerPrice}</strong>
         </div>
     `;
 
@@ -1059,6 +1165,9 @@ function initMobileSwipeGallery(car) {
    SCROLL TO TOP BUTTON
    ========================================= */
 function initScrollTopButton() {
+    const existing = document.querySelector('.scroll-top-btn');
+    if (existing) return existing;
+
     // 1. Создаем кнопку
     const btn = document.createElement('div');
     btn.className = 'scroll-top-btn';

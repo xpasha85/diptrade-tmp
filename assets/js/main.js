@@ -5,6 +5,7 @@
 const API_BASE = isLocal
   ? 'http://localhost:3001'
   : 'https://api.diptrade.ru';
+const SITE_CARS_API_BASE = `${API_BASE}/site/cars`;
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. ЭЛЕМЕНТЫ УПРАВЛЕНИЯ ---
     const burger = document.getElementById('burgerBtn');
@@ -87,13 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
             v: String(Date.now())
         });
 
-        fetch(`${API_BASE}/cars?${featuredParams.toString()}`)
+        fetch(`${SITE_CARS_API_BASE}?${featuredParams.toString()}`)
             .then(res => res.json())
             .then(data => {
                 const cars = Array.isArray(data) ? data : (data?.cars || []);
-                const featured = cars.filter(car => car.featured && car.is_visible !== false && car.is_sold !== true);
                 // Перемешиваем
-                const shuffled = featured.sort(() => 0.5 - Math.random());
+                const shuffled = cars.sort(() => 0.5 - Math.random());
                 const isMobile = window.innerWidth < 768;
                 // На мобилке показываем все, на ПК только 4
                 const selected = isMobile ? shuffled : shuffled.slice(0, 4);
@@ -120,9 +120,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Форматирование данных
                     const displayPrice = formatPrice(car.price);
                     const displayMonth = car.month ? `${formatMonth(car.month)}, ` : '';
-                    const hp = `${car.specs.hp} л.с.`;
-                    const fuel = car.specs.fuel;
-                    const volume = car.specs.volume > 0 ? `${(car.specs.volume / 1000).toFixed(1)} л` : 'Электро';
+                    const specs = car.specs || {};
+                    const hpValue = Number(specs.power_hp) || 0;
+                    const volumeValue = Number(specs.engine_volume_cc) || 0;
+                    const engineType = String(specs.engine_type || '').toLowerCase();
+                    const fuel = engineType === 'gasoline'
+                        ? 'Бензин'
+                        : engineType === 'diesel'
+                            ? 'Дизель'
+                            : (engineType === 'hybrid' || engineType === 'par_hybrid')
+                                ? 'Гибрид'
+                                : engineType === 'electric'
+                                    ? 'Электро'
+                                    : engineType === 'lpg'
+                                        ? 'LPG'
+                                        : '—';
+                    const hp = hpValue > 0 ? `${hpValue} л.с.` : '—';
+                    const volume = volumeValue > 0 ? `${(volumeValue / 1000).toFixed(1)} л` : 'Электро';
 
                     return `
                     <div class="car-card" onclick="handleCardClick(event, ${car.id})">
@@ -239,6 +253,9 @@ document.addEventListener('DOMContentLoaded', () => {
    SCROLL TO TOP BUTTON (Генерация кнопки)
    ========================================= */
 function initScrollTopButton() {
+    const existing = document.querySelector('.scroll-top-btn');
+    if (existing) return existing;
+
     // 1. Создаем кнопку
     const btn = document.createElement('div');
     btn.className = 'scroll-top-btn';

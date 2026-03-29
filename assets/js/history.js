@@ -5,6 +5,7 @@
 const HISTORY_API_BASE = historyIsLocal
   ? 'http://localhost:3001'
   : 'https://api.diptrade.ru';
+const HISTORY_CARS_API_BASE = `${HISTORY_API_BASE}/site/cars`;
 document.addEventListener('DOMContentLoaded', () => {
     const historyGrid = document.getElementById('historyGrid');
 
@@ -22,12 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
         v: String(Date.now())
     });
 
-    fetch(`${HISTORY_API_BASE}/cars?${historyParams.toString()}`)
+    fetch(`${HISTORY_CARS_API_BASE}?${historyParams.toString()}`)
         .then(res => res.json())
         .then(data => {
             const cars = Array.isArray(data) ? data : (data?.cars || []);
-            // Фильтруем только проданные авто
-            const soldCars = cars.filter(car => car.is_sold === true);
+            const soldCars = cars;
 
             if (soldCars.length === 0) {
                 historyGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">История продаж пока пуста.</p>';
@@ -47,14 +47,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const soldDate = formatSoldDate(car.sold_on);
 
                 // Безопасное получение характеристик (фикс ошибки toLocaleString)
-                const mileage = car.specs && car.specs.mileage 
-                    ? car.specs.mileage.toLocaleString('ru-RU') 
-                    : '—';
-                const volume = car.specs && car.specs.volume 
-                    ? (car.specs.volume / 1000).toFixed(1) 
-                    : '—';
-                const fuel = car.specs && car.specs.fuel ? car.specs.fuel : '—';
-                const hp = car.specs && car.specs.hp ? car.specs.hp : '—';
+                const specs = car.specs || {};
+                const mileageValue = Number(specs.mileage_km) || 0;
+                const volumeValue = Number(specs.engine_volume_cc) || 0;
+                const hpValue = Number(specs.power_hp) || 0;
+                const engineType = String(specs.engine_type || '').toLowerCase();
+                const mileage = mileageValue ? mileageValue.toLocaleString('ru-RU') : '—';
+                const volume = volumeValue ? (volumeValue / 1000).toFixed(1) : '—';
+                const fuel = engineType === 'gasoline'
+                    ? 'Бензин'
+                    : engineType === 'diesel'
+                        ? 'Дизель'
+                        : (engineType === 'hybrid' || engineType === 'par_hybrid')
+                            ? 'Гибрид'
+                            : engineType === 'electric'
+                                ? 'Электро'
+                                : engineType === 'lpg'
+                                    ? 'LPG'
+                                    : '—';
+                const hp = hpValue || '—';
 
                 // Безопасное форматирование цен
                 const priceFormatted = car.price 

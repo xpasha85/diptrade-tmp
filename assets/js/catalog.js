@@ -5,13 +5,15 @@
 const CATALOG_API_BASE = catalogIsLocal
   ? 'http://localhost:3001'
   : 'https://api.diptrade.ru';
+const CATALOG_CARS_API_BASE = `${CATALOG_API_BASE}/site/cars`;
 document.addEventListener('DOMContentLoaded', () => {
 
   initScrollTopButton();
   // ---------------------------
   // ПЕРЕМЕННЫЕ
   // ---------------------------
-  let allCars = [];
+  let filterIndexCars = [];
+  let filterIndexKey = null;
   let filteredCars = [];
   let itemsToShow = 0;
   const serverState = {
@@ -19,8 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
     perPage: 20,
     hasNext: false,
     total: 0,
-    isLoading: false
+    isLoading: false,
+    requestSeq: 0,
+    activeController: null
   };
+  let filterIndexController = null;
+  let filterIndexRequestSeq = 0;
 
   function getColumnsCount() {
   const w = window.innerWidth;
@@ -107,6 +113,16 @@ function getPageSize() {
     return (now.getFullYear() - y) * 12 + (now.getMonth() - (mo - 1));
   };
 
+  const normalizeFuelLabel = (specs = {}) => {
+    const engineType = String(specs.engine_type || '').toLowerCase();
+    if (engineType === 'gasoline') return 'Бензин';
+    if (engineType === 'diesel') return 'Дизель';
+    if (engineType === 'hybrid' || engineType === 'par_hybrid') return 'Гибрид';
+    if (engineType === 'electric') return 'Электро';
+    if (engineType === 'lpg') return 'LPG';
+    return '';
+  };
+
   const normalizeCar = (car) => {
     car.id = car.id ?? '';
     car.country_code = car.country_code ?? '';
@@ -130,16 +146,18 @@ function getPageSize() {
     car.assets_folder = car.assets_folder || '';
 
     if (!car.specs) car.specs = {};
-    car.specs.hp = Number(car.specs.hp) || 0;
-    car.specs.volume = Number(car.specs.volume) || 0;
-    car.specs.mileage = Number(car.specs.mileage) || 0;
-    car.specs.fuel = car.specs.fuel || '';
+    car._specs = {
+      powerHp: Number(car.specs.power_hp) || 0,
+      engineVolumeCc: Number(car.specs.engine_volume_cc) || 0,
+      mileageKm: Number(car.specs.mileage_km) || 0,
+      fuelLabel: normalizeFuelLabel(car.specs)
+    };
 
     // Кэши для ускорения на 1000+
     car._ageMonths = getAgeInMonths(car.year, car.month || 1);
     car._hasCustomsBadges = car.country_code !== 'RU';
     car._isPassable = car._hasCustomsBadges && (car._ageMonths >= 36 && car._ageMonths < 60);
-    car._isLowPower = car._hasCustomsBadges && (car.specs.hp <= 160 && car.specs.volume > 0);
+    car._isLowPower = car._hasCustomsBadges && (car._specs.powerHp <= 160 && car._specs.engineVolumeCc > 0);
 
     // фото
     if (!Array.isArray(car.photos)) car.photos = [];
@@ -178,12 +196,6 @@ function getPageSize() {
     if (hiddenCountry) hiddenCountry.value = state.country;
     else setFormValue('country_code', state.country);
   }
-
-
- // Вешаем слушатели закрытия
-if (closeSheetBtn) closeSheetBtn.addEventListener('click', closeSheet);
-if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
-
 
   // ---------------------------
   // Делегирование hover (ДЛЯ ПК)
@@ -433,10 +445,10 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       let rawTitle = car.web_title ? car.web_title : `${car.brand} ${car.model}`;
       const title = rawTitle.replace(/_/g, ' ');
 
-      const volStr = (car.specs.volume / 1000).toFixed(1) + ' л';
-      const hpStr = car.specs.hp + ' л.с.';
-      const fuelStr = car.specs.fuel; 
-      const kmStr = car.specs.mileage.toLocaleString() + ' км';
+      const volStr = (car._specs.engineVolumeCc / 1000).toFixed(1) + ' л';
+      const hpStr = car._specs.powerHp + ' л.с.';
+      const fuelStr = car._specs.fuelLabel;
+      const kmStr = car._specs.mileageKm.toLocaleString() + ' км';
       
       const monthStr = car.month ? formatMonth(car.month) : '';
       const dateStr = (monthStr ? monthStr + ' ' : '') + car.year;
@@ -543,6 +555,13 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     }
   }
 
+  function syncLoadMoreButton() {
+    if (!loadMoreBtn) return;
+    loadMoreBtn.style.display = serverState.hasNext ? 'inline-flex' : 'none';
+    loadMoreBtn.disabled = serverState.isLoading;
+    loadMoreBtn.textContent = serverState.isLoading ? 'Загрузка...' : 'Показать еще';
+  }
+
   function updateCounter() {
     if (!totalCountEl) return;
     totalCountEl.textContent = `${serverState.total}`;
@@ -558,6 +577,40 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       return;
     }
     params.append(key, String(value));
+  }
+
+  function isAbortError(err) {
+    return err?.name === 'AbortError';
+  }
+
+  async function fetchCarsCollection(query, options = {}) {
+    const collected = [];
+    let page = 1;
+    const perPage = 200;
+
+    for (;;) {
+      const params = new URLSearchParams();
+      Object.entries({
+        ...query,
+        page,
+        per_page: perPage
+      }).forEach(([key, value]) => addQueryParam(params, key, value));
+
+      const response = await fetch(`${CATALOG_CARS_API_BASE}?${params.toString()}`, {
+        signal: options.signal
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const apiCars = Array.isArray(data) ? data : (Array.isArray(data?.cars) ? data.cars : []);
+      collected.push(...apiCars.map(normalizeCar));
+
+      const pagination = data && typeof data === 'object' ? data.pagination : null;
+      if (!pagination?.has_next) break;
+      page += 1;
+    }
+
+    return collected;
   }
 
   function toBool(v) {
@@ -583,7 +636,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       const countryCode = String(car.country_code || car.country || '');
       const brand = String(car.brand || '').toLowerCase();
       const model = String(car.model || '').toLowerCase();
-      const fuel = String(specs.fuel || '').toLowerCase();
+      const fuel = String(specs.engine_type || '').toLowerCase();
 
       if (query.status === 'active' && (car.is_visible === false || car.is_sold === true)) return false;
       if (query.status === 'featured' && !car.featured) return false;
@@ -600,10 +653,10 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       if (query.price_to != null && Number(car.price || 0) > Number(query.price_to)) return false;
       if (query.year_from != null && Number(car.year || 0) < Number(query.year_from)) return false;
       if (query.year_to != null && Number(car.year || 0) > Number(query.year_to)) return false;
-      if (query.volume_from != null && Number(specs.volume || 0) < Number(query.volume_from)) return false;
-      if (query.volume_to != null && Number(specs.volume || 0) > Number(query.volume_to)) return false;
-      if (query.hp_from != null && Number(specs.hp || 0) < Number(query.hp_from)) return false;
-      if (query.hp_to != null && Number(specs.hp || 0) > Number(query.hp_to)) return false;
+      if (query.volume_from != null && Number(specs.engine_volume_cc || 0) < Number(query.volume_from)) return false;
+      if (query.volume_to != null && Number(specs.engine_volume_cc || 0) > Number(query.volume_to)) return false;
+      if (query.hp_from != null && Number(specs.power_hp || 0) < Number(query.hp_from)) return false;
+      if (query.hp_to != null && Number(specs.power_hp || 0) > Number(query.hp_to)) return false;
 
       if (fuelSet.size > 0 && !fuelSet.has(fuel)) return false;
 
@@ -644,7 +697,9 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     const country = state.country;
     const currentBrand = brandSelect ? brandSelect.value : '';
 
-    const availableCars = country ? allCars.filter(c => c.country_code === country) : allCars;
+    const availableCars = country
+      ? filterIndexCars.filter(c => c.country_code === country)
+      : filterIndexCars;
     const brands = [...new Set(availableCars.map(c => c.brand))].sort();
 
     if (!brandSelect) return;
@@ -680,7 +735,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       return;
     }
 
-    const availableCars = allCars.filter(c => {
+    const availableCars = filterIndexCars.filter(c => {
       if (country && c.country_code !== country) return false;
       return c.brand === brand;
     });
@@ -697,6 +752,50 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
     // Если текущая модель не существует в новом списке — сброс
     if (currentModel && !models.includes(currentModel)) {
       modelSelect.value = '';
+    }
+  }
+
+  async function refreshFilterIndex({ force = false } = {}) {
+    const nextKey = state.country || '*';
+    if (!force && filterIndexKey === nextKey && filterIndexCars.length > 0) {
+      updateBrandList();
+      return;
+    }
+
+    if (filterIndexController) {
+      filterIndexController.abort();
+    }
+
+    const requestSeq = ++filterIndexRequestSeq;
+    const controller = new AbortController();
+    filterIndexController = controller;
+
+    try {
+      const query = {
+        status: 'active',
+        sort: 'newest'
+      };
+      if (state.country) query.country_code = state.country;
+
+      const cars = await fetchCarsCollection(query, {
+        signal: controller.signal
+      });
+      if (requestSeq !== filterIndexRequestSeq) return;
+
+      filterIndexCars = cars;
+      filterIndexKey = nextKey;
+      updateBrandList();
+    } catch (err) {
+      if (isAbortError(err)) return;
+      console.error('Ошибка загрузки индекса фильтров:', err);
+      if (requestSeq !== filterIndexRequestSeq) return;
+      filterIndexCars = [];
+      filterIndexKey = nextKey;
+      updateBrandList();
+    } finally {
+      if (requestSeq === filterIndexRequestSeq) {
+        filterIndexController = null;
+      }
     }
   }
 
@@ -778,9 +877,15 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   }
 
   async function fetchCarsPage({ append = false } = {}) {
-    if (serverState.isLoading) return;
+    if (serverState.activeController) {
+      serverState.activeController.abort();
+    }
+
+    const requestSeq = ++serverState.requestSeq;
+    const controller = new AbortController();
+    serverState.activeController = controller;
     serverState.isLoading = true;
-    renderGrid();
+    syncLoadMoreButton();
 
     try {
       const query = buildCarsQuery();
@@ -788,14 +893,14 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
         filteredCars = [];
         serverState.hasNext = false;
         serverState.total = 0;
-        renderGrid();
-        updateCounter();
         return;
       }
       const params = new URLSearchParams();
       Object.entries(query).forEach(([key, value]) => addQueryParam(params, key, value));
 
-      const response = await fetch(`${CATALOG_API_BASE}/cars?${params.toString()}`);
+      const response = await fetch(`${CATALOG_CARS_API_BASE}?${params.toString()}`, {
+        signal: controller.signal
+      });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
@@ -827,6 +932,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
 
       if (append) filteredCars = filteredCars.concat(normalized);
       else filteredCars = normalized;
+      if (requestSeq !== serverState.requestSeq) return;
 
       serverState.hasNext = Boolean(pagination?.has_next);
       serverState.total = Number(pagination?.total ?? filteredCars.length);
@@ -834,23 +940,21 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
       serverState.perPage = Number(pagination?.per_page ?? serverState.perPage);
 
       itemsToShow = filteredCars.length;
-      allCars = [...filteredCars];
-      updateBrandList();
-      renderGrid();
-      updateCounter();
     } catch (err) {
+      if (isAbortError(err)) return;
       console.error('Ошибка загрузки каталога:', err);
       if (!append) {
         filteredCars = [];
-        allCars = [];
         serverState.total = 0;
         serverState.hasNext = false;
       }
-      renderGrid();
-      updateCounter();
     } finally {
-      serverState.isLoading = false;
-      renderGrid();
+      if (requestSeq === serverState.requestSeq) {
+        serverState.activeController = null;
+        serverState.isLoading = false;
+        renderGrid();
+        updateCounter();
+      }
     }
   }
 
@@ -867,7 +971,9 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   state.country = "";
   syncCountryToForm();
   syncChipsUI();
-  applyFilters();
+  refreshFilterIndex({ force: true }).finally(() => {
+    applyFilters();
+  });
 
   // ---------------------------
   // СОБЫТИЯ
@@ -875,7 +981,9 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
 
   // Сайдбар -> фильтры
   if (filterForm) {
-    filterForm.addEventListener('change', () => {
+    filterForm.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target === brandSelect || target === modelSelect || target === sortSelect) return;
       applyFilters();
     });
   }
@@ -898,7 +1006,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
 // Страна (кнопки в сайдбаре) -> ПОЛНЫЙ СБРОС + выбор страны
   if (countryButtons.length) {
     countryButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         // 1. Сначала сбрасываем вообще всё
         if (filterForm) filterForm.reset();
         state.chipFlags.clear();
@@ -919,7 +1027,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
         // 3. Синхронизируем и обновляем
         syncCountryToForm();   
         syncChipsUI();         
-        updateBrandList();     
+        await refreshFilterIndex({ force: true });
         applyFilters();
       });
     });
@@ -936,10 +1044,9 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
         state.country = (t === 'all') ? "" : (t === 'korea') ? "KR" : (t === 'china') ? "CN" : "RU";
         syncCountryToForm();
         syncChipsUI();
-
-        // смена страны => обновить бренды/модели
-        updateBrandList();
-        applyFilters();
+        refreshFilterIndex({ force: true }).finally(() => {
+          applyFilters();
+        });
         return;
       }
 
@@ -964,7 +1071,7 @@ if (sheetOverlay) sheetOverlay.addEventListener('click', closeSheet);
   }
 
 if (resetBtn && filterForm) {
-    resetBtn.addEventListener('click', () => {
+    resetBtn.addEventListener('click', async () => {
       // 1. Сброс формы
       filterForm.reset();
 
@@ -985,7 +1092,7 @@ if (resetBtn && filterForm) {
       // 4. Обновление UI
       syncCountryToForm();
       syncChipsUI();
-      updateBrandList();
+      await refreshFilterIndex({ force: true });
       applyFilters();
     });
   }
@@ -1198,6 +1305,9 @@ document.addEventListener('DOMContentLoaded', () => {
    SCROLL TO TOP BUTTON (Генерация кнопки)
    ========================================= */
 function initScrollTopButton() {
+    const existing = document.querySelector('.scroll-top-btn');
+    if (existing) return existing;
+
     // 1. Создаем кнопку
     const btn = document.createElement('div');
     btn.className = 'scroll-top-btn';
